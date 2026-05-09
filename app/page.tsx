@@ -16,9 +16,9 @@ export default function Home() {
           </div>
         </div>
         <div className="hidden md:flex items-center gap-6 text-sm text-gray-600">
-          <a href="#services" className="hover:text-red-700">Our Services</a>
-          <a href="#who-we-are" className="hover:text-red-700">About Us</a>
-          <a href="#how-it-works" className="hover:text-red-700">How We Work</a>
+          <a href="https://www.fractionalaeco.com/services" target="_blank" className="hover:text-red-700">Our Services</a>
+          <a href="https://www.fractionalaeco.com/about" target="_blank" className="hover:text-red-700">About Us</a>
+          <a href="https://www.fractionalaeco.com/how-we-work" target="_blank" className="hover:text-red-700">How We Work</a>
           <a href="https://www.fractionalaeco.com/contact" target="_blank" className="hover:text-red-700">Contact</a>
         </div>
         <div className="flex gap-3">
@@ -115,19 +115,19 @@ export default function Home() {
               <div className="text-3xl mb-3">👷</div>
               <h4 className="font-bold text-gray-900 mb-2">Contractors</h4>
               <p className="text-sm text-gray-500">Project delivery, risk management, and field leadership on a fractional basis.</p>
-              <a href="/signup" className="mt-4 inline-block text-sm text-red-700 font-medium hover:underline">Join as Contractor →</a>
+              <a href="https://www.fractionalaeco.com/services" target="_blank" className="mt-4 inline-block text-sm text-red-700 font-medium hover:underline">Learn More →</a>
             </div>
             <div className="bg-white p-6 rounded-2xl border border-gray-100 text-center">
               <div className="text-3xl mb-3">📐</div>
               <h4 className="font-bold text-gray-900 mb-2">Architects</h4>
               <p className="text-sm text-gray-500">Design leadership, BIM expertise, and project oversight without full-time overhead.</p>
-              <a href="/signup" className="mt-4 inline-block text-sm text-red-700 font-medium hover:underline">Join as Architect →</a>
+              <a href="https://www.fractionalaeco.com/services" target="_blank" className="mt-4 inline-block text-sm text-red-700 font-medium hover:underline">Learn More →</a>
             </div>
             <div className="bg-white p-6 rounded-2xl border border-gray-100 text-center">
               <div className="text-3xl mb-3">🏢</div>
               <h4 className="font-bold text-gray-900 mb-2">Owners & Operators</h4>
               <p className="text-sm text-gray-500">Asset management, operations optimization, and owner's rep services.</p>
-              <a href="/signup" className="mt-4 inline-block text-sm text-red-700 font-medium hover:underline">Find Talent →</a>
+              <a href="https://www.fractionalaeco.com/services" target="_blank" className="mt-4 inline-block text-sm text-red-700 font-medium hover:underline">Learn More →</a>
             </div>
           </div>
         </div>
@@ -195,8 +195,8 @@ export default function Home() {
             <p className="text-xs text-gray-600 mt-1">fractus.fractional.com</p>
           </div>
           <div className="flex gap-6 text-sm">
-            <a href="https://www.fractionalaeco.com/services" target="_blank" className="hover:text-white">Services</a>
-            <a href="https://www.fractionalaeco.com/about" target="_blank" className="hover:text-white">About</a>
+            <a href="https://www.fractionalaeco.com/services" target="_blank" className="hover:text-white">Our Services</a>
+            <a href="https://www.fractionalaeco.com/about" target="_blank" className="hover:text-white">About Us</a>
             <a href="https://www.fractionalaeco.com/how-we-work" target="_blank" className="hover:text-white">How We Work</a>
             <a href="https://www.fractionalaeco.com/contact" target="_blank" className="hover:text-white">Contact</a>
           </div>
