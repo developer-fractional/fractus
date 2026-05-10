@@ -56,9 +56,9 @@ export default function Dashboard() {
 
         <div className="grid grid-cols-3 gap-6">
           {[
-            { icon: '👤', title: 'My Profile', desc: 'Build your AECO profile', href: '/profile' },
-            { icon: '🔍', title: 'Find Talent', desc: 'Browse fractional pros', href: '/marketplace' },
-            { icon: '📋', title: 'My Listings', desc: 'Post fractional gigs', href: '/listings' },
+           { icon: '👤', title: 'My Profile', desc: 'Build your AECO profile', href: '/profile' },
+           { icon: '🔍', title: 'Find Talent', desc: 'Browse fractional pros', href: '/marketplace' },
+           { icon: '📋', title: 'My Listings', desc: 'Post fractional gigs', href: '/listings' },
           ].map((card, i) => (
             <a key={i} href={card.href} className="p-8 rounded-2xl border block hover:opacity-80 transition-all cursor-pointer" style={{background:'var(--color-bg-card)', borderColor:'var(--color-border)'}}>
               <div className="text-4xl mb-4">{card.icon}</div>
