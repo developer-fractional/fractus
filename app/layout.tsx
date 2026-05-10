@@ -16,11 +16,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: getThemeScript() }} />
       </head>
-      <body className={geist.className} style={{margin:0, padding:0}}>
+      <body suppressHydrationWarning className={geist.className} style={{margin:0, padding:0}}>
         {children}
       </body>
     </html>
