@@ -1,191 +1,254 @@
 export default function Home() {
   return (
-    <main className="min-h-screen" style={{background:'var(--color-bg)'}}>
+    <main style={{ background: '#0A0A0A' }}>
 
       {/* Top bar */}
-      <div className="text-white text-center py-3 px-4" style={{background:'var(--color-primary)', fontSize:'16px'}}>
-        Powered by <a href="https://www.fractionalaeco.com" target="_blank" className="underline font-semibold hover:opacity-80">Fractional AECO</a> · Your AECO Experts · <a href="tel:+19804940263" className="underline hover:opacity-80">+1 980 494 0263</a>
+      <div style={{ background: '#C41230', color: 'white', textAlign: 'center', padding: '10px 16px', fontSize: '14px', fontWeight: 500 }}>
+        Powered by{' '}
+        <a href="https://www.fractionalaeco.com" target="_blank" style={{ color: 'white', textDecoration: 'underline' }}>Fractional AECO</a>
+        {' '}· Your AECO Experts ·{' '}
+        <a href="tel:+19804940263" style={{ color: 'white', textDecoration: 'underline' }}>+1 980 494 0263</a>
       </div>
 
-      {/* Navigation */}
-      <nav className="flex items-center justify-between px-10 py-6 border-b" style={{background:'var(--color-bg)', borderColor:'var(--color-border)'}}>
-        <div>
-          <span className="font-bold" style={{color:'var(--color-accent)', fontSize:'32px'}}>Fractus</span>
-          <span className="block text-gray-500" style={{fontSize:'14px'}}>by FractionalAECO</span>
+      {/* Nav */}
+      <nav style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '18px 48px', background: '#0A0A0A', borderBottom: '1px solid #242424', position: 'sticky', top: 0, zIndex: 100 }}>
+        <a href="/" style={{ textDecoration: 'none' }}>
+          <div style={{ fontSize: '26px', fontWeight: 800, color: '#C41230', letterSpacing: '-0.5px' }}>Fractus</div>
+          <div style={{ fontSize: '11px', color: '#666', marginTop: '-2px' }}>by FractionalAECO</div>
+        </a>
+        <div style={{ display: 'flex', gap: '32px', alignItems: 'center' }}>
+          <a href="https://www.fractionalaeco.com/services" target="_blank" style={{ color: '#A0A0A0', textDecoration: 'none', fontSize: '15px', fontWeight: 500 }}>Our Services</a>
+          <a href="https://www.fractionalaeco.com/about" target="_blank" style={{ color: '#A0A0A0', textDecoration: 'none', fontSize: '15px', fontWeight: 500 }}>About Us</a>
+          <a href="https://www.fractionalaeco.com/how-we-work" target="_blank" style={{ color: '#A0A0A0', textDecoration: 'none', fontSize: '15px', fontWeight: 500 }}>How We Work</a>
+          <a href="/talent" style={{ color: '#A0A0A0', textDecoration: 'none', fontSize: '15px', fontWeight: 500 }}>Talent</a>
+          <a href="https://www.fractionalaeco.com/contact" target="_blank" style={{ color: '#A0A0A0', textDecoration: 'none', fontSize: '15px', fontWeight: 500 }}>Contact</a>
         </div>
-        <div className="hidden md:flex items-center gap-8 text-gray-400" style={{fontSize:'16px'}}>
-          <a href="https://www.fractionalaeco.com/services" target="_blank" className="hover:text-white transition-colors">Our Services</a>
-          <a href="https://www.fractionalaeco.com/about" target="_blank" className="hover:text-white transition-colors">About Us</a>
-          <a href="https://www.fractionalaeco.com/how-we-work" target="_blank" className="hover:text-white transition-colors">How We Work</a>
-          <a href="https://www.fractionalaeco.com/contact" target="_blank" className="hover:text-white transition-colors">Contact</a>
-        </div>
-        <div className="flex gap-4">
-          <a href="/login" className="px-6 py-3 text-gray-400 hover:text-white font-medium transition-colors" style={{fontSize:'16px'}}>Login</a>
-          <a href="/signup" className="px-6 py-3 text-white rounded-full font-semibold transition-colors" style={{background:'var(--color-primary)', fontSize:'16px'}}>Join Free</a>
+        <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+          <a href="/login" style={{ color: '#A0A0A0', textDecoration: 'none', fontSize: '15px', fontWeight: 500, padding: '8px 16px' }}>Sign in</a>
+          <a href="/signup" style={{ background: '#C41230', color: 'white', textDecoration: 'none', fontSize: '15px', fontWeight: 600, padding: '10px 22px', borderRadius: '8px' }}>Join free</a>
         </div>
       </nav>
 
       {/* Hero */}
-      <section className="text-white text-center px-8 py-32" style={{background:'var(--color-bg)'}}>
-        <p className="font-semibold uppercase tracking-widest mb-6" style={{color:'var(--color-accent)', fontSize:'16px'}}>Fractus · Powered by FractionalAECO</p>
-        <h2 className="font-bold mb-8 max-w-4xl mx-auto leading-tight text-white" style={{fontSize:'64px'}}>
-          Senior AECO Expertise.<br/>
-          <span style={{color:'var(--color-accent)'}}>Fractional by Design.</span><br/>
-          Built to Execute.
-        </h2>
-        <p className="text-gray-400 mb-12 max-w-3xl mx-auto" style={{fontSize:'22px', lineHeight:'1.7'}}>
-          Your trusted partners for expert Architecture, Engineering, Construction, and Owner/Operator solutions — without overhiring or slowing down.
+      <section style={{ background: '#0A0A0A', padding: '100px 48px 80px', textAlign: 'center' }}>
+        <div style={{ display: 'inline-block', background: 'rgba(196,18,48,0.12)', border: '1px solid rgba(196,18,48,0.3)', borderRadius: '100px', padding: '6px 18px', marginBottom: '28px' }}>
+          <span style={{ color: '#C41230', fontSize: '13px', fontWeight: 600, letterSpacing: '0.05em' }}>FRACTUS · THE AECO TALENT NETWORK</span>
+        </div>
+        <h1 style={{ fontSize: '68px', fontWeight: 800, color: 'white', lineHeight: 1.05, letterSpacing: '-2px', maxWidth: '820px', margin: '0 auto 24px' }}>
+          Senior AECO expertise,{' '}
+          <span style={{ color: '#C41230' }}>fractional by design.</span>
+        </h1>
+        <p style={{ fontSize: '20px', color: '#888', lineHeight: 1.7, maxWidth: '580px', margin: '0 auto 48px' }}>
+          A curated network of architects, engineers, and construction leaders. Build a LinkedIn-style profile, import your experience, and get booked by the hour.
         </p>
-        <div className="flex gap-5 justify-center flex-wrap">
-          <a href="/signup" className="text-white rounded-full font-semibold transition-colors hover:opacity-90" style={{background:'var(--color-primary)', fontSize:'20px', padding:'18px 36px'}}>
-            Find Smart People
+        <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap' }}>
+          <a href="/signup" style={{ background: '#C41230', color: 'white', textDecoration: 'none', fontSize: '17px', fontWeight: 600, padding: '16px 36px', borderRadius: '10px' }}>
+            Create your profile
           </a>
-          <a href="/signup" className="border text-white rounded-full font-semibold hover:opacity-80 transition-colors" style={{borderColor:'var(--color-border)', fontSize:'20px', padding:'18px 36px'}}>
-            Join as a Pro
-          </a>
-          <a href="https://www.fractionalaeco.com/contact" target="_blank" className="border rounded-full font-semibold transition-colors hover:opacity-80" style={{borderColor:'var(--color-primary)', color:'var(--color-accent)', fontSize:'20px', padding:'18px 36px'}}>
-            Book a Consult
+          <a href="/talent" style={{ background: 'transparent', color: 'white', textDecoration: 'none', fontSize: '17px', fontWeight: 600, padding: '16px 36px', borderRadius: '10px', border: '1.5px solid #333' }}>
+            Browse talent →
           </a>
         </div>
-      </section>
 
-      {/* Stats */}
-      <section className="text-white py-10 px-8" style={{background:'var(--color-primary)'}}>
-        <div className="max-w-4xl mx-auto grid grid-cols-3 gap-4 text-center">
+        {/* Stats */}
+        <div style={{ display: 'flex', gap: '0', justifyContent: 'center', marginTop: '72px', borderTop: '1px solid #1F1F1F', paddingTop: '48px' }}>
           {[
-            { num: '500+', label: 'AECO Professionals' },
-            { num: '3', label: 'Core Service Areas' },
-            { num: '100%', label: 'Fractional Model' },
+            { num: '320+', label: 'Senior professionals' },
+            { num: '42', label: 'Disciplines covered' },
+            { num: '18 yrs', label: 'Avg. experience' },
+            { num: '24h', label: 'Avg. time to match' },
           ].map((s, i) => (
-            <div key={i}>
-              <div className="font-bold" style={{fontSize:'42px'}}>{s.num}</div>
-              <div className="opacity-80 mt-1" style={{fontSize:'17px'}}>{s.label}</div>
+            <div key={i} style={{ flex: 1, textAlign: 'center', borderRight: i < 3 ? '1px solid #1F1F1F' : 'none', padding: '0 32px' }}>
+              <div style={{ fontSize: '38px', fontWeight: 800, color: 'white' }}>{s.num}</div>
+              <div style={{ fontSize: '14px', color: '#666', marginTop: '4px' }}>{s.label}</div>
             </div>
           ))}
         </div>
       </section>
 
-      {/* Services */}
-      <section className="px-8 py-24" style={{background:'var(--color-bg-card)'}}>
-        <div className="max-w-5xl mx-auto">
-          <p className="font-semibold uppercase tracking-widest text-center mb-4" style={{color:'var(--color-accent)', fontSize:'15px'}}>What We Offer</p>
-          <h3 className="font-bold text-white text-center mb-14" style={{fontSize:'42px'}}>Our Services</h3>
-          <div className="grid grid-cols-3 gap-8">
+      {/* How it works */}
+      <section style={{ background: '#111111', padding: '96px 48px' }}>
+        <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
+          <p style={{ color: '#C41230', fontSize: '13px', fontWeight: 600, letterSpacing: '0.08em', textAlign: 'center', marginBottom: '12px' }}>HOW IT WORKS</p>
+          <h2 style={{ fontSize: '44px', fontWeight: 800, color: 'white', textAlign: 'center', marginBottom: '8px', letterSpacing: '-1px' }}>From profile to project,</h2>
+          <h2 style={{ fontSize: '44px', fontWeight: 800, color: '#555', textAlign: 'center', marginBottom: '64px', letterSpacing: '-1px' }}>in three moves.</h2>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '2px', background: '#242424' }}>
             {[
-              { icon: '🏗️', title: 'Management Services', desc: 'Fractional AECO management that drives projects forward, mitigates risk, and gives your team the leadership it needs — without the cost of full-time hires.' },
-              { icon: '💻', title: 'AECO Technology & Systems', desc: 'We help AECO teams adopt, optimize, and get real results from technology — embedded expertise that turns tools into executable outcomes.' },
-              { icon: '📊', title: 'Insurance, Cost & Value', desc: 'We help AECO teams manage risk, control costs, and unlock value — turning complexity into confident decisions.' },
+              { num: '01', title: 'Build your profile', desc: 'LinkedIn-style profile with experience, certifications, and portfolio. Import directly from LinkedIn or upload your CV.' },
+              { num: '02', title: 'Sync your presence', desc: 'Connect Indeed, Glassdoor, and other platforms. Keep one source of truth for your fractional availability.' },
+              { num: '03', title: 'Get booked by the hour', desc: 'Companies discover, vet, and book your hours through Fractional AECO. You execute, we handle the rest.' },
             ].map((s, i) => (
-              <div key={i} className="p-8 rounded-2xl border transition-all hover:opacity-90" style={{background:'var(--color-bg)', borderColor:'var(--color-border)'}}>
-                <div className="w-14 h-14 rounded-xl flex items-center justify-center mb-5" style={{background:'var(--color-bg-card)', fontSize:'28px'}}>
-                  {s.icon}
-                </div>
-                <h4 className="font-bold text-white mb-3" style={{fontSize:'20px'}}>{s.title}</h4>
-                <p className="text-gray-400 leading-relaxed" style={{fontSize:'16px'}}>{s.desc}</p>
+              <div key={i} style={{ background: '#111', padding: '48px 40px' }}>
+                <div style={{ fontSize: '13px', fontWeight: 700, color: '#C41230', marginBottom: '20px', letterSpacing: '0.05em' }}>{s.num}</div>
+                <h3 style={{ fontSize: '22px', fontWeight: 700, color: 'white', marginBottom: '14px' }}>{s.title}</h3>
+                <p style={{ fontSize: '15px', color: '#666', lineHeight: 1.7 }}>{s.desc}</p>
               </div>
             ))}
           </div>
-          <div className="text-center mt-12">
-            <a href="https://www.fractionalaeco.com/services" target="_blank" className="border rounded-full font-semibold transition-all hover:opacity-80" style={{borderColor:'var(--color-primary)', color:'var(--color-accent)', fontSize:'18px', padding:'14px 36px'}}>
+        </div>
+      </section>
+
+      {/* Featured talent */}
+      <section style={{ background: '#0A0A0A', padding: '96px 48px' }}>
+        <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '48px' }}>
+            <div>
+              <p style={{ color: '#C41230', fontSize: '13px', fontWeight: 600, letterSpacing: '0.08em', marginBottom: '8px' }}>FEATURED TALENT</p>
+              <h2 style={{ fontSize: '44px', fontWeight: 800, color: 'white', letterSpacing: '-1px', margin: 0 }}>A glimpse of the network.</h2>
+            </div>
+            <a href="/talent" style={{ color: '#C41230', textDecoration: 'none', fontSize: '15px', fontWeight: 600, border: '1.5px solid #C41230', padding: '10px 22px', borderRadius: '8px' }}>
+              See all profiles →
+            </a>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px' }}>
+            {[
+              { init: 'M', name: 'Marcus L.', role: 'Principal Architect', tags: ['Healthcare', 'Mass timber'], exp: '22 yrs', rate: '$240/h' },
+              { init: 'P', name: 'Priya K.', role: 'Structural Engineer, PE', tags: ['High-rise', 'Seismic'], exp: '16 yrs', rate: '$185/h' },
+              { init: 'D', name: 'David O.', role: 'Construction Director', tags: ['Megaprojects', 'P3'], exp: '27 yrs', rate: '$310/h' },
+              { init: 'S', name: 'Sofia R.', role: 'MEP Lead', tags: ['Data centers', 'Net-zero'], exp: '14 yrs', rate: '$170/h' },
+              { init: 'E', name: 'Ethan W.', role: 'BIM Manager', tags: ['Revit', 'ISO 19650'], exp: '11 yrs', rate: '$135/h' },
+              { init: 'A', name: 'Amara N.', role: 'Sustainability Director', tags: ['LEED', 'Embodied carbon'], exp: '19 yrs', rate: '$220/h' },
+            ].map((p, i) => (
+              <a href="/talent" key={i} style={{ background: '#141414', border: '1px solid #242424', borderRadius: '12px', padding: '24px', textDecoration: 'none', display: 'block', transition: 'border-color 0.2s' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '16px' }}>
+                  <div style={{ width: '46px', height: '46px', borderRadius: '10px', background: '#C41230', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: 800, fontSize: '18px', flexShrink: 0 }}>
+                    {p.init}
+                  </div>
+                  <div>
+                    <div style={{ color: 'white', fontWeight: 700, fontSize: '16px' }}>{p.name}</div>
+                    <div style={{ color: '#888', fontSize: '13px', marginTop: '2px' }}>{p.role}</div>
+                  </div>
+                </div>
+                <div style={{ display: 'flex', gap: '8px', marginBottom: '16px', flexWrap: 'wrap' }}>
+                  {p.tags.map((tag, j) => (
+                    <span key={j} style={{ background: 'rgba(196,18,48,0.1)', color: '#C41230', fontSize: '12px', fontWeight: 500, padding: '4px 10px', borderRadius: '100px', border: '1px solid rgba(196,18,48,0.2)' }}>
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: '14px', borderTop: '1px solid #242424' }}>
+                  <span style={{ color: '#666', fontSize: '13px' }}>{p.exp} experience</span>
+                  <span style={{ color: 'white', fontWeight: 700, fontSize: '15px' }}>{p.rate}</span>
+                </div>
+              </a>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Integrations */}
+      <section style={{ background: '#111111', padding: '96px 48px' }}>
+        <div style={{ maxWidth: '900px', margin: '0 auto', textAlign: 'center' }}>
+          <p style={{ color: '#C41230', fontSize: '13px', fontWeight: 600, letterSpacing: '0.08em', marginBottom: '12px' }}>INTEGRATIONS</p>
+          <h2 style={{ fontSize: '44px', fontWeight: 800, color: 'white', letterSpacing: '-1px', marginBottom: '12px' }}>Your career, already written.</h2>
+          <h2 style={{ fontSize: '44px', fontWeight: 800, color: '#555', letterSpacing: '-1px', marginBottom: '24px' }}>Just import it.</h2>
+          <p style={{ color: '#888', fontSize: '18px', lineHeight: 1.7, marginBottom: '48px', maxWidth: '560px', margin: '0 auto 48px' }}>
+            Skip the form-filling. Pull your experience straight from the platforms you already use.
+          </p>
+          {/* Platform tabs */}
+          <div style={{ display: 'flex', gap: '8px', justifyContent: 'center', marginBottom: '40px', flexWrap: 'wrap' }}>
+            {['LinkedIn', 'Indeed', 'Glassdoor', 'AngelList', 'CV upload'].map((p, i) => (
+              <span key={i} style={{ padding: '8px 20px', borderRadius: '100px', fontSize: '14px', fontWeight: 600, background: i === 0 ? '#C41230' : '#1A1A1A', color: i === 0 ? 'white' : '#666', border: `1px solid ${i === 0 ? '#C41230' : '#2A2A2A'}` }}>
+                {p}
+              </span>
+            ))}
+          </div>
+          {/* Import preview */}
+          <div style={{ background: '#0A0A0A', border: '1px solid #242424', borderRadius: '16px', padding: '28px', maxWidth: '480px', margin: '0 auto', textAlign: 'left' }}>
+            <p style={{ color: '#888', fontSize: '13px', marginBottom: '20px' }}>Importing from LinkedIn…</p>
+            {[
+              { title: 'Senior Architect', company: 'Foster + Partners', years: '2019 — Present' },
+              { title: 'Project Architect', company: 'Arup', years: '2014 — 2019' },
+              { title: 'Designer', company: 'SOM', years: '2010 — 2014' },
+            ].map((r, i) => (
+              <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '14px 0', borderBottom: i < 2 ? '1px solid #1A1A1A' : 'none' }}>
+                <div>
+                  <div style={{ color: 'white', fontWeight: 600, fontSize: '15px' }}>{r.title}</div>
+                  <div style={{ color: '#666', fontSize: '13px', marginTop: '2px' }}>{r.company}</div>
+                </div>
+                <div style={{ color: '#555', fontSize: '13px' }}>{r.years}</div>
+              </div>
+            ))}
+            <div style={{ marginTop: '20px', padding: '10px 16px', background: 'rgba(196,18,48,0.1)', border: '1px solid rgba(196,18,48,0.2)', borderRadius: '8px', color: '#C41230', fontSize: '13px', fontWeight: 600, textAlign: 'center' }}>
+              12 roles parsed · ready to publish
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Services */}
+      <section style={{ background: '#0A0A0A', padding: '96px 48px' }}>
+        <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
+          <p style={{ color: '#C41230', fontSize: '13px', fontWeight: 600, letterSpacing: '0.08em', textAlign: 'center', marginBottom: '12px' }}>WHAT WE OFFER</p>
+          <h2 style={{ fontSize: '44px', fontWeight: 800, color: 'white', textAlign: 'center', letterSpacing: '-1px', marginBottom: '64px' }}>Our Services</h2>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '16px' }}>
+            {[
+              { icon: '🏗️', title: 'Management Services', desc: 'Fractional AECO management that drives projects forward, mitigates risk, and gives your team the leadership it needs.' },
+              { icon: '💻', title: 'AECO Technology & Systems', desc: 'We help AECO teams adopt, optimize, and get real results from technology — embedded expertise that turns tools into outcomes.' },
+              { icon: '📊', title: 'Insurance, Cost & Value', desc: 'We help AECO teams manage risk, control costs, and unlock value — turning complexity into confident decisions.' },
+            ].map((s, i) => (
+              <div key={i} style={{ background: '#141414', border: '1px solid #242424', borderRadius: '12px', padding: '36px' }}>
+                <div style={{ fontSize: '32px', marginBottom: '20px' }}>{s.icon}</div>
+                <h3 style={{ color: 'white', fontWeight: 700, fontSize: '19px', marginBottom: '12px' }}>{s.title}</h3>
+                <p style={{ color: '#888', fontSize: '15px', lineHeight: 1.7 }}>{s.desc}</p>
+              </div>
+            ))}
+          </div>
+          <div style={{ textAlign: 'center', marginTop: '40px' }}>
+            <a href="https://www.fractionalaeco.com/services" target="_blank" style={{ color: '#C41230', textDecoration: 'none', fontSize: '15px', fontWeight: 600, border: '1.5px solid #C41230', padding: '12px 28px', borderRadius: '8px', display: 'inline-block' }}>
               Explore All Services →
             </a>
           </div>
         </div>
       </section>
 
-      {/* Who we serve */}
-      <section className="px-8 py-24" style={{background:'var(--color-bg)'}}>
-        <div className="max-w-5xl mx-auto">
-          <p className="font-semibold uppercase tracking-widest text-center mb-4" style={{color:'var(--color-accent)', fontSize:'15px'}}>Who We Serve</p>
-          <h3 className="font-bold text-white text-center mb-14" style={{fontSize:'42px'}}>Built for Every AECO Role</h3>
-          <div className="grid grid-cols-3 gap-6">
-            {[
-              { icon: '👷', title: 'Contractors', desc: 'Project delivery, risk management, and field leadership on a fractional basis.' },
-              { icon: '📐', title: 'Architects', desc: 'Design leadership, BIM expertise, and project oversight without full-time overhead.' },
-              { icon: '🏢', title: 'Owners & Operators', desc: 'Asset management, operations optimization, and owner\'s rep services.' },
-            ].map((r, i) => (
-              <div key={i} className="p-8 rounded-2xl border text-center" style={{background:'var(--color-bg-card)', borderColor:'var(--color-border)'}}>
-                <div style={{fontSize:'42px'}} className="mb-4">{r.icon}</div>
-                <h4 className="font-bold text-white mb-3" style={{fontSize:'20px'}}>{r.title}</h4>
-                <p className="text-gray-400 mb-4" style={{fontSize:'16px'}}>{r.desc}</p>
-                <a href="https://www.fractionalaeco.com/services" target="_blank" className="font-semibold hover:opacity-80" style={{color:'var(--color-accent)', fontSize:'16px'}}>Learn More →</a>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Who we are */}
-      <section className="px-8 py-24" style={{background:'var(--color-bg-card)'}}>
-        <div className="max-w-3xl mx-auto text-center">
-          <p className="font-semibold uppercase tracking-widest mb-4" style={{color:'var(--color-accent)', fontSize:'15px'}}>Who We Are</p>
-          <h3 className="font-bold text-white mb-8" style={{fontSize:'42px'}}>Shaping the Future of AECO</h3>
-          <p className="text-gray-400 leading-relaxed mb-10" style={{fontSize:'20px'}}>
-            We are shaping the future of the AECO industry by harnessing the power of top-tier talent through a fractional employment model that thrives on flexibility, innovation, and collaboration. Future-leaning in every sense — embracing emerging technologies, empowering the next generation of thinkers and builders.
-          </p>
-          <a href="https://www.fractionalaeco.com/about" target="_blank" className="text-white rounded-full font-semibold hover:opacity-90 transition-colors" style={{background:'var(--color-primary)', fontSize:'18px', padding:'16px 36px'}}>
-            Learn More About Us →
+      {/* For companies CTA */}
+      <section style={{ background: '#C41230', padding: '96px 48px', textAlign: 'center' }}>
+        <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '13px', fontWeight: 600, letterSpacing: '0.08em', marginBottom: '12px' }}>FOR COMPANIES</p>
+        <h2 style={{ fontSize: '48px', fontWeight: 800, color: 'white', letterSpacing: '-1.5px', marginBottom: '16px', maxWidth: '700px', margin: '0 auto 16px' }}>
+          Need senior AECO firepower? Book by the hour.
+        </h2>
+        <p style={{ color: 'rgba(255,255,255,0.75)', fontSize: '18px', lineHeight: 1.7, maxWidth: '520px', margin: '0 auto 48px' }}>
+          Tell us what you need. We'll match you with vetted senior practitioners, available fractionally — no recruiters, no overhead.
+        </p>
+        <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap' }}>
+          <a href="https://www.fractionalaeco.com/contact" target="_blank" style={{ background: 'white', color: '#C41230', textDecoration: 'none', fontSize: '17px', fontWeight: 700, padding: '16px 36px', borderRadius: '10px' }}>
+            Talk to Fractional AECO
           </a>
-        </div>
-      </section>
-
-      {/* How it works */}
-      <section className="text-white px-8 py-24" style={{background:'var(--color-bg)'}}>
-        <div className="max-w-4xl mx-auto">
-          <p className="font-semibold uppercase tracking-widest text-center mb-4" style={{color:'var(--color-accent)', fontSize:'15px'}}>How It Works</p>
-          <h3 className="font-bold text-center mb-16" style={{fontSize:'42px'}}>Get Started in 3 Steps</h3>
-          <div className="grid grid-cols-3 gap-10">
-            {[
-              { n: '1', title: 'Create Your Profile', desc: 'Sign up and build your AECO profile with your discipline, certifications, and availability.' },
-              { n: '2', title: 'Get Verified', desc: 'Our team reviews your credentials and awards you a Verified badge so clients trust you instantly.' },
-              { n: '3', title: 'Connect & Work', desc: 'Match with AECO organisations who need your exact expertise on a fractional basis.' },
-            ].map((s, i) => (
-              <div key={i} className="text-center">
-                <div className="w-16 h-16 rounded-full flex items-center justify-center text-white font-bold mx-auto mb-5" style={{background:'var(--color-primary)', fontSize:'24px'}}>
-                  {s.n}
-                </div>
-                <h4 className="font-bold mb-3" style={{fontSize:'20px'}}>{s.title}</h4>
-                <p className="text-gray-400" style={{fontSize:'17px'}}>{s.desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* CTA */}
-      <section className="text-white text-center px-8 py-20" style={{background:'var(--color-primary)'}}>
-        <h3 className="font-bold mb-5" style={{fontSize:'42px'}}>Ready to elevate your AECO projects?</h3>
-        <p className="opacity-80 mb-10" style={{fontSize:'22px'}}>Transformational solutions tailored for your project's unique needs.</p>
-        <div className="flex gap-5 justify-center flex-wrap">
-          <a href="/signup" className="rounded-full font-bold hover:opacity-90 transition-colors" style={{background:'white', color:'var(--color-primary)', fontSize:'20px', padding:'18px 40px'}}>
-            Get Started Free
-          </a>
-          <a href="https://www.fractionalaeco.com/contact" target="_blank" className="border-2 border-white text-white rounded-full font-bold hover:bg-white/10 transition-colors" style={{fontSize:'20px', padding:'18px 40px'}}>
-            Book Your Consult Today
+          <a href="/signup" style={{ background: 'transparent', color: 'white', textDecoration: 'none', fontSize: '17px', fontWeight: 600, padding: '16px 36px', borderRadius: '10px', border: '2px solid rgba(255,255,255,0.5)' }}>
+            Join as talent
           </a>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="text-gray-400 px-8 py-12" style={{background:'var(--color-bg)', borderTop:'1px solid var(--color-border)'}}>
-        <div className="max-w-5xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
-          <div>
-            <span className="text-white font-bold" style={{fontSize:'22px'}}>Fractus</span>
-            <span className="text-gray-500 ml-2" style={{fontSize:'16px'}}>by FractionalAECO</span>
-            <p className="text-gray-600 mt-1" style={{fontSize:'13px'}}>fractus.fractional.com</p>
+      <footer style={{ background: '#060606', padding: '56px 48px 40px', borderTop: '1px solid #1A1A1A' }}>
+        <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '48px', flexWrap: 'wrap', gap: '32px' }}>
+            <div>
+              <div style={{ fontSize: '22px', fontWeight: 800, color: 'white' }}>Fractus</div>
+              <div style={{ fontSize: '13px', color: '#555', marginTop: '4px' }}>A Fractional AECO product</div>
+              <a href="https://www.fractionalaeco.com" target="_blank" style={{ color: '#C41230', textDecoration: 'none', fontSize: '14px', marginTop: '8px', display: 'block' }}>fractionalaeco.com</a>
+            </div>
+            <div style={{ display: 'flex', gap: '48px', flexWrap: 'wrap' }}>
+              <div>
+                <div style={{ color: '#444', fontSize: '11px', fontWeight: 700, letterSpacing: '0.08em', marginBottom: '16px' }}>PLATFORM</div>
+                {[['Browse Talent', '/talent'], ['Create Profile', '/signup'], ['Sign In', '/login']].map(([label, href]) => (
+                  <a key={label} href={href} style={{ display: 'block', color: '#888', textDecoration: 'none', fontSize: '14px', marginBottom: '10px' }}>{label}</a>
+                ))}
+              </div>
+              <div>
+                <div style={{ color: '#444', fontSize: '11px', fontWeight: 700, letterSpacing: '0.08em', marginBottom: '16px' }}>COMPANY</div>
+                {[['Our Services', 'https://www.fractionalaeco.com/services'], ['About Us', 'https://www.fractionalaeco.com/about'], ['How We Work', 'https://www.fractionalaeco.com/how-we-work'], ['Contact', 'https://www.fractionalaeco.com/contact']].map(([label, href]) => (
+                  <a key={label} href={href} target="_blank" style={{ display: 'block', color: '#888', textDecoration: 'none', fontSize: '14px', marginBottom: '10px' }}>{label}</a>
+                ))}
+              </div>
+            </div>
           </div>
-          <div className="flex gap-8" style={{fontSize:'16px'}}>
-            <a href="https://www.fractionalaeco.com/services" target="_blank" className="hover:text-white transition-colors">Our Services</a>
-            <a href="https://www.fractionalaeco.com/about" target="_blank" className="hover:text-white transition-colors">About Us</a>
-            <a href="https://www.fractionalaeco.com/how-we-work" target="_blank" className="hover:text-white transition-colors">How We Work</a>
-            <a href="https://www.fractionalaeco.com/contact" target="_blank" className="hover:text-white transition-colors">Contact</a>
+          <div style={{ borderTop: '1px solid #1A1A1A', paddingTop: '28px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
+            <div style={{ color: '#444', fontSize: '13px' }}>© 2026 Fractional-AECO LLC. All rights reserved.</div>
+            <a href="tel:+19804940263" style={{ color: '#555', textDecoration: 'none', fontSize: '13px' }}>+1 980 494 0263</a>
           </div>
-          <div style={{fontSize:'16px'}}>
-            <a href="tel:+19804940263" className="hover:text-white transition-colors">+1 980 494 0263</a>
-          </div>
-        </div>
-        <div className="text-center text-gray-600 mt-10" style={{fontSize:'14px'}}>
-          © 2026 Fractional-AECO LLC. All rights reserved. · Fractus platform powered by FractionalAECO.
         </div>
       </footer>
 

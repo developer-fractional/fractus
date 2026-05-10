@@ -3,15 +3,17 @@
 :root {
   --color-primary: #C41230;
   --color-primary-hover: #A50E28;
-  --color-bg: #0A0000;
-  --color-bg-card: #1A0505;
-  --color-border: #3D0F0F;
+  --color-bg: #0A0A0A;
+  --color-bg-card: #141414;
+  --color-bg-light: #F8F8F8;
+  --color-border: #242424;
+  --color-border-light: #E5E5E5;
   --color-accent: #C41230;
-  --color-accent-light: #FF4D4D;
+  --color-accent-light: #FF3352;
 }
 
 html, body {
-  background-color: var(--color-bg) !important;
+  background-color: var(--color-bg);
   color: white;
   margin: 0;
   padding: 0;

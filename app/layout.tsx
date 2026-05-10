@@ -6,21 +6,17 @@ import { getThemeScript } from "./lib/theme";
 const geist = Geist({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Fractus — Powered by FractionalAECO",
-  description: "Find fractional AECO talent. Built for Architecture, Engineering, Construction and Operations.",
+  title: "Fractus — Senior AECO Talent, Fractional by Design",
+  description: "A curated network of architects, engineers, and construction leaders. Powered by FractionalAECO.",
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: getThemeScript() }} />
       </head>
-      <body suppressHydrationWarning className={geist.className} style={{margin:0, padding:0}}>
+      <body suppressHydrationWarning className={geist.className} style={{ margin: 0, padding: 0 }}>
         {children}
       </body>
     </html>
