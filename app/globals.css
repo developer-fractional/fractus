@@ -5,16 +5,12 @@
   --color-cyan: #2DD4BF;
   --color-bg: #0D0A06;
   --color-bg-card: #141210;
-  --color-bg-hover: #1A1712;
   --color-border: #2A2420;
-  --color-text: #FFFFFF;
-  --color-muted: #888880;
-  --color-muted-2: #555550;
 }
 
 html, body {
-  background-color: var(--color-bg);
-  color: var(--color-text);
+  background-color: #0D0A06;
+  color: white;
   margin: 0;
   padding: 0;
 }

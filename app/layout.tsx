@@ -15,7 +15,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <script dangerouslySetInnerHTML={{ __html: getThemeScript() }} />
+        <script suppressHydrationWarning dangerouslySetInnerHTML={{ __html: getThemeScript() }} />
       </head>
       <body suppressHydrationWarning className={`${geist.variable} ${playfair.variable}`} style={{ margin: 0, padding: 0, fontFamily: 'var(--font-sans)' }}>
         {children}
