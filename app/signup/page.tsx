@@ -8,76 +8,61 @@ export default function Signup() {
   const [password, setPassword] = useState('')
   const [role, setRole] = useState('Fractional Professional')
   const [message, setMessage] = useState('')
+  const [loading, setLoading] = useState(false)
 
   async function handleSignup() {
     if (!name || !email || !password) return setMessage('Please fill in all fields')
     if (password.length < 6) return setMessage('Password must be at least 6 characters')
+    setLoading(true)
     const { error } = await supabase.auth.signUp({ email, password })
+    setLoading(false)
     if (error) setMessage('Signup failed: ' + error.message)
     else window.location.href = '/dashboard'
   }
 
-  const inputStyle = {
-    background: 'var(--color-bg-card)',
-    border: '1.5px solid var(--color-border)',
-    fontSize: '18px'
-  }
+  const inputStyle = { width: '100%', background: '#141210', border: '1px solid #2A2420', borderRadius: '12px', padding: '16px 18px', color: 'white', fontSize: '16px', outline: 'none', boxSizing: 'border-box' as const }
+  const labelStyle = { display: 'block', color: '#888', fontSize: '13px', fontWeight: 500, marginBottom: '8px', letterSpacing: '0.03em' } as const
 
   return (
-    <div className="min-h-screen flex flex-col" style={{background:'var(--color-bg)'}}>
+    <div style={{ minHeight: '100vh', background: '#0D0A06', display: 'flex', flexDirection: 'column' }}>
 
       {/* Top bar */}
-      <div className="text-white text-center py-3 px-4" style={{background:'var(--color-primary)', fontSize:'15px'}}>
-        Powered by{' '}
-        <a href="https://www.fractionalaeco.com" target="_blank" className="underline font-semibold hover:opacity-80">
-          Fractional AECO
-        </a>{' '}
-        · Your AECO Experts ·{' '}
-        <a href="tel:+19804940263" className="underline hover:opacity-80">+1 980 494 0263</a>
+      <div style={{ background: '#D4A017', color: '#0D0A06', textAlign: 'center', padding: '9px 16px', fontSize: '13px', fontWeight: 600 }}>
+        Powered by <a href="https://www.fractionalaeco.com" target="_blank" style={{ color: '#0D0A06', textDecoration: 'underline' }}>Fractional AECO</a> · Your AECO Experts · <a href="tel:+19804940263" style={{ color: '#0D0A06', textDecoration: 'underline' }}>+1 980 494 0263</a>
       </div>
 
       {/* Nav */}
-      <nav className="flex items-center justify-between px-10 py-5 border-b" style={{background:'var(--color-bg)', borderColor:'var(--color-border)'}}>
-        <a href="/" className="flex flex-col">
-          <span className="text-3xl font-bold" style={{color:'var(--color-accent)'}}>Fractus</span>
-          <span className="text-sm text-gray-500 leading-none">by FractionalAECO</span>
+      <nav style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px 48px', borderBottom: '1px solid #2A2420' }}>
+        <a href="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'baseline', gap: '8px' }}>
+          <span style={{ fontSize: '22px', fontWeight: 700, color: '#D4A017', fontFamily: 'Georgia, serif' }}>Fractus</span>
+          <span style={{ fontSize: '11px', color: '#444', letterSpacing: '0.05em' }}>BY FRACTIONAL AECO</span>
         </a>
-        <a href="/login" className="text-base text-gray-400 hover:text-white">
-          Already have an account?{' '}
-          <span className="font-semibold" style={{color:'var(--color-accent-light)'}}>Sign in →</span>
+        <a href="/login" style={{ color: '#888', textDecoration: 'none', fontSize: '14px' }}>
+          Already have an account? <span style={{ color: '#2DD4BF', fontWeight: 600 }}>Sign in →</span>
         </a>
       </nav>
 
       {/* Form */}
-      <div className="flex-1 flex items-center justify-center px-4 py-16">
-        <div className="w-full max-w-lg">
+      <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '60px 24px' }}>
+        <div style={{ width: '100%', maxWidth: '440px' }}>
+          <h1 style={{ fontFamily: 'Georgia, serif', fontSize: '44px', fontWeight: 700, color: 'white', marginBottom: '8px', letterSpacing: '-1px' }}>Join Fractus</h1>
+          <p style={{ color: '#666', fontSize: '17px', marginBottom: '40px' }}>Connect with top AECO fractional talent</p>
 
-          <h1 className="font-bold text-white mb-3" style={{fontSize:'42px'}}>Join Fractus</h1>
-          <p className="text-gray-400 mb-10" style={{fontSize:'20px'}}>Connect with top AECO fractional talent</p>
-
-          <div className="mb-6">
-            <label className="block font-semibold text-gray-300 mb-3" style={{fontSize:'17px'}}>Full name</label>
-            <input type="text" placeholder="Jane Smith" value={name} onChange={e => setName(e.target.value)}
-              className="w-full rounded-2xl px-6 py-5 text-white outline-none placeholder-gray-600" style={inputStyle} />
+          <div style={{ marginBottom: '18px' }}>
+            <label style={labelStyle}>FULL NAME</label>
+            <input type="text" placeholder="Jane Smith" value={name} onChange={e => setName(e.target.value)} style={inputStyle} />
           </div>
-
-          <div className="mb-6">
-            <label className="block font-semibold text-gray-300 mb-3" style={{fontSize:'17px'}}>Email address</label>
-            <input type="email" placeholder="you@example.com" value={email} onChange={e => setEmail(e.target.value)}
-              className="w-full rounded-2xl px-6 py-5 text-white outline-none placeholder-gray-600" style={inputStyle} />
+          <div style={{ marginBottom: '18px' }}>
+            <label style={labelStyle}>EMAIL ADDRESS</label>
+            <input type="email" placeholder="you@example.com" value={email} onChange={e => setEmail(e.target.value)} style={inputStyle} />
           </div>
-
-          <div className="mb-6">
-            <label className="block font-semibold text-gray-300 mb-3" style={{fontSize:'17px'}}>Password</label>
-            <input type="password" placeholder="Min 6 characters" value={password} onChange={e => setPassword(e.target.value)}
-              className="w-full rounded-2xl px-6 py-5 text-white outline-none placeholder-gray-600" style={inputStyle} />
+          <div style={{ marginBottom: '18px' }}>
+            <label style={labelStyle}>PASSWORD</label>
+            <input type="password" placeholder="Min 6 characters" value={password} onChange={e => setPassword(e.target.value)} style={inputStyle} />
           </div>
-
-          <div className="mb-10">
-            <label className="block font-semibold text-gray-300 mb-3" style={{fontSize:'17px'}}>I am joining as a...</label>
-            <select value={role} onChange={e => setRole(e.target.value)}
-              className="w-full rounded-2xl px-6 py-5 text-white outline-none"
-              style={{...inputStyle, fontSize:'18px'}}>
+          <div style={{ marginBottom: '32px' }}>
+            <label style={labelStyle}>I AM JOINING AS A...</label>
+            <select value={role} onChange={e => setRole(e.target.value)} style={{ ...inputStyle, cursor: 'pointer' }}>
               <option>Fractional Professional</option>
               <option>Contractor</option>
               <option>Architect</option>
@@ -87,38 +72,27 @@ export default function Signup() {
             </select>
           </div>
 
-          <button onClick={handleSignup}
-            className="w-full text-white rounded-2xl font-bold cursor-pointer hover:opacity-90 transition-all mb-6"
-            style={{background:'var(--color-primary)', fontSize:'20px', padding:'20px'}}>
-            Create Account
+          <button onClick={handleSignup} disabled={loading}
+            style={{ width: '100%', background: '#D4A017', color: 'white', border: 'none', borderRadius: '100px', padding: '18px', fontSize: '17px', fontWeight: 600, cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.7 : 1, marginBottom: '20px' }}>
+            {loading ? 'Creating account...' : 'Create Account'}
           </button>
 
-          <p className="text-center text-gray-500" style={{fontSize:'17px'}}>
+          <p style={{ textAlign: 'center', color: '#555', fontSize: '15px' }}>
             Already have an account?{' '}
-            <a href="/login" className="font-semibold hover:opacity-80" style={{color:'var(--color-accent-light)'}}>Sign in →</a>
+            <a href="/login" style={{ color: '#2DD4BF', textDecoration: 'none', fontWeight: 600 }}>Sign in →</a>
           </p>
 
           {message && (
-            <div className={`mt-8 text-center p-5 rounded-2xl border`}
-              style={{
-                background: message.includes('failed') || message.includes('Please') ? 'rgba(196,18,48,0.1)' : 'rgba(20,100,50,0.1)',
-                borderColor: message.includes('failed') || message.includes('Please') ? 'rgba(196,18,48,0.3)' : 'rgba(20,100,50,0.3)',
-                color: message.includes('failed') || message.includes('Please') ? '#FF6B6B' : '#5DDDAA',
-                fontSize: '17px'
-              }}>
+            <div style={{ marginTop: '24px', padding: '14px 18px', background: message.includes('failed') || message.includes('Please') ? 'rgba(255,100,100,0.08)' : 'rgba(45,212,191,0.08)', border: `1px solid ${message.includes('failed') || message.includes('Please') ? 'rgba(255,100,100,0.2)' : 'rgba(45,212,191,0.2)'}`, borderRadius: '10px', color: message.includes('failed') || message.includes('Please') ? '#FF8888' : '#2DD4BF', fontSize: '14px', textAlign: 'center' }}>
               {message}
             </div>
           )}
-
         </div>
       </div>
 
-      {/* Footer */}
-      <div className="text-center py-6 text-gray-600 border-t" style={{borderColor:'var(--color-border)', fontSize:'15px'}}>
-        © 2026 Fractional-AECO LLC ·{' '}
-        <a href="https://www.fractionalaeco.com" target="_blank" className="hover:text-gray-400">fractionalaeco.com</a>
+      <div style={{ textAlign: 'center', padding: '20px', color: '#333', fontSize: '13px', borderTop: '1px solid #1A1A1A' }}>
+        © 2026 Fractional-AECO LLC · <a href="https://www.fractionalaeco.com" target="_blank" style={{ color: '#444', textDecoration: 'none' }}>fractionalaeco.com</a>
       </div>
-
     </div>
   )
 }
