@@ -1,10 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Playfair_Display } from "next/font/google";
 import "./globals.css";
-import { getThemeScript } from "./lib/theme";
-
-const geist = Geist({ subsets: ["latin"], variable: '--font-sans' });
-const playfair = Playfair_Display({ subsets: ["latin"], variable: '--font-serif', style: ['normal', 'italic'] });
 
 export const metadata: Metadata = {
   title: "Fractus — Senior AECO Talent, Fractional by Design",
@@ -15,9 +10,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <script suppressHydrationWarning dangerouslySetInnerHTML={{ __html: getThemeScript() }} />
+        <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700;800&family=Nunito:ital,wght@0,400;0,700;0,800;1,400;1,700&display=swap" rel="stylesheet" />
       </head>
-      <body suppressHydrationWarning className={`${geist.variable} ${playfair.variable}`} style={{ margin: 0, padding: 0, fontFamily: 'var(--font-sans)' }}>
+      <body suppressHydrationWarning style={{ margin: 0, padding: 0, fontFamily: "'Nunito Sans', sans-serif" }}>
         {children}
       </body>
     </html>
