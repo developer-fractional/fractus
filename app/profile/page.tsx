@@ -49,6 +49,7 @@ export default function ProfilePage() {
   }
 
   async function handleSave() {
+    if (!user) return
     setSaving(true)
     const { error } = await supabase.from('profiles').upsert({
       id: user.id,
