@@ -165,7 +165,7 @@ export default function TalentPage() {
                   {/* Certs */}
                   {(p.certifications?.length ?? 0) > 0 && (
                     <div className="flex flex-wrap gap-2 mb-4">
-                      {p.certifications.slice(0, 3).map((c: string, j: number) => (
+                      {(p.certifications ?? []).slice(0, 3).map((c: string, j: number) => (
                         <span key={j} className="text-xs px-2 py-1 rounded-full font-medium" style={{ background: 'var(--color-bg)', color: '#94a3b8', border: '1px solid var(--color-border)' }}>
                           {c}
                         </span>
