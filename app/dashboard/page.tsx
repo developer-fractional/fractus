@@ -1,9 +1,11 @@
 'use client'
 import { useEffect, useState } from 'react'
+import Link from 'next/link'
+import type { User } from '@supabase/supabase-js'
 import { supabase } from '../lib/supabase'
 
 export default function Dashboard() {
-  const [user, setUser] = useState<any>(null)
+  const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -37,10 +39,10 @@ export default function Dashboard() {
       </div>
 
       <nav className="flex items-center justify-between px-10 py-5 border-b" style={{background:'var(--color-bg)', borderColor:'var(--color-border)'}}>
-        <a href="/" className="flex flex-col">
+        <Link href="/" className="flex flex-col">
           <span className="text-3xl font-bold" style={{color:'var(--color-accent)'}}>Fractus</span>
           <span className="text-sm text-gray-500 leading-none">by FractionalAECO</span>
-        </a>
+        </Link>
         <button onClick={handleLogout} className="text-base text-gray-400 hover:text-white cursor-pointer">
           Logout
         </button>
@@ -57,14 +59,14 @@ export default function Dashboard() {
         <div className="grid grid-cols-3 gap-6">
           {[
            { icon: '👤', title: 'My Profile', desc: 'Build your AECO profile', href: '/profile' },
-           { icon: '🔍', title: 'Find Talent', desc: 'Browse fractional pros', href: '/marketplace' },
+           { icon: '🔍', title: 'Find Talent', desc: 'Browse fractional pros', href: '/talent' },
            { icon: '📋', title: 'My Listings', desc: 'Post fractional gigs', href: '/listings' },
           ].map((card, i) => (
-            <a key={i} href={card.href} className="p-8 rounded-2xl border block hover:opacity-80 transition-all cursor-pointer" style={{background:'var(--color-bg-card)', borderColor:'var(--color-border)'}}>
+            <Link key={i} href={card.href} className="p-8 rounded-2xl border block hover:opacity-80 transition-all cursor-pointer" style={{background:'var(--color-bg-card)', borderColor:'var(--color-border)'}}>
               <div className="text-4xl mb-4">{card.icon}</div>
               <h3 className="font-bold text-white mb-2" style={{fontSize:'20px'}}>{card.title}</h3>
               <p className="text-gray-400" style={{fontSize:'16px'}}>{card.desc}</p>
-            </a>
+            </Link>
           ))}
         </div>
       </div>

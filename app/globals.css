@@ -7,6 +7,13 @@
   --color-bg-card: #1B2130;
   --color-border: #2A3145;
   --color-muted: #8892A4;
+
+  /* Aliases used across dashboard/profile/talent pages.
+     "accent" = brand orange, "accent-light" = brand teal. Keeping both names
+     defined avoids text silently rendering with no color (the CSS falls back
+     to "unset" when a variable is missing). */
+  --color-accent: #F6981F;
+  --color-accent-light: #05809B;
 }
 
 html, body {

@@ -1,5 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
+import Link from 'next/link'
+import type { User } from '@supabase/supabase-js'
 import { supabase } from '../lib/supabase'
 
 const DISCIPLINES = ['Architecture', 'Structural Engineering', 'MEP Engineering', 'Civil Engineering', 'Construction Management', 'BIM/VDC', 'Sustainability', 'Owner/Operator', 'Project Controls', 'Cost Management']
@@ -7,7 +9,7 @@ const CERTIFICATIONS = ['LEED AP', 'AIA', 'PE', 'PMP', 'RIBA', 'WELL AP', 'ISO 1
 const AVAILABILITY = ['1–2 days/week', '3 days/week', '4 days/week', 'Full-time fractional', 'Project-based only']
 
 export default function ProfilePage() {
-  const [user, setUser] = useState<any>(null)
+  const [user, setUser] = useState<User | null>(null)
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
   const [form, setForm] = useState({
@@ -31,9 +33,10 @@ export default function ProfilePage() {
       setUser(data.user)
       // Load existing profile
       supabase.from('profiles').select('*').eq('id', data.user.id).single().then(({ data: profile }) => {
-        if (profile) setForm({ ...form, ...profile })
+        if (profile) setForm(f => ({ ...f, ...profile }))
       })
     })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   function toggleCert(cert: string) {
@@ -71,13 +74,13 @@ export default function ProfilePage() {
 
       {/* Nav */}
       <nav className="flex items-center justify-between px-10 py-5 border-b" style={{ background: 'var(--color-bg)', borderColor: 'var(--color-border)' }}>
-        <a href="/" className="flex flex-col">
+        <Link href="/" className="flex flex-col">
           <span className="text-3xl font-bold" style={{ color: 'var(--color-accent)' }}>Fractus</span>
           <span className="text-sm text-gray-500 leading-none">by FractionalAECO</span>
-        </a>
+        </Link>
         <div className="flex gap-6 items-center">
-          <a href="/dashboard" className="text-gray-400 hover:text-white transition-colors" style={{ fontSize: '16px' }}>Dashboard</a>
-          <a href="/talent" className="text-gray-400 hover:text-white transition-colors" style={{ fontSize: '16px' }}>Browse Talent</a>
+          <Link href="/dashboard" className="text-gray-400 hover:text-white transition-colors" style={{ fontSize: '16px' }}>Dashboard</Link>
+          <Link href="/talent" className="text-gray-400 hover:text-white transition-colors" style={{ fontSize: '16px' }}>Browse Talent</Link>
         </div>
       </nav>
 
@@ -216,9 +219,9 @@ export default function ProfilePage() {
           {user && (
             <p className="text-center text-gray-500" style={{ fontSize: '15px' }}>
               Your public profile →{' '}
-              <a href={`/talent/${user.id}`} className="font-medium hover:opacity-80" style={{ color: 'var(--color-accent-light)' }}>
+              <Link href={`/talent/${user.id}`} className="font-medium hover:opacity-80" style={{ color: 'var(--color-accent-light)' }}>
                 View how others see you
-              </a>
+              </Link>
             </p>
           )}
 

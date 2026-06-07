@@ -1,3 +1,5 @@
+import Link from 'next/link'
+
 export default function Home() {
   return (
     <main style={{ background: '#0F1117', minHeight: '100vh', fontFamily: "'Nunito Sans', sans-serif" }}>
@@ -12,10 +14,10 @@ export default function Home() {
 
       {/* Nav */}
       <nav style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '18px 56px', background: '#0F1117', borderBottom: '1px solid #2A3145', position: 'sticky', top: 0, zIndex: 100 }}>
-        <a href="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'baseline', gap: '10px' }}>
+        <Link href="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'baseline', gap: '10px' }}>
           <span style={{ fontSize: '26px', fontWeight: 800, color: '#F6981F', fontFamily: "'Nunito', sans-serif" }}>Fractus</span>
           <span style={{ fontSize: '11px', color: '#4A5568', fontWeight: 600, letterSpacing: '0.08em' }}>BY FRACTIONAL AECO</span>
-        </a>
+        </Link>
         <div style={{ display: 'flex', gap: '36px', alignItems: 'center' }}>
           {[
             ['Talent', '/talent'],
@@ -84,7 +86,7 @@ export default function Home() {
             </div>
             <div style={{ paddingTop: '40px' }}>
               <p style={{ color: '#8892A4', fontSize: '18px', lineHeight: 1.7, fontWeight: 400 }}>
-                Built for senior practitioners who'd rather execute than chase work, and for teams that need expertise on demand.
+                Built for senior practitioners who&apos;d rather execute than chase work, and for teams that need expertise on demand.
               </p>
             </div>
           </div>
@@ -243,7 +245,7 @@ export default function Home() {
             Need senior AECO firepower? Book by the hour.
           </h2>
           <p style={{ color: 'rgba(255,255,255,0.8)', fontSize: '19px', lineHeight: 1.7, marginBottom: '48px', fontWeight: 400 }}>
-            Tell us what you need. We'll match you with vetted senior practitioners, available fractionally — no recruiters, no overhead.
+            Tell us what you need. We&apos;ll match you with vetted senior practitioners, available fractionally — no recruiters, no overhead.
           </p>
           <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap' }}>
             <a href="https://www.fractionalaeco.com/contact" target="_blank" style={{ background: 'white', color: '#F6981F', textDecoration: 'none', fontSize: '17px', fontWeight: 800, padding: '16px 36px', borderRadius: '10px', fontFamily: "'Nunito', sans-serif" }}>

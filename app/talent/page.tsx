@@ -1,9 +1,11 @@
 'use client'
 import { useState, useEffect } from 'react'
+import Link from 'next/link'
 import { supabase } from '../lib/supabase'
+import type { Profile } from '../lib/types'
 
 export default function TalentPage() {
-  const [profiles, setProfiles] = useState<any[]>([])
+  const [profiles, setProfiles] = useState<Profile[]>([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
   const [filterDiscipline, setFilterDiscipline] = useState('')
@@ -48,13 +50,13 @@ export default function TalentPage() {
 
       {/* Nav */}
       <nav className="flex items-center justify-between px-10 py-5 border-b" style={{ background: 'var(--color-bg)', borderColor: 'var(--color-border)' }}>
-        <a href="/" className="flex flex-col">
+        <Link href="/" className="flex flex-col">
           <span className="text-3xl font-bold" style={{ color: 'var(--color-accent)' }}>Fractus</span>
           <span className="text-sm text-gray-500 leading-none">by FractionalAECO</span>
-        </a>
+        </Link>
         <div className="flex gap-6 items-center">
-          <a href="/dashboard" className="text-gray-400 hover:text-white transition-colors" style={{ fontSize: '16px' }}>Dashboard</a>
-          <a href="/profile" className="text-white font-medium px-5 py-2 rounded-full transition-colors" style={{ background: 'var(--color-primary)', fontSize: '16px' }}>My Profile</a>
+          <Link href="/dashboard" className="text-gray-400 hover:text-white transition-colors" style={{ fontSize: '16px' }}>Dashboard</Link>
+          <Link href="/profile" className="text-white font-medium px-5 py-2 rounded-full transition-colors" style={{ background: 'var(--color-primary)', fontSize: '16px' }}>My Profile</Link>
         </div>
       </nav>
 
@@ -90,9 +92,9 @@ export default function TalentPage() {
               className="flex-1 rounded-xl px-5 py-4 text-white outline-none placeholder-gray-600"
               style={{ background: 'var(--color-bg)', border: '1.5px solid var(--color-border)', fontSize: '16px' }}
             />
-            <a href="/profile" className="px-6 py-4 rounded-xl text-white font-semibold transition-colors hover:opacity-90 whitespace-nowrap" style={{ background: 'var(--color-primary)', fontSize: '16px' }}>
+            <Link href="/profile" className="px-6 py-4 rounded-xl text-white font-semibold transition-colors hover:opacity-90 whitespace-nowrap" style={{ background: 'var(--color-primary)', fontSize: '16px' }}>
               + Add your profile
-            </a>
+            </Link>
           </div>
         </div>
       </div>
@@ -123,7 +125,7 @@ export default function TalentPage() {
             <p className="text-gray-500 mb-8" style={{ fontSize: '15px' }}>{displayProfiles.length} professionals found</p>
             <div className="grid grid-cols-3 gap-6">
               {displayProfiles.map((p, i) => (
-                <a key={p.id || i} href={p.id?.startsWith('d') ? '#' : `/talent/${p.id}`}
+                <Link key={p.id || i} href={p.id?.startsWith('d') ? '#' : `/talent/${p.id}`}
                   className="rounded-2xl border p-6 block transition-all hover:scale-[1.02] hover:shadow-xl cursor-pointer"
                   style={{ background: 'var(--color-bg-card)', borderColor: 'var(--color-border)' }}>
 
@@ -172,7 +174,7 @@ export default function TalentPage() {
                       {p.hourly_rate ? `$${p.hourly_rate}/h` : 'Rate TBD'}
                     </span>
                   </div>
-                </a>
+                </Link>
               ))}
             </div>
           </>
@@ -182,14 +184,14 @@ export default function TalentPage() {
       {/* CTA */}
       <div className="text-center px-8 py-16 border-t" style={{ borderColor: 'var(--color-border)' }}>
         <h3 className="font-bold text-white mb-4" style={{ fontSize: '32px' }}>Need senior AECO firepower?</h3>
-        <p className="text-gray-400 mb-8" style={{ fontSize: '18px' }}>Tell us what you need. We'll match you with vetted senior practitioners.</p>
+        <p className="text-gray-400 mb-8" style={{ fontSize: '18px' }}>Tell us what you need. We&apos;ll match you with vetted senior practitioners.</p>
         <div className="flex gap-4 justify-center">
-          <a href="https://www.fractionalaeco.com/contact" target="_blank" className="px-8 py-4 rounded-full font-semibold text-white hover:opacity-90 transition-all" style={{ background: 'var(--color-primary)', fontSize: '18px' }}>
+          <a href="https://www.fractionalaeco.com/contact" target="_blank" rel="noopener noreferrer" className="px-8 py-4 rounded-full font-semibold text-white hover:opacity-90 transition-all" style={{ background: 'var(--color-primary)', fontSize: '18px' }}>
             Talk to Fractional AECO
           </a>
-          <a href="/signup" className="px-8 py-4 rounded-full font-semibold hover:opacity-80 transition-all" style={{ border: '1.5px solid var(--color-border)', color: 'var(--color-accent-light)', fontSize: '18px' }}>
+          <Link href="/signup" className="px-8 py-4 rounded-full font-semibold hover:opacity-80 transition-all" style={{ border: '1.5px solid var(--color-border)', color: 'var(--color-accent-light)', fontSize: '18px' }}>
             Join as talent
-          </a>
+          </Link>
         </div>
       </div>
 

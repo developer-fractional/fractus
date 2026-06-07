@@ -1,14 +1,16 @@
 'use client'
 import { useEffect, useState } from 'react'
+import Link from 'next/link'
+import type { User } from '@supabase/supabase-js'
 import { supabase } from '../lib/supabase'
+import type { Profile, Listing } from '../lib/types'
 
 export default function AdminPage() {
-  const [user, setUser] = useState<any>(null)
-  const [isAdmin, setIsAdmin] = useState(false)
+  const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState('overview')
-  const [users, setUsers] = useState<any[]>([])
-  const [listings, setListings] = useState<any[]>([])
+  const [users, setUsers] = useState<Profile[]>([])
+  const [listings, setListings] = useState<Listing[]>([])
   const [stats, setStats] = useState({ users: 0, listings: 0, verified: 0 })
 
   useEffect(() => {
@@ -18,7 +20,6 @@ export default function AdminPage() {
       const { data: profile } = await supabase
         .from('profiles').select('is_admin').eq('id', data.user.id).single()
       if (!profile?.is_admin) { window.location.href = '/dashboard'; return }
-      setIsAdmin(true)
       loadAll()
       setLoading(false)
     })
@@ -32,7 +33,7 @@ export default function AdminPage() {
     setStats({
       users: u?.length || 0,
       listings: l?.length || 0,
-      verified: u?.filter((x: any) => x.is_verified).length || 0,
+      verified: u?.filter((x) => x.is_verified).length || 0,
     })
   }
 
@@ -87,13 +88,13 @@ export default function AdminPage() {
       {/* Nav */}
       <nav style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '18px 48px', borderBottom: '1px solid #2A3145', background: '#0F1117' }}>
         <div style={{ display: 'flex', alignItems: 'baseline', gap: '10px' }}>
-          <a href="/" style={{ textDecoration: 'none' }}>
+          <Link href="/" style={{ textDecoration: 'none' }}>
             <span style={{ fontSize: '24px', fontWeight: 800, color: '#F6981F', fontFamily: "'Nunito', sans-serif" }}>Fractus</span>
-          </a>
+          </Link>
           <span style={{ fontSize: '12px', color: '#F6981F', fontWeight: 700, background: 'rgba(246,152,31,0.15)', padding: '3px 10px', borderRadius: '100px', border: '1px solid rgba(246,152,31,0.3)' }}>ADMIN</span>
         </div>
         <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-          <a href="/dashboard" style={{ color: '#8892A4', textDecoration: 'none', fontSize: '14px', fontWeight: 600 }}>← Back to Dashboard</a>
+          <Link href="/dashboard" style={{ color: '#8892A4', textDecoration: 'none', fontSize: '14px', fontWeight: 600 }}>← Back to Dashboard</Link>
           <span style={{ color: '#4A5568', fontSize: '14px' }}>{user?.email}</span>
         </div>
       </nav>
