@@ -44,7 +44,7 @@ export default function Signup() {
     }
 
     setLoading(false)
-    window.location.href = '/dashboard'
+    window.location.href = '/verify-email?email=' + encodeURIComponent(email)
   }
 
   async function handleOAuth(provider: 'google' | 'azure' | 'linkedin_oidc') {

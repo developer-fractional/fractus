@@ -91,10 +91,14 @@ export default function Login() {
               style={{ width: '100%', background: '#1B2130', border: '1px solid #2A3145', borderRadius: '12px', padding: '16px 18px', color: 'white', fontSize: '16px', outline: 'none', boxSizing: 'border-box' }} />
           </div>
 
-          <div style={{ marginBottom: '32px' }}>
+          <div style={{ marginBottom: '12px' }}>
             <label style={{ display: 'block', color: '#8892A4', fontSize: '13px', fontWeight: 600, marginBottom: '8px', letterSpacing: '0.03em' }}>PASSWORD</label>
             <input type="password" placeholder="Your password" value={password} onChange={e => setPassword(e.target.value)}
               style={{ width: '100%', background: '#1B2130', border: '1px solid #2A3145', borderRadius: '12px', padding: '16px 18px', color: 'white', fontSize: '16px', outline: 'none', boxSizing: 'border-box' }} />
+          </div>
+
+          <div style={{ textAlign: 'right', marginBottom: '32px' }}>
+            <Link href="/forgot-password" style={{ color: '#05809B', textDecoration: 'none', fontSize: '14px', fontWeight: 700 }}>Forgot password?</Link>
           </div>
 
           <button onClick={handleLogin} disabled={loading}
