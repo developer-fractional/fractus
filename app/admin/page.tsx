@@ -148,7 +148,7 @@ export default function AdminPage() {
                         </span>
                       </td>
                       <td style={{ padding: '14px 20px' }}>
-                        <button onClick={() => toggleVerified(u.id, u.is_verified)}
+                        <button onClick={() => toggleVerified(u.id, u.is_verified ?? false)}
                           style={{ background: 'transparent', border: '1px solid #2A3145', borderRadius: '6px', padding: '6px 12px', color: '#F6981F', fontSize: '12px', fontWeight: 700, cursor: 'pointer', marginRight: '8px' }}>
                           {u.is_verified ? 'Unverify' : 'Verify'}
                         </button>
@@ -189,7 +189,7 @@ export default function AdminPage() {
                       </td>
                       <td style={{ padding: '14px 16px' }}>
                         <div style={{ display: 'flex', gap: '6px' }}>
-                          <button onClick={() => toggleVerified(u.id, u.is_verified)}
+                          <button onClick={() => toggleVerified(u.id, u.is_verified ?? false)}
                             style={{ background: 'transparent', border: `1px solid ${u.is_verified ? '#2A3145' : '#05809B'}`, borderRadius: '6px', padding: '5px 10px', color: u.is_verified ? '#4A5568' : '#05809B', fontSize: '11px', fontWeight: 700, cursor: 'pointer' }}>
                             {u.is_verified ? 'Unverify' : '✓ Verify'}
                           </button>
