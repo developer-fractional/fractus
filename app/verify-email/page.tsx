@@ -1,10 +1,10 @@
 'use client'
-import { useEffect, useState } from 'react'
+import { Suspense, useEffect, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { supabase } from '../lib/supabase'
 
-export default function VerifyEmail() {
+function VerifyEmailContent() {
   const searchParams = useSearchParams()
   const [email, setEmail] = useState('')
   const [message, setMessage] = useState('')
@@ -90,5 +90,13 @@ export default function VerifyEmail() {
         © 2026 Fractional-AECO LLC · <a href="https://www.fractionalaeco.com" target="_blank" rel="noopener noreferrer" style={{ color: '#4A5568', textDecoration: 'none' }}>fractionalaeco.com</a>
       </div>
     </div>
+  )
+}
+
+export default function VerifyEmailPage() {
+  return (
+    <Suspense fallback={<div style={{ background: '#0F1117', minHeight: '100vh' }} />}>
+      <VerifyEmailContent />
+    </Suspense>
   )
 }
