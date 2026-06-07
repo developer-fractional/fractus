@@ -1,6 +1,27 @@
+'use client'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
+import { supabase } from './lib/supabase'
 
 export default function Home() {
+  // Track whether someone is currently logged in so the navbar can swap
+  // "Sign in / Join free" for a "Dashboard" button when they already have
+  // an active session.
+  const [loggedIn, setLoggedIn] = useState<boolean | null>(null)
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => {
+      setLoggedIn(!!data.session)
+    })
+
+    // Keep the navbar in sync if the user logs in/out in another tab.
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+      setLoggedIn(!!session)
+    })
+
+    return () => listener.subscription.unsubscribe()
+  }, [])
+
   return (
     <main style={{ background: '#0F1117', minHeight: '100vh', fontFamily: "'Nunito Sans', sans-serif" }}>
 
@@ -29,10 +50,18 @@ export default function Home() {
           ))}
         </div>
         <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-          <a href="/login" style={{ color: '#8892A4', textDecoration: 'none', fontSize: '15px', fontWeight: 600 }}>Sign in</a>
-          <a href="/signup" style={{ background: '#F6981F', color: 'white', textDecoration: 'none', fontSize: '14px', fontWeight: 700, padding: '10px 22px', borderRadius: '8px' }}>
-            Join free
-          </a>
+          {loggedIn ? (
+            <Link href="/dashboard" style={{ background: '#F6981F', color: 'white', textDecoration: 'none', fontSize: '14px', fontWeight: 700, padding: '10px 22px', borderRadius: '8px' }}>
+              Dashboard
+            </Link>
+          ) : (
+            <>
+              <Link href="/login" style={{ color: '#8892A4', textDecoration: 'none', fontSize: '15px', fontWeight: 600 }}>Sign in</Link>
+              <Link href="/signup" style={{ background: '#F6981F', color: 'white', textDecoration: 'none', fontSize: '14px', fontWeight: 700, padding: '10px 22px', borderRadius: '8px' }}>
+                Join free
+              </Link>
+            </>
+          )}
         </div>
       </nav>
 
