@@ -124,21 +124,27 @@ export default function TalentPage() {
           <>
             <p className="text-gray-500 mb-8" style={{ fontSize: '15px' }}>{displayProfiles.length} professionals found</p>
             <div className="grid grid-cols-3 gap-6">
-              {displayProfiles.map((p, i) => (
-                <Link key={p.id || i} href={p.id?.startsWith('d') ? '#' : `/talent/${p.id}`}
-                  className="rounded-2xl border p-6 block transition-all hover:scale-[1.02] hover:shadow-xl cursor-pointer"
-                  style={{ background: 'var(--color-bg-card)', borderColor: 'var(--color-border)' }}>
+              {displayProfiles.map((p, i) => {
+                const isDemo = p.id?.startsWith('d')
+                const cardClassName = "rounded-2xl border p-6 block transition-all hover:scale-[1.02] hover:shadow-xl " + (isDemo ? "cursor-default" : "cursor-pointer")
+                const cardStyle = { background: 'var(--color-bg-card)', borderColor: 'var(--color-border)' }
 
+                const cardContent = (
+                  <>
                   {/* Avatar + verified */}
                   <div className="flex items-start justify-between mb-4">
                     <div className="w-14 h-14 rounded-xl flex items-center justify-center text-white font-bold text-xl" style={{ background: 'var(--color-primary)' }}>
                       {p.name?.charAt(0)}
                     </div>
-                    {p.is_verified && (
+                    {p.is_verified ? (
                       <span className="text-xs px-2 py-1 rounded-full font-medium" style={{ background: 'rgba(22,163,74,0.2)', color: '#4ade80', border: '1px solid rgba(22,163,74,0.3)' }}>
                         ✓ Verified
                       </span>
-                    )}
+                    ) : p.id?.startsWith('d') ? (
+                      <span className="text-xs px-2 py-1 rounded-full font-medium" style={{ background: 'rgba(246,152,32,0.15)', color: 'var(--color-accent)', border: '1px solid rgba(246,152,32,0.3)' }}>
+                        Demo
+                      </span>
+                    ) : null}
                   </div>
 
                   {/* Name + role */}
@@ -174,8 +180,28 @@ export default function TalentPage() {
                       {p.hourly_rate ? `$${p.hourly_rate}/h` : 'Rate TBD'}
                     </span>
                   </div>
-                </Link>
-              ))}
+                  </>
+                )
+
+                if (isDemo) {
+                  return (
+                    <div key={p.id || i}
+                      title="This is a demo profile — sign up to see real AECO professionals"
+                      className={cardClassName}
+                      style={cardStyle}>
+                      {cardContent}
+                    </div>
+                  )
+                }
+
+                return (
+                  <Link key={p.id || i} href={`/talent/${p.id}`}
+                    className={cardClassName}
+                    style={cardStyle}>
+                    {cardContent}
+                  </Link>
+                )
+              })}
             </div>
           </>
         )}
