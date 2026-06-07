@@ -186,6 +186,7 @@ export default function TalentPage() {
                 if (isDemo) {
                   return (
                     <div key={p.id || i}
+                      onClick={() => {}}
                       title="This is a demo profile — sign up to see real AECO professionals"
                       className={cardClassName}
                       style={cardStyle}>
