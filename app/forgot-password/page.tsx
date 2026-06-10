@@ -19,7 +19,7 @@ export default function ForgotPassword() {
     setLoading(true)
     setMessage('')
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: window.location.origin + '/reset-password',
+      redirectTo: window.location.origin + '/auth/callback?type=recovery',
     })
     setLoading(false)
     if (error) setMessage('Something went wrong: ' + error.message)
@@ -66,7 +66,7 @@ export default function ForgotPassword() {
               </div>
 
               {/* Turnstile CAPTCHA */}
-              <div style={{ marginBottom: '20px' }}>
+              <div style={{ margin: '16px 0' }}>
                 <Turnstile siteKey={TURNSTILE_SITE_KEY} onSuccess={token => setCaptchaToken(token)} onExpire={() => setCaptchaToken(null)} />
               </div>
 

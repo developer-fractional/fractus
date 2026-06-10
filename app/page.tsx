@@ -8,6 +8,14 @@ export default function Home() {
   const [menuOpen, setMenuOpen] = useState(false)
 
   useEffect(() => {
+    // If Supabase redirected a recovery email here (site URL + hash), forward to reset-password.
+    if (typeof window !== 'undefined') {
+      const hash = window.location.hash
+      if (hash.includes('type=recovery')) {
+        window.location.href = '/reset-password' + hash
+        return
+      }
+    }
     supabase.auth.getSession().then(({ data }) => setLoggedIn(!!data.session))
     const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => setLoggedIn(!!session))
     return () => listener.subscription.unsubscribe()

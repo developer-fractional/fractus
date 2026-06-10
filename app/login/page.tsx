@@ -107,7 +107,7 @@ export default function Login() {
           </div>
 
           {/* Turnstile CAPTCHA */}
-          <div style={{ marginBottom: '20px' }}>
+          <div style={{ margin: '16px 0' }}>
             <Turnstile siteKey={TURNSTILE_SITE_KEY} onSuccess={token => setCaptchaToken(token)} onExpire={() => setCaptchaToken(null)} />
           </div>
 

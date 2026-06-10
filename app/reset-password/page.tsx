@@ -1,5 +1,5 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { supabase } from '../lib/supabase'
 
@@ -8,6 +8,19 @@ export default function ResetPassword() {
   const [confirmPassword, setConfirmPassword] = useState('')
   const [message, setMessage] = useState('')
   const [loading, setLoading] = useState(false)
+  // true once Supabase fires PASSWORD_RECOVERY (session is live)
+  const [sessionReady, setSessionReady] = useState(false)
+
+  useEffect(() => {
+    // Supabase detects the access_token in the URL hash automatically and fires
+    // PASSWORD_RECOVERY once the session is established from the hash fragment.
+    const { data: listener } = supabase.auth.onAuthStateChange((event) => {
+      if (event === 'PASSWORD_RECOVERY') {
+        setSessionReady(true)
+      }
+    })
+    return () => listener.subscription.unsubscribe()
+  }, [])
 
   async function handleUpdate() {
     if (!password || !confirmPassword) return setMessage('Please fill in both fields')
@@ -50,24 +63,33 @@ export default function ResetPassword() {
           <h1 style={{ fontFamily: "'Nunito', sans-serif", fontSize: '40px', fontWeight: 800, color: 'white', marginBottom: '8px', letterSpacing: '-1px' }}>Set a new password</h1>
           <p style={{ color: '#8892A4', fontSize: '17px', marginBottom: '32px' }}>Choose a strong new password for your Fractus account.</p>
 
-          <div style={{ marginBottom: '18px' }}>
-            <label style={labelStyle}>NEW PASSWORD</label>
-            <input type="password" placeholder="Min 6 characters" value={password} onChange={e => setPassword(e.target.value)} style={inputStyle} />
-          </div>
-          <div style={{ marginBottom: '32px' }}>
-            <label style={labelStyle}>CONFIRM NEW PASSWORD</label>
-            <input type="password" placeholder="Re-enter your new password" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} style={inputStyle} />
-          </div>
-
-          <button onClick={handleUpdate} disabled={loading}
-            style={{ width: '100%', background: '#F6981F', color: 'white', border: 'none', borderRadius: '100px', padding: '18px', fontSize: '17px', fontWeight: 700, cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.7 : 1, marginBottom: '20px', fontFamily: "'Nunito Sans', sans-serif" }}>
-            {loading ? 'Updating password...' : 'Update password'}
-          </button>
-
-          {message && (
-            <div style={{ padding: '14px 18px', background: 'rgba(255,107,107,0.08)', border: '1px solid rgba(255,107,107,0.2)', borderRadius: '10px', color: '#FF8888', fontSize: '14px', textAlign: 'center' }}>
-              {message}
+          {!sessionReady ? (
+            /* Waiting for Supabase to process the hash token */
+            <div style={{ padding: '20px 22px', background: 'rgba(5,128,155,0.08)', border: '1px solid rgba(5,128,155,0.2)', borderRadius: '12px', color: '#05809B', fontSize: '15px', textAlign: 'center' }}>
+              Verifying your reset link…
             </div>
+          ) : (
+            <>
+              <div style={{ marginBottom: '18px' }}>
+                <label style={labelStyle}>NEW PASSWORD</label>
+                <input type="password" placeholder="Min 6 characters" value={password} onChange={e => setPassword(e.target.value)} style={inputStyle} />
+              </div>
+              <div style={{ marginBottom: '32px' }}>
+                <label style={labelStyle}>CONFIRM NEW PASSWORD</label>
+                <input type="password" placeholder="Re-enter your new password" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} style={inputStyle} />
+              </div>
+
+              <button onClick={handleUpdate} disabled={loading}
+                style={{ width: '100%', background: '#F6981F', color: 'white', border: 'none', borderRadius: '100px', padding: '18px', fontSize: '17px', fontWeight: 700, cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.7 : 1, marginBottom: '20px', fontFamily: "'Nunito Sans', sans-serif" }}>
+                {loading ? 'Updating password...' : 'Update password'}
+              </button>
+
+              {message && (
+                <div style={{ padding: '14px 18px', background: 'rgba(255,107,107,0.08)', border: '1px solid rgba(255,107,107,0.2)', borderRadius: '10px', color: '#FF8888', fontSize: '14px', textAlign: 'center' }}>
+                  {message}
+                </div>
+              )}
+            </>
           )}
         </div>
       </div>
