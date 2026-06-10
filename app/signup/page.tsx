@@ -1,7 +1,10 @@
 'use client'
 import { useState } from 'react'
 import Link from 'next/link'
+import { Turnstile } from '@marsidev/react-turnstile'
 import { supabase } from '../lib/supabase'
+
+const TURNSTILE_SITE_KEY = '0x4AAAAAADiPgJ3awUL16qTR'
 
 const OAUTH_PROVIDERS: { name: string; provider: 'google' | 'azure' | 'linkedin_oidc'; icon: string }[] = [
   { name: 'Google', provider: 'google', icon: '🇬' },
@@ -17,10 +20,12 @@ export default function Signup() {
   const [message, setMessage] = useState('')
   const [loading, setLoading] = useState(false)
   const [oauthLoading, setOauthLoading] = useState<string | null>(null)
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null)
 
   async function handleSignup() {
     if (!name || !email || !password) return setMessage('Please fill in all fields')
     if (password.length < 6) return setMessage('Password must be at least 6 characters')
+    if (!captchaToken) return setMessage('Please complete the CAPTCHA verification')
     setLoading(true)
     const { data, error } = await supabase.auth.signUp({ email, password })
     if (error) {
@@ -82,7 +87,7 @@ export default function Signup() {
       </nav>
 
       {/* Form */}
-      <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '60px 24px' }}>
+      <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 'clamp(32px, 6vw, 60px) clamp(16px, 5vw, 24px)' }}>
         <div style={{ width: '100%', maxWidth: '440px' }}>
           <h1 style={{ fontFamily: "'Nunito', sans-serif", fontSize: '40px', fontWeight: 800, color: 'white', marginBottom: '8px', letterSpacing: '-1px' }}>Join Fractus</h1>
           <p style={{ color: '#8892A4', fontSize: '17px', marginBottom: '32px' }}>Connect with top AECO fractional talent</p>
@@ -131,6 +136,11 @@ export default function Signup() {
               <option>Owner / Operator</option>
               <option>Employer / Hiring</option>
             </select>
+          </div>
+
+          {/* Turnstile CAPTCHA */}
+          <div style={{ marginBottom: '20px' }}>
+            <Turnstile siteKey={TURNSTILE_SITE_KEY} onSuccess={token => setCaptchaToken(token)} onExpire={() => setCaptchaToken(null)} />
           </div>
 
           <button onClick={handleSignup} disabled={loading}

@@ -4,6 +4,7 @@ import { useParams } from 'next/navigation'
 import Link from 'next/link'
 import { supabase } from '../../lib/supabase'
 import type { Profile } from '../../lib/types'
+import Navbar from '../../components/Navbar'
 
 export default function TalentProfilePage() {
   const params = useParams<{ id: string }>()
@@ -24,15 +25,7 @@ export default function TalentProfilePage() {
   }, [params?.id])
 
   const navBar = (
-    <nav className="flex items-center justify-between px-10 py-5 border-b" style={{ background: '#0F1117', borderColor: '#2A3145' }}>
-      <Link href="/" className="flex flex-col" style={{ textDecoration: 'none' }}>
-        <span className="text-3xl font-bold" style={{ color: '#F6981F' }}>Fractus</span>
-        <span className="text-sm text-gray-500 leading-none">by FractionalAECO</span>
-      </Link>
-      <div className="flex gap-6 items-center">
-        <Link href="/talent" className="text-gray-400 hover:text-white transition-colors" style={{ fontSize: '16px', textDecoration: 'none' }}>← Back to Talent</Link>
-      </div>
-    </nav>
+    <Navbar activeLink="talent" />
   )
 
   if (loading) {
@@ -70,10 +63,16 @@ export default function TalentProfilePage() {
     <div className="min-h-screen" style={{ background: '#0F1117', fontFamily: "'Nunito Sans', sans-serif" }}>
       {navBar}
 
-      <div className="max-w-3xl mx-auto px-6 py-12">
+      {/* Back link shown below nav on profile pages */}
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 pt-5">
+        <Link href="/talent" className="text-sm font-semibold hover:text-white transition-colors"
+          style={{ color: '#8892A4', textDecoration: 'none' }}>← Back to Talent</Link>
+      </div>
+
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 py-6 sm:py-10">
 
         {/* Header card */}
-        <div className="rounded-2xl border p-8 mb-8 flex items-start gap-6 flex-wrap" style={{ background: '#1B2130', borderColor: '#2A3145' }}>
+        <div className="rounded-2xl border p-5 sm:p-8 mb-6 sm:mb-8 flex items-start gap-4 sm:gap-6 flex-wrap" style={{ background: '#1B2130', borderColor: '#2A3145' }}>
           <div className="w-20 h-20 rounded-2xl flex items-center justify-center text-white font-bold flex-shrink-0" style={{ background: '#F6981F', fontSize: '32px', fontFamily: "'Nunito', sans-serif" }}>
             {profile.name ? profile.name.charAt(0).toUpperCase() : '?'}
           </div>

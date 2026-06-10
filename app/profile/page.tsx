@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import type { User } from '@supabase/supabase-js'
 import { supabase } from '../lib/supabase'
+import Navbar from '../components/Navbar'
 
 const DISCIPLINES = ['Architecture', 'Structural Engineering', 'MEP Engineering', 'Civil Engineering', 'Construction Management', 'BIM/VDC', 'Sustainability', 'Owner/Operator', 'Project Controls', 'Cost Management']
 const CERTIFICATIONS = ['LEED AP', 'AIA', 'PE', 'PMP', 'RIBA', 'WELL AP', 'ISO 19650', 'CCM', 'DBIA', 'Revit Certified']
@@ -66,31 +67,16 @@ export default function ProfilePage() {
   const labelClass = "block font-semibold text-gray-300 mb-2"
 
   return (
-    <div className="min-h-screen" style={{ background: 'var(--color-bg)' }}>
+    <div className="min-h-screen" style={{ background: 'var(--color-bg)', fontFamily: "'Nunito Sans', sans-serif" }}>
 
-      {/* Top bar */}
-      <div className="text-white text-center py-3 px-4" style={{ background: 'var(--color-primary)', fontSize: '15px' }}>
-        Powered by <a href="https://www.fractionalaeco.com" target="_blank" className="underline font-semibold hover:opacity-80">Fractional AECO</a> · Your AECO Experts · <a href="tel:+19804940263" className="underline hover:opacity-80">+1 980 494 0263</a>
-      </div>
+      <Navbar activeLink="profile" />
 
-      {/* Nav */}
-      <nav className="flex items-center justify-between px-10 py-5 border-b" style={{ background: 'var(--color-bg)', borderColor: 'var(--color-border)' }}>
-        <Link href="/" className="flex flex-col">
-          <span className="text-3xl font-bold" style={{ color: 'var(--color-accent)' }}>Fractus</span>
-          <span className="text-sm text-gray-500 leading-none">by FractionalAECO</span>
-        </Link>
-        <div className="flex gap-6 items-center">
-          <Link href="/dashboard" className="text-gray-400 hover:text-white transition-colors" style={{ fontSize: '16px' }}>Dashboard</Link>
-          <Link href="/talent" className="text-gray-400 hover:text-white transition-colors" style={{ fontSize: '16px' }}>Browse Talent</Link>
-        </div>
-      </nav>
-
-      <div className="max-w-3xl mx-auto px-6 py-12">
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
 
         {/* Header */}
-        <div className="mb-10">
-          <h1 className="font-bold text-white mb-2" style={{ fontSize: '38px' }}>Your Profile</h1>
-          <p className="text-gray-400" style={{ fontSize: '18px' }}>Build your AECO profile so companies can find and book you.</p>
+        <div className="mb-8 sm:mb-10">
+          <h1 className="font-bold text-white mb-2" style={{ fontSize: 'clamp(28px, 5vw, 38px)', fontFamily: "'Nunito', sans-serif" }}>Your Profile</h1>
+          <p className="text-gray-400 text-base sm:text-lg">Build your AECO profile so companies can find and book you.</p>
         </div>
 
         {/* Profile preview card */}
@@ -118,7 +104,7 @@ export default function ProfilePage() {
           {/* Basic info */}
           <div className="rounded-2xl border p-8" style={{ background: 'var(--color-bg-card)', borderColor: 'var(--color-border)' }}>
             <h2 className="font-bold text-white mb-6" style={{ fontSize: '22px' }}>Basic Information</h2>
-            <div className="grid grid-cols-2 gap-5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
               <div>
                 <label className={labelClass}>Full name</label>
                 <input type="text" placeholder="Jane Smith" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} className={inputClass} style={inputStyle} />
@@ -145,7 +131,7 @@ export default function ProfilePage() {
           {/* AECO specifics */}
           <div className="rounded-2xl border p-8" style={{ background: 'var(--color-bg-card)', borderColor: 'var(--color-border)' }}>
             <h2 className="font-bold text-white mb-6" style={{ fontSize: '22px' }}>AECO Details</h2>
-            <div className="grid grid-cols-2 gap-5 mb-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-6">
               <div>
                 <label className={labelClass}>Primary discipline</label>
                 <select value={form.discipline} onChange={e => setForm({ ...form, discipline: e.target.value })} className={inputClass} style={{ ...inputStyle, cursor: 'pointer' }}>

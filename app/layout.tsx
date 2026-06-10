@@ -1,9 +1,26 @@
 import type { Metadata } from "next";
 import "./globals.css";
 
+const OG_IMAGE = "https://www.fractionalaeco.com/og-image.png"
+const BASE_URL = "https://fractus.fractionalaeco.com"
+
 export const metadata: Metadata = {
-  title: "Fractus — Senior AECO Talent, Fractional by Design",
-  description: "A curated network of architects, engineers, and construction leaders. Powered by FractionalAECO.",
+  title: "Fractus — Senior AECO Fractional Talent | FractionalAECO",
+  description: "Find and hire senior architects, engineers, and construction leaders on a fractional basis. Vetted AECO professionals available by the hour.",
+  openGraph: {
+    title: "Fractus — Senior AECO Fractional Talent | FractionalAECO",
+    description: "Find and hire senior architects, engineers, and construction leaders on a fractional basis. Vetted AECO professionals available by the hour.",
+    url: BASE_URL,
+    siteName: "Fractus by FractionalAECO",
+    type: "website",
+    images: [{ url: OG_IMAGE, width: 1200, height: 630, alt: "Fractus AECO Talent Network" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Fractus — Senior AECO Fractional Talent | FractionalAECO",
+    description: "Find and hire senior architects, engineers, and construction leaders on a fractional basis. Vetted AECO professionals available by the hour.",
+    images: [OG_IMAGE],
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

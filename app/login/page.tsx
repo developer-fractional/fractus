@@ -1,7 +1,10 @@
 'use client'
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import Link from 'next/link'
+import { Turnstile } from '@marsidev/react-turnstile'
 import { supabase } from '../lib/supabase'
+
+const TURNSTILE_SITE_KEY = '0x4AAAAAADiPgJ3awUL16qTR'
 
 const OAUTH_PROVIDERS: { name: string; provider: 'google' | 'azure' | 'linkedin_oidc'; icon: string }[] = [
   { name: 'Google', provider: 'google', icon: '🇬' },
@@ -15,9 +18,11 @@ export default function Login() {
   const [message, setMessage] = useState('')
   const [loading, setLoading] = useState(false)
   const [oauthLoading, setOauthLoading] = useState<string | null>(null)
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null)
 
   async function handleLogin() {
     if (!email || !password) return setMessage('Please enter email and password')
+    if (!captchaToken) return setMessage('Please complete the CAPTCHA verification')
     setLoading(true)
     const { error } = await supabase.auth.signInWithPassword({ email, password })
     setLoading(false)
@@ -58,7 +63,7 @@ export default function Login() {
       </nav>
 
       {/* Form */}
-      <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '60px 24px' }}>
+      <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 'clamp(32px, 6vw, 60px) clamp(16px, 5vw, 24px)' }}>
         <div style={{ width: '100%', maxWidth: '440px' }}>
           <h1 style={{ fontFamily: "'Nunito', sans-serif", fontSize: '40px', fontWeight: 800, color: 'white', marginBottom: '8px', letterSpacing: '-1px' }}>Welcome back</h1>
           <p style={{ color: '#8892A4', fontSize: '17px', marginBottom: '32px' }}>Sign in to your Fractus account</p>
@@ -99,6 +104,11 @@ export default function Login() {
 
           <div style={{ textAlign: 'right', marginBottom: '32px' }}>
             <Link href="/forgot-password" style={{ color: '#05809B', textDecoration: 'none', fontSize: '14px', fontWeight: 700 }}>Forgot password?</Link>
+          </div>
+
+          {/* Turnstile CAPTCHA */}
+          <div style={{ marginBottom: '20px' }}>
+            <Turnstile siteKey={TURNSTILE_SITE_KEY} onSuccess={token => setCaptchaToken(token)} onExpire={() => setCaptchaToken(null)} />
           </div>
 
           <button onClick={handleLogin} disabled={loading}

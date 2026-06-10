@@ -1,16 +1,21 @@
 'use client'
 import { useState } from 'react'
 import Link from 'next/link'
+import { Turnstile } from '@marsidev/react-turnstile'
 import { supabase } from '../lib/supabase'
+
+const TURNSTILE_SITE_KEY = '0x4AAAAAADiPgJ3awUL16qTR'
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState('')
   const [message, setMessage] = useState('')
   const [loading, setLoading] = useState(false)
   const [sent, setSent] = useState(false)
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null)
 
   async function handleReset() {
     if (!email) return setMessage('Please enter your email address')
+    if (!captchaToken) return setMessage('Please complete the CAPTCHA verification')
     setLoading(true)
     setMessage('')
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
@@ -58,6 +63,11 @@ export default function ForgotPassword() {
               <div style={{ marginBottom: '28px' }}>
                 <label style={labelStyle}>EMAIL ADDRESS</label>
                 <input type="email" placeholder="you@example.com" value={email} onChange={e => setEmail(e.target.value)} style={inputStyle} />
+              </div>
+
+              {/* Turnstile CAPTCHA */}
+              <div style={{ marginBottom: '20px' }}>
+                <Turnstile siteKey={TURNSTILE_SITE_KEY} onSuccess={token => setCaptchaToken(token)} onExpire={() => setCaptchaToken(null)} />
               </div>
 
               <button onClick={handleReset} disabled={loading}
