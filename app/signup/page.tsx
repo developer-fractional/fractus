@@ -4,8 +4,6 @@ import Link from 'next/link'
 import { Turnstile } from '@marsidev/react-turnstile'
 import { supabase } from '../lib/supabase'
 
-const TURNSTILE_SITE_KEY = '0x4AAAAAADiPgJ3awUL16qTR'
-
 const OAUTH_PROVIDERS: { name: string; provider: 'google' | 'azure' | 'linkedin_oidc'; icon: string }[] = [
   { name: 'Google', provider: 'google', icon: '🇬' },
   { name: 'Microsoft', provider: 'azure', icon: '🪟' },
@@ -140,7 +138,12 @@ export default function Signup() {
 
           {/* Turnstile CAPTCHA */}
           <div style={{ margin: '16px 0' }}>
-            <Turnstile siteKey={TURNSTILE_SITE_KEY} onSuccess={token => setCaptchaToken(token)} onExpire={() => setCaptchaToken(null)} />
+            <Turnstile
+              siteKey="0x4AAAAAADiPgJ3awUL16qTR"
+              onSuccess={(token) => setCaptchaToken(token)}
+              onExpire={() => setCaptchaToken(null)}
+              onError={() => setCaptchaToken(null)}
+            />
           </div>
 
           <button onClick={handleSignup} disabled={loading}
