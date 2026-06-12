@@ -150,7 +150,7 @@ export default function Signup() {
           {/* Turnstile CAPTCHA — rendered by Cloudflare script via data-* attributes */}
           <div
             className="cf-turnstile"
-            data-sitekey="0x4AAAAAADiPgJ3awUL16qTR"
+            data-sitekey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || "0x4AAAAAADiPgJ3awUL16qTR"}
             data-callback="onTurnstileSuccess"
             style={{ margin: '16px 0' }}
           />
