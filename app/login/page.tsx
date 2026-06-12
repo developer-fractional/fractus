@@ -1,14 +1,8 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import Link from 'next/link'
-import Script from 'next/script'
+import { Turnstile } from '@marsidev/react-turnstile'
 import { supabase } from '../lib/supabase'
-
-declare global {
-  interface Window {
-    onTurnstileSuccess: (token: string) => void
-  }
-}
 
 const OAUTH_PROVIDERS: { name: string; provider: 'google' | 'azure' | 'linkedin_oidc'; icon: string }[] = [
   { name: 'Google', provider: 'google', icon: '🇬' },
@@ -24,16 +18,9 @@ export default function Login() {
   const [oauthLoading, setOauthLoading] = useState<string | null>(null)
   const [captchaToken, setCaptchaToken] = useState<string | null>(null)
 
-  useEffect(() => {
-    window.onTurnstileSuccess = (token: string) => {
-      setCaptchaToken(token)
-    }
-  }, [])
-
   async function handleLogin() {
     if (!email || !password) return setMessage('Please enter email and password')
-    // TODO: Re-enable CAPTCHA validation when Cloudflare domain issue is resolved
-    // if (!captchaToken) return setMessage('Please complete the CAPTCHA verification')
+    if (!captchaToken) return setMessage('Please complete the CAPTCHA verification')
     setLoading(true)
     const { error } = await supabase.auth.signInWithPassword({ email, password })
     setLoading(false)
@@ -55,7 +42,6 @@ export default function Login() {
 
   return (
     <div style={{ minHeight: '100vh', background: '#0F1117', display: 'flex', flexDirection: 'column', fontFamily: "'Nunito Sans', sans-serif" }}>
-      <Script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer />
 
       {/* Top bar */}
       <div style={{ background: '#F6981F', color: 'white', textAlign: 'center', padding: '9px 16px', fontSize: '13px', fontWeight: 700 }}>
@@ -113,17 +99,20 @@ export default function Login() {
               style={{ width: '100%', background: '#1B2130', border: '1px solid #2A3145', borderRadius: '12px', padding: '16px 18px', color: 'white', fontSize: '16px', outline: 'none', boxSizing: 'border-box' }} />
           </div>
 
-          <div style={{ textAlign: 'right', marginBottom: '32px' }}>
+          <div style={{ textAlign: 'right', marginBottom: '24px' }}>
             <Link href="/forgot-password" style={{ color: '#05809B', textDecoration: 'none', fontSize: '14px', fontWeight: 700 }}>Forgot password?</Link>
           </div>
 
-          {/* Turnstile CAPTCHA — rendered by Cloudflare script via data-* attributes */}
-          <div
-            className="cf-turnstile"
-            data-sitekey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || "0x4AAAAAADiPgJ3awUL16qTR"}
-            data-callback="onTurnstileSuccess"
-            style={{ margin: '16px 0' }}
-          />
+          {/* Turnstile CAPTCHA — using react-turnstile for reliable rendering */}
+          <div style={{ margin: '16px 0' }}>
+            <Turnstile
+              siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || '0x4AAAAAADiPgJ3awUL16qTR'}
+              onSuccess={(token) => setCaptchaToken(token)}
+              onError={() => setCaptchaToken(null)}
+              onExpire={() => setCaptchaToken(null)}
+              options={{ theme: 'dark' }}
+            />
+          </div>
 
           <button onClick={handleLogin} disabled={loading}
             style={{ width: '100%', background: '#F6981F', color: 'white', border: 'none', borderRadius: '100px', padding: '18px', fontSize: '17px', fontWeight: 700, cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.7 : 1, marginBottom: '20px', fontFamily: "'Nunito Sans', sans-serif" }}>

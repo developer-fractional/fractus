@@ -1,14 +1,8 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import Link from 'next/link'
-import Script from 'next/script'
+import { Turnstile } from '@marsidev/react-turnstile'
 import { supabase } from '../lib/supabase'
-
-declare global {
-  interface Window {
-    onTurnstileSuccess: (token: string) => void
-  }
-}
 
 const OAUTH_PROVIDERS: { name: string; provider: 'google' | 'azure' | 'linkedin_oidc'; icon: string }[] = [
   { name: 'Google', provider: 'google', icon: '🇬' },
@@ -26,17 +20,10 @@ export default function Signup() {
   const [oauthLoading, setOauthLoading] = useState<string | null>(null)
   const [captchaToken, setCaptchaToken] = useState<string | null>(null)
 
-  useEffect(() => {
-    window.onTurnstileSuccess = (token: string) => {
-      setCaptchaToken(token)
-    }
-  }, [])
-
   async function handleSignup() {
     if (!name || !email || !password) return setMessage('Please fill in all fields')
     if (password.length < 6) return setMessage('Password must be at least 6 characters')
-    // TODO: Re-enable CAPTCHA validation when Cloudflare domain issue is resolved
-    // if (!captchaToken) return setMessage('Please complete the CAPTCHA verification')
+    if (!captchaToken) return setMessage('Please complete the CAPTCHA verification')
     setLoading(true)
     const { data, error } = await supabase.auth.signUp({ email, password })
     if (error) {
@@ -78,7 +65,6 @@ export default function Signup() {
 
   return (
     <div style={{ minHeight: '100vh', background: '#0F1117', display: 'flex', flexDirection: 'column', fontFamily: "'Nunito Sans', sans-serif" }}>
-      <Script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer />
 
       {/* Top bar */}
       <div style={{ background: '#F6981F', color: 'white', textAlign: 'center', padding: '9px 16px', fontSize: '13px', fontWeight: 700 }}>
@@ -136,7 +122,7 @@ export default function Signup() {
             <label style={labelStyle}>PASSWORD</label>
             <input type="password" placeholder="Min 6 characters" value={password} onChange={e => setPassword(e.target.value)} style={inputStyle} />
           </div>
-          <div style={{ marginBottom: '32px' }}>
+          <div style={{ marginBottom: '24px' }}>
             <label style={labelStyle}>I AM JOINING AS A...</label>
             <select value={role} onChange={e => setRole(e.target.value)} style={{ ...inputStyle, cursor: 'pointer' }}>
               <option>Fractional Professional</option>
@@ -148,13 +134,16 @@ export default function Signup() {
             </select>
           </div>
 
-          {/* Turnstile CAPTCHA — rendered by Cloudflare script via data-* attributes */}
-          <div
-            className="cf-turnstile"
-            data-sitekey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || "0x4AAAAAADiPgJ3awUL16qTR"}
-            data-callback="onTurnstileSuccess"
-            style={{ margin: '16px 0' }}
-          />
+          {/* Turnstile CAPTCHA — using react-turnstile for reliable rendering */}
+          <div style={{ margin: '16px 0' }}>
+            <Turnstile
+              siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || '0x4AAAAAADiPgJ3awUL16qTR'}
+              onSuccess={(token) => setCaptchaToken(token)}
+              onError={() => setCaptchaToken(null)}
+              onExpire={() => setCaptchaToken(null)}
+              options={{ theme: 'dark' }}
+            />
+          </div>
 
           <button onClick={handleSignup} disabled={loading}
             style={{ width: '100%', background: '#F6981F', color: 'white', border: 'none', borderRadius: '100px', padding: '18px', fontSize: '17px', fontWeight: 700, cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.7 : 1, marginBottom: '20px', fontFamily: "'Nunito Sans', sans-serif" }}>
@@ -163,7 +152,7 @@ export default function Signup() {
 
           <p style={{ textAlign: 'center', color: '#8892A4', fontSize: '15px' }}>
             Already have an account?{' '}
-            <Link href="/signup" style={{ color: '#05809B', textDecoration: 'none', fontWeight: 700 }}>Sign in →</Link>
+            <Link href="/login" style={{ color: '#05809B', textDecoration: 'none', fontWeight: 700 }}>Sign in →</Link>
           </p>
 
           {message && (
