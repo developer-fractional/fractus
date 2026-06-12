@@ -32,7 +32,8 @@ export default function Login() {
 
   async function handleLogin() {
     if (!email || !password) return setMessage('Please enter email and password')
-    if (!captchaToken) return setMessage('Please complete the CAPTCHA verification')
+    // TODO: Re-enable CAPTCHA validation when Cloudflare domain issue is resolved
+    // if (!captchaToken) return setMessage('Please complete the CAPTCHA verification')
     setLoading(true)
     const { error } = await supabase.auth.signInWithPassword({ email, password })
     setLoading(false)

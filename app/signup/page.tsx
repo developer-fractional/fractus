@@ -35,7 +35,8 @@ export default function Signup() {
   async function handleSignup() {
     if (!name || !email || !password) return setMessage('Please fill in all fields')
     if (password.length < 6) return setMessage('Password must be at least 6 characters')
-    if (!captchaToken) return setMessage('Please complete the CAPTCHA verification')
+    // TODO: Re-enable CAPTCHA validation when Cloudflare domain issue is resolved
+    // if (!captchaToken) return setMessage('Please complete the CAPTCHA verification')
     setLoading(true)
     const { data, error } = await supabase.auth.signUp({ email, password })
     if (error) {

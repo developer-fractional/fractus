@@ -25,7 +25,8 @@ export default function ForgotPassword() {
 
   async function handleReset() {
     if (!email) return setMessage('Please enter your email address')
-    if (!captchaToken) return setMessage('Please complete the CAPTCHA verification')
+    // TODO: Re-enable CAPTCHA validation when Cloudflare domain issue is resolved
+    // if (!captchaToken) return setMessage('Please complete the CAPTCHA verification')
     setLoading(true)
     setMessage('')
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
