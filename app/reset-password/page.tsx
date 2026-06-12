@@ -3,23 +3,53 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { supabase } from '../lib/supabase'
 
+type PageState = 'loading' | 'ready' | 'expired'
+
 export default function ResetPassword() {
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [message, setMessage] = useState('')
   const [loading, setLoading] = useState(false)
-  // true once Supabase fires PASSWORD_RECOVERY (session is live)
-  const [sessionReady, setSessionReady] = useState(false)
+  const [pageState, setPageState] = useState<PageState>('loading')
 
   useEffect(() => {
-    // Supabase detects the access_token in the URL hash automatically and fires
-    // PASSWORD_RECOVERY once the session is established from the hash fragment.
-    const { data: listener } = supabase.auth.onAuthStateChange((event) => {
-      if (event === 'PASSWORD_RECOVERY') {
-        setSessionReady(true)
-      }
-    })
-    return () => listener.subscription.unsubscribe()
+    // Parse the hash fragment that Supabase appends to the redirectTo URL.
+    // Format: #access_token=xxx&refresh_token=yyy&type=recovery&...
+    const hash = window.location.hash.slice(1) // strip leading '#'
+    const params = new URLSearchParams(hash)
+    const accessToken = params.get('access_token')
+    const refreshToken = params.get('refresh_token')
+    const type = params.get('type')
+
+    if (accessToken && type === 'recovery') {
+      // Explicitly establish the session — @supabase/ssr does not auto-detect
+      // hash fragments the way the legacy supabase-js client does.
+      supabase.auth
+        .setSession({ access_token: accessToken, refresh_token: refreshToken ?? '' })
+        .then(({ error }) => {
+          if (error) {
+            console.error('setSession error:', error.message)
+            setPageState('expired')
+          } else {
+            // Clean the tokens out of the URL bar (cosmetic, no navigation)
+            window.history.replaceState(null, '', window.location.pathname)
+            setPageState('ready')
+          }
+        })
+    } else {
+      // No hash token — maybe PKCE flow already set a cookie session.
+      // Check for an existing session before giving up.
+      supabase.auth.getSession().then(({ data }) => {
+        if (data.session) {
+          setPageState('ready')
+        } else {
+          // Nothing found. Give a 3-second grace period in case the page
+          // loaded before the supabase SDK initialised, then show the error.
+          const timer = setTimeout(() => setPageState('expired'), 3000)
+          return () => clearTimeout(timer)
+        }
+      })
+    }
   }, [])
 
   async function handleUpdate() {
@@ -35,8 +65,15 @@ export default function ResetPassword() {
     else window.location.href = '/dashboard'
   }
 
-  const inputStyle = { width: '100%', background: '#1B2130', border: '1px solid #2A3145', borderRadius: '12px', padding: '16px 18px', color: 'white', fontSize: '16px', outline: 'none', boxSizing: 'border-box' as const }
-  const labelStyle = { display: 'block', color: '#8892A4', fontSize: '13px', fontWeight: 600, marginBottom: '8px', letterSpacing: '0.03em' } as const
+  const inputStyle = {
+    width: '100%', background: '#1B2130', border: '1px solid #2A3145',
+    borderRadius: '12px', padding: '16px 18px', color: 'white',
+    fontSize: '16px', outline: 'none', boxSizing: 'border-box' as const,
+  }
+  const labelStyle = {
+    display: 'block', color: '#8892A4', fontSize: '13px',
+    fontWeight: 600, marginBottom: '8px', letterSpacing: '0.03em',
+  } as const
 
   return (
     <div style={{ minHeight: '100vh', background: '#0F1117', display: 'flex', flexDirection: 'column', fontFamily: "'Nunito Sans', sans-serif" }}>
@@ -57,18 +94,28 @@ export default function ResetPassword() {
         </Link>
       </nav>
 
-      {/* Form */}
+      {/* Content */}
       <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '60px 24px' }}>
         <div style={{ width: '100%', maxWidth: '440px' }}>
           <h1 style={{ fontFamily: "'Nunito', sans-serif", fontSize: '40px', fontWeight: 800, color: 'white', marginBottom: '8px', letterSpacing: '-1px' }}>Set a new password</h1>
           <p style={{ color: '#8892A4', fontSize: '17px', marginBottom: '32px' }}>Choose a strong new password for your Fractus account.</p>
 
-          {!sessionReady ? (
-            /* Waiting for Supabase to process the hash token */
+          {pageState === 'loading' && (
             <div style={{ padding: '20px 22px', background: 'rgba(5,128,155,0.08)', border: '1px solid rgba(5,128,155,0.2)', borderRadius: '12px', color: '#05809B', fontSize: '15px', textAlign: 'center' }}>
               Verifying your reset link…
             </div>
-          ) : (
+          )}
+
+          {pageState === 'expired' && (
+            <div style={{ padding: '20px 22px', background: 'rgba(255,107,107,0.08)', border: '1px solid rgba(255,107,107,0.2)', borderRadius: '12px', color: '#FF8888', fontSize: '15px', textAlign: 'center' }}>
+              Reset link expired or already used.{' '}
+              <Link href="/forgot-password" style={{ color: '#F6981F', fontWeight: 700, textDecoration: 'underline' }}>
+                Request a new one →
+              </Link>
+            </div>
+          )}
+
+          {pageState === 'ready' && (
             <>
               <div style={{ marginBottom: '18px' }}>
                 <label style={labelStyle}>NEW PASSWORD</label>
