@@ -30,12 +30,27 @@ export default function TalentPage() {
   const [filterAvailability,setFilterAvailability]= useState('')
   const [filterLocation,    setFilterLocation]    = useState('')
   const [sort,              setSort]              = useState('newest')
+  const [stats,             setStats]             = useState({ totalTalent: 0, uniqueDisciplines: 0, avgExperience: 0 })
 
   useEffect(() => {
     supabase.from('profiles')
       .select('*')
       .not('name', 'is', null)
       .then(({ data }) => { setProfiles(data || []); setLoading(false) })
+  }, [])
+
+  useEffect(() => {
+    Promise.all([
+      supabase.from('profiles').select('*', { count: 'exact', head: true }).not('name', 'is', null),
+      supabase.from('profiles').select('discipline').not('discipline', 'is', null).not('name', 'is', null),
+      supabase.from('profiles').select('years_experience').not('years_experience', 'is', null).not('name', 'is', null),
+    ]).then(([{ count }, { data: disciplines }, { data: experience }]) => {
+      const uniqueDisciplines = new Set(disciplines?.map(d => d.discipline) ?? []).size
+      const avgExperience = experience?.length
+        ? Math.round(experience.reduce((sum, p) => sum + (p.years_experience ?? 0), 0) / experience.length)
+        : 0
+      setStats({ totalTalent: count ?? 0, uniqueDisciplines, avgExperience })
+    })
   }, [])
 
   // ── Active filter count ────────────────────────────────────────────────────
@@ -89,11 +104,15 @@ export default function TalentPage() {
           <h1 style={{ fontFamily: "'Nunito', sans-serif", fontSize: 'clamp(32px,6vw,48px)', fontWeight: 800, color: 'white', marginBottom: '12px' }}>Browse AECO Talent</h1>
           <p style={{ color: '#8892A4', fontSize: '18px', marginBottom: '28px' }}>Senior practitioners available fractionally. Vetted by FractionalAECO.</p>
 
-          {/* Stats */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: '20px', marginBottom: '28px' }}>
-            {[{ num: '320+', label: 'Senior professionals' }, { num: '42', label: 'Disciplines covered' }, { num: '18 yrs', label: 'Avg. experience' }, { num: '24h', label: 'Avg. time to match' }].map((s, i) => (
+          {/* Live stats */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: '20px', marginBottom: '28px' }}>
+            {[
+              { value: stats.totalTalent > 0 ? `${stats.totalTalent}+` : '—', label: 'Senior professionals' },
+              { value: stats.uniqueDisciplines > 0 ? String(stats.uniqueDisciplines) : '—', label: 'Disciplines covered' },
+              { value: stats.avgExperience > 0 ? `${stats.avgExperience} yrs` : '—', label: 'Avg. experience' },
+            ].map((s, i) => (
               <div key={i}>
-                <div style={{ color: '#05809B', fontSize: 'clamp(22px,4vw,28px)', fontWeight: 800, fontFamily: "'Nunito', sans-serif" }}>{s.num}</div>
+                <div style={{ color: '#05809B', fontSize: 'clamp(22px,4vw,28px)', fontWeight: 800, fontFamily: "'Nunito', sans-serif" }}>{s.value}</div>
                 <div style={{ color: '#4A5568', fontSize: '13px' }}>{s.label}</div>
               </div>
             ))}

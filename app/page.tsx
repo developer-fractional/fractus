@@ -1,108 +1,20 @@
-'use client'
-import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { supabase } from './lib/supabase'
+import HomeNav from './components/HomeNav'
+import { getLiveStats } from './lib/getStats'
 
-export default function Home() {
-  const [loggedIn, setLoggedIn] = useState<boolean | null>(null)
-  const [menuOpen, setMenuOpen] = useState(false)
+export default async function Home() {
+  const { totalTalent, uniqueDisciplines, avgExperience } = await getLiveStats()
 
-  useEffect(() => {
-    // If Supabase redirected a recovery email here (site URL + hash), forward to reset-password.
-    if (typeof window !== 'undefined') {
-      const hash = window.location.hash
-      if (hash.includes('type=recovery')) {
-        window.location.href = '/reset-password' + hash
-        return
-      }
-    }
-    supabase.auth.getSession().then(({ data }) => setLoggedIn(!!data.session))
-    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => setLoggedIn(!!session))
-    return () => listener.subscription.unsubscribe()
-  }, [])
+  const stats = [
+    { value: totalTalent > 0 ? `${totalTalent}+` : 'Growing', label: 'Senior professionals' },
+    { value: uniqueDisciplines > 0 ? String(uniqueDisciplines) : 'Many', label: 'Disciplines covered' },
+    { value: avgExperience > 0 ? `${avgExperience} yrs` : '—', label: 'Avg. experience' },
+  ]
 
   return (
     <main style={{ background: '#0F1117', minHeight: '100vh', fontFamily: "'Nunito Sans', sans-serif" }}>
 
-      {/* Top bar */}
-      <div className="text-center py-2 px-4 text-xs sm:text-sm font-bold text-white"
-        style={{ background: '#F6981F' }}>
-        Powered by{' '}
-        <a href="https://www.fractionalaeco.com" target="_blank" style={{ color: 'white', textDecoration: 'underline' }}>Fractional AECO</a>
-        {' '}· Your AECO Experts ·{' '}
-        <a href="tel:+19804940263" style={{ color: 'white', textDecoration: 'underline' }}>+1 980 494 0263</a>
-      </div>
-
-      {/* Nav */}
-      <nav className="flex items-center justify-between px-5 sm:px-14 py-4 sm:py-5 border-b sticky top-0 z-[100]"
-        style={{ background: '#0F1117', borderColor: '#2A3145' }}>
-        <Link href="/" className="flex items-baseline gap-2" style={{ textDecoration: 'none' }}>
-          <span className="text-xl sm:text-2xl font-bold" style={{ color: '#F6981F', fontFamily: "'Nunito', sans-serif" }}>Fractus</span>
-          <span className="hidden sm:inline text-xs font-semibold" style={{ color: '#4A5568', letterSpacing: '0.08em' }}>BY FRACTIONAL AECO</span>
-        </Link>
-
-        {/* Desktop centre links */}
-        <div className="hidden md:flex gap-8 items-center">
-          {[['Talent', '/talent'], ['How it works', '#how'], ['Integrations', '#integrations'], ['For companies', '#companies']].map(([label, href]) => (
-            <a key={label as string} href={href as string} className="text-sm font-semibold hover:text-white transition-colors"
-              style={{ color: '#8892A4', textDecoration: 'none' }}>{label}</a>
-          ))}
-        </div>
-
-        {/* Desktop auth */}
-        <div className="hidden md:flex gap-3 items-center">
-          {loggedIn ? (
-            <Link href="/dashboard" className="text-white font-bold text-sm px-5 py-2 rounded-lg hover:opacity-90 transition-opacity"
-              style={{ background: '#F6981F', textDecoration: 'none' }}>Dashboard</Link>
-          ) : (
-            <>
-              <Link href="/login" className="text-sm font-semibold hover:text-white transition-colors"
-                style={{ color: '#8892A4', textDecoration: 'none' }}>Sign in</Link>
-              <Link href="/signup" className="text-white font-bold text-sm px-5 py-2 rounded-lg hover:opacity-90 transition-opacity"
-                style={{ background: '#F6981F', textDecoration: 'none' }}>Join free</Link>
-            </>
-          )}
-        </div>
-
-        {/* Mobile hamburger */}
-        <button className="md:hidden flex flex-col justify-center gap-[5px] p-1 cursor-pointer"
-          onClick={() => setMenuOpen(o => !o)}
-          style={{ background: 'none', border: 'none' }}
-          aria-label="Toggle menu">
-          <span className={`block w-6 h-0.5 bg-gray-400 transition-all duration-200 ${menuOpen ? 'rotate-45 translate-y-[7px]' : ''}`} />
-          <span className={`block w-6 h-0.5 bg-gray-400 transition-all duration-200 ${menuOpen ? 'opacity-0' : ''}`} />
-          <span className={`block w-6 h-0.5 bg-gray-400 transition-all duration-200 ${menuOpen ? '-rotate-45 -translate-y-[7px]' : ''}`} />
-        </button>
-
-        {/* Mobile menu */}
-        {menuOpen && (
-          <div className="absolute top-full left-0 right-0 z-50 border-b flex flex-col py-3 md:hidden"
-            style={{ background: '#0F1117', borderColor: '#2A3145' }}>
-            {[['Talent', '/talent'], ['How it works', '#how'], ['Integrations', '#integrations'], ['For companies', '#companies']].map(([label, href]) => (
-              <a key={label as string} href={href as string}
-                className="px-5 py-3 text-sm font-semibold hover:text-white transition-colors"
-                style={{ color: '#8892A4', textDecoration: 'none' }}
-                onClick={() => setMenuOpen(false)}>{label}</a>
-            ))}
-            <div className="px-5 pt-3 pb-1 flex flex-col gap-3">
-              {loggedIn ? (
-                <Link href="/dashboard" className="text-center py-3 rounded-xl font-bold text-white"
-                  style={{ background: '#F6981F', textDecoration: 'none' }}
-                  onClick={() => setMenuOpen(false)}>Dashboard</Link>
-              ) : (
-                <>
-                  <Link href="/login" className="text-center py-3 rounded-xl text-sm font-semibold border"
-                    style={{ color: '#8892A4', textDecoration: 'none', borderColor: '#2A3145' }}
-                    onClick={() => setMenuOpen(false)}>Sign in</Link>
-                  <Link href="/signup" className="text-center py-3 rounded-xl font-bold text-white"
-                    style={{ background: '#F6981F', textDecoration: 'none' }}
-                    onClick={() => setMenuOpen(false)}>Join free</Link>
-                </>
-              )}
-            </div>
-          </div>
-        )}
-      </nav>
+      <HomeNav />
 
       {/* Hero */}
       <section className="px-5 sm:px-14 pt-16 sm:pt-24 pb-14 sm:pb-20 max-w-[1200px] mx-auto">
@@ -118,7 +30,7 @@ export default function Home() {
         <p className="mb-10 sm:mb-12 max-w-lg" style={{ fontSize: 'clamp(16px, 2.5vw, 20px)', color: '#8892A4', lineHeight: 1.7, fontWeight: 400 }}>
           A curated network of architects, engineers, and construction leaders. Build a LinkedIn-style profile, import your experience, and get booked by the hour.
         </p>
-        {/* CTA buttons — stacked on mobile */}
+        {/* CTA buttons */}
         <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
           <a href="/signup" className="text-white font-bold text-base sm:text-lg px-7 py-4 rounded-xl w-full sm:w-auto text-center hover:opacity-90 transition-opacity"
             style={{ background: '#F6981F', textDecoration: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
@@ -130,17 +42,12 @@ export default function Home() {
           </a>
         </div>
 
-        {/* Stats — 2×2 on mobile, 4 across on desktop */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-8 sm:gap-0 mt-16 sm:mt-20 pt-10 sm:pt-12 border-t" style={{ borderColor: '#2A3145' }}>
-          {[
-            { num: '320+', label: 'Senior professionals' },
-            { num: '42', label: 'Disciplines covered' },
-            { num: '18 yrs', label: 'Avg. experience' },
-            { num: '24h', label: 'Avg. time to match' },
-          ].map((s, i) => (
+        {/* Live stats — 3 across */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-8 sm:gap-0 mt-16 sm:mt-20 pt-10 sm:pt-12 border-t" style={{ borderColor: '#2A3145' }}>
+          {stats.map((s, i) => (
             <div key={i} className="sm:pr-14 sm:mr-14 sm:border-r last:sm:border-r-0 last:sm:mr-0 last:sm:pr-0"
               style={{ borderColor: '#2A3145' }}>
-              <div className="font-bold text-white" style={{ fontFamily: "'Nunito', sans-serif", fontSize: 'clamp(28px, 5vw, 40px)', fontWeight: 800 }}>{s.num}</div>
+              <div className="font-bold text-white" style={{ fontFamily: "'Nunito', sans-serif", fontSize: 'clamp(28px, 5vw, 40px)', fontWeight: 800 }}>{s.value}</div>
               <div className="text-xs sm:text-sm font-semibold mt-1" style={{ color: '#4A5568' }}>{s.label}</div>
             </div>
           ))}
@@ -150,7 +57,6 @@ export default function Home() {
       {/* How it works */}
       <section id="how" className="px-5 sm:px-14 py-16 sm:py-24 border-t" style={{ background: '#161C28', borderColor: '#2A3145' }}>
         <div className="max-w-[1200px] mx-auto">
-          {/* Two-column header — stack on mobile */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-20 items-start mb-12 sm:mb-16">
             <div>
               <p className="text-xs sm:text-sm font-bold tracking-widest mb-4" style={{ color: '#05809B' }}>HOW IT WORKS</p>
@@ -164,7 +70,6 @@ export default function Home() {
               </p>
             </div>
           </div>
-          {/* Three steps — single column on mobile */}
           <div className="grid grid-cols-1 md:grid-cols-3 border-t" style={{ borderColor: '#2A3145' }}>
             {[
               { num: '01', icon: '🔗', title: 'Build your profile', desc: 'LinkedIn-style profile with experience, certifications, and portfolio. Import directly from LinkedIn or upload your CV.' },
@@ -200,7 +105,6 @@ export default function Home() {
               See all profiles →
             </a>
           </div>
-          {/* Cards — 1 col mobile, 2 col sm, 3 col lg */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {[
               { init: 'M', name: 'Marcus L.', role: 'Principal Architect', tags: ['Healthcare', 'Mass timber'], exp: '22 yrs', rate: '$240/h', color: '#F6981F' },
@@ -260,7 +164,6 @@ export default function Home() {
               ))}
             </div>
           </div>
-          {/* Import preview */}
           <div className="rounded-2xl p-6 sm:p-8" style={{ background: '#0F1117', border: '1px solid #2A3145' }}>
             <div className="flex items-center gap-2 mb-6">
               <div className="w-2 h-2 rounded-full" style={{ background: '#05809B' }}></div>
@@ -328,7 +231,6 @@ export default function Home() {
           <p className="mb-10 text-sm sm:text-lg" style={{ color: 'rgba(255,255,255,0.8)', lineHeight: 1.7 }}>
             Tell us what you need. We&apos;ll match you with vetted senior practitioners, available fractionally — no recruiters, no overhead.
           </p>
-          {/* CTA buttons — stacked on mobile */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <a href="https://www.fractionalaeco.com/contact" target="_blank"
               className="w-full sm:w-auto font-bold text-base sm:text-lg px-9 py-4 rounded-xl hover:opacity-90 transition-opacity"
