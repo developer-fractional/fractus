@@ -52,7 +52,7 @@ export default function ListingsPage() {
               className="flex-1 rounded-xl px-4 sm:px-5 py-3 sm:py-4 text-white outline-none placeholder-gray-600 text-sm sm:text-base"
               style={{ background: '#0F1117', border: '1.5px solid #2A3145' }}
             />
-            <Link href="/dashboard"
+            <Link href="/listings/new"
               className="px-5 py-3 sm:py-4 rounded-xl text-white font-semibold hover:opacity-90 transition-opacity text-center text-sm sm:text-base whitespace-nowrap"
               style={{ background: '#F6981F', textDecoration: 'none' }}>
               + Post a listing
@@ -97,9 +97,9 @@ export default function ListingsPage() {
             {/* Single column on mobile */}
             <div className="flex flex-col gap-4">
               {filtered.map((l, i) => (
-                <div key={l.id || i}
+                <Link key={l.id || i} href={'/listings/' + l.id}
                   className="rounded-2xl border p-5 sm:p-7 hover:opacity-90 transition-opacity"
-                  style={{ background: '#1B2130', borderColor: '#2A3145' }}>
+                  style={{ textDecoration: 'none', display: 'block', background: '#1B2130', borderColor: '#2A3145' }}>
                   <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-4">
                     <div>
                       <h3 className="font-bold text-white text-base sm:text-xl mb-1" style={{ fontFamily: "'Nunito', sans-serif" }}>
@@ -124,7 +124,7 @@ export default function ListingsPage() {
                       <span>🗓 {new Date(l.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
                     )}
                   </div>
-                </div>
+                </Link>
               ))}
             </div>
           </>
