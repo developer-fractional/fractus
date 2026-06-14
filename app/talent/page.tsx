@@ -5,104 +5,117 @@ import { supabase } from '../lib/supabase'
 import type { Profile } from '../lib/types'
 import Navbar from '../components/Navbar'
 
-export default function TalentPage() {
-  const [profiles, setProfiles] = useState<Profile[]>([])
-  const [loading, setLoading] = useState(true)
-  const [search, setSearch] = useState('')
-  const [filterDiscipline, setFilterDiscipline] = useState('')
+const DISCIPLINES   = ['All', 'Architecture', 'Structural Engineering', 'MEP Engineering', 'Civil Engineering', 'Construction Management', 'BIM/VDC', 'Sustainability', 'Owner/Operator']
+const AVAILABILITIES = ['All', 'Available Now', 'Open to Work']
+const SORTS = [
+  { label: 'Newest first',      value: 'newest' },
+  { label: 'Most experienced',  value: 'exp_desc' },
+  { label: 'Lowest rate',       value: 'rate_asc' },
+  { label: 'Highest rate',      value: 'rate_desc' },
+]
 
-  const DISCIPLINES = ['All', 'Architecture', 'Structural Engineering', 'MEP Engineering', 'Civil Engineering', 'Construction Management', 'BIM/VDC', 'Sustainability', 'Owner/Operator']
+// ── Style helpers ─────────────────────────────────────────────────────────────
+
+function pill(active: boolean): React.CSSProperties {
+  return active
+    ? { background: 'rgba(5,128,155,0.15)', border: '1px solid #05809B',  color: '#05809B',  borderRadius: '100px', padding: '7px 16px', fontSize: '13px', fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0 }
+    : { background: '#1B2130',               border: '1px solid #2A3145',  color: '#8892A4',  borderRadius: '100px', padding: '7px 16px', fontSize: '13px', fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0 }
+}
+
+export default function TalentPage() {
+  const [profiles,          setProfiles]          = useState<Profile[]>([])
+  const [loading,           setLoading]           = useState(true)
+  const [search,            setSearch]            = useState('')
+  const [filterDiscipline,  setFilterDiscipline]  = useState('')
+  const [filterAvailability,setFilterAvailability]= useState('')
+  const [filterLocation,    setFilterLocation]    = useState('')
+  const [sort,              setSort]              = useState('newest')
 
   useEffect(() => {
     supabase.from('profiles')
       .select('*')
       .not('name', 'is', null)
-      .then(({ data }) => {
-        setProfiles(data || [])
-        setLoading(false)
-      })
+      .then(({ data }) => { setProfiles(data || []); setLoading(false) })
   }, [])
 
-  const filtered = profiles.filter(p => {
-    const matchSearch = !search || p.name?.toLowerCase().includes(search.toLowerCase()) || p.role?.toLowerCase().includes(search.toLowerCase()) || p.skills?.toLowerCase().includes(search.toLowerCase())
-    const matchDiscipline = !filterDiscipline || filterDiscipline === 'All' || p.discipline === filterDiscipline
-    return matchSearch && matchDiscipline
-  })
+  // ── Active filter count ────────────────────────────────────────────────────
+  const activeFilterCount = [filterDiscipline, filterAvailability, filterLocation, sort !== 'newest' ? sort : ''].filter(Boolean).length
 
-  // Show demo profiles only when no real profiles exist at all.
-  // When real profiles exist but filters return 0, show the empty-state message instead.
+  // ── Filter + sort ──────────────────────────────────────────────────────────
+  const filtered = profiles
+    .filter(p => {
+      const q = search.toLowerCase()
+      const matchSearch       = !search || p.name?.toLowerCase().includes(q) || p.role?.toLowerCase().includes(q) || p.skills?.toLowerCase().includes(q)
+      const matchDiscipline   = !filterDiscipline   || p.discipline   === filterDiscipline
+      const matchAvailability = !filterAvailability || p.availability === filterAvailability
+      const matchLocation     = !filterLocation     || p.location?.toLowerCase().includes(filterLocation.toLowerCase())
+      return matchSearch && matchDiscipline && matchAvailability && matchLocation
+    })
+    .sort((a, b) => {
+      if (sort === 'exp_desc')  return (Number(b.years_experience) || 0) - (Number(a.years_experience) || 0)
+      if (sort === 'rate_asc')  return (Number(a.hourly_rate)      || 0) - (Number(b.hourly_rate)      || 0)
+      if (sort === 'rate_desc') return (Number(b.hourly_rate)      || 0) - (Number(a.hourly_rate)      || 0)
+      return 0 // newest first = server order
+    })
+
   const hasRealProfiles = profiles.length > 0
-  const showEmptyState = hasRealProfiles && filtered.length === 0
+  const showEmptyState  = hasRealProfiles && filtered.length === 0
 
   const demoProfiles: Profile[] = [
-    { id: 'd1', name: 'Marcus L.', role: 'Principal Architect', discipline: 'Architecture', years_experience: '22', hourly_rate: '240', skills: 'Healthcare, Mass timber', certifications: ['AIA', 'LEED AP'], location: 'New York, NY', is_verified: true, email: null, is_admin: null, bio: null, availability: null, linkedin_url: null, portfolio_url: null },
-    { id: 'd2', name: 'Priya K.', role: 'Structural Engineer', discipline: 'Structural Engineering', years_experience: '16', hourly_rate: '185', skills: 'High-rise, Seismic', certifications: ['PE'], location: 'San Francisco, CA', is_verified: true, email: null, is_admin: null, bio: null, availability: null, linkedin_url: null, portfolio_url: null },
-    { id: 'd3', name: 'David O.', role: 'Construction Director', discipline: 'Construction Management', years_experience: '27', hourly_rate: '310', skills: 'Megaprojects, P3', certifications: ['CCM', 'PMP'], location: 'Chicago, IL', is_verified: true, email: null, is_admin: null, bio: null, availability: null, linkedin_url: null, portfolio_url: null },
-    { id: 'd4', name: 'Sofia R.', role: 'MEP Lead', discipline: 'MEP Engineering', years_experience: '14', hourly_rate: '170', skills: 'Data centers, Net-zero', certifications: ['PE', 'LEED AP'], location: 'Austin, TX', is_verified: true, email: null, is_admin: null, bio: null, availability: null, linkedin_url: null, portfolio_url: null },
-    { id: 'd5', name: 'Ethan W.', role: 'BIM Manager', discipline: 'BIM/VDC', years_experience: '11', hourly_rate: '135', skills: 'Revit, ISO 19650', certifications: ['ISO 19650'], location: 'Seattle, WA', is_verified: true, email: null, is_admin: null, bio: null, availability: null, linkedin_url: null, portfolio_url: null },
-    { id: 'd6', name: 'Amara N.', role: 'Sustainability Director', discipline: 'Sustainability', years_experience: '19', hourly_rate: '220', skills: 'LEED, Embodied carbon', certifications: ['LEED AP', 'WELL AP'], location: 'Boston, MA', is_verified: true, email: null, is_admin: null, bio: null, availability: null, linkedin_url: null, portfolio_url: null },
+    { id: 'd1', name: 'Marcus L.',  role: 'Principal Architect',     discipline: 'Architecture',           years_experience: '22', hourly_rate: '240', skills: 'Healthcare, Mass timber',   certifications: ['AIA', 'LEED AP'], location: 'New York, NY',       is_verified: true,  email: null, is_admin: null, bio: null, availability: null, linkedin_url: null, portfolio_url: null },
+    { id: 'd2', name: 'Priya K.',   role: 'Structural Engineer',     discipline: 'Structural Engineering', years_experience: '16', hourly_rate: '185', skills: 'High-rise, Seismic',        certifications: ['PE'],             location: 'San Francisco, CA',  is_verified: true,  email: null, is_admin: null, bio: null, availability: null, linkedin_url: null, portfolio_url: null },
+    { id: 'd3', name: 'David O.',   role: 'Construction Director',   discipline: 'Construction Management',years_experience: '27', hourly_rate: '310', skills: 'Megaprojects, P3',          certifications: ['CCM', 'PMP'],     location: 'Chicago, IL',        is_verified: true,  email: null, is_admin: null, bio: null, availability: null, linkedin_url: null, portfolio_url: null },
+    { id: 'd4', name: 'Sofia R.',   role: 'MEP Lead',                discipline: 'MEP Engineering',        years_experience: '14', hourly_rate: '170', skills: 'Data centers, Net-zero',    certifications: ['PE', 'LEED AP'],  location: 'Austin, TX',         is_verified: true,  email: null, is_admin: null, bio: null, availability: null, linkedin_url: null, portfolio_url: null },
+    { id: 'd5', name: 'Ethan W.',   role: 'BIM Manager',             discipline: 'BIM/VDC',                years_experience: '11', hourly_rate: '135', skills: 'Revit, ISO 19650',         certifications: ['ISO 19650'],      location: 'Seattle, WA',        is_verified: true,  email: null, is_admin: null, bio: null, availability: null, linkedin_url: null, portfolio_url: null },
+    { id: 'd6', name: 'Amara N.',   role: 'Sustainability Director', discipline: 'Sustainability',         years_experience: '19', hourly_rate: '220', skills: 'LEED, Embodied carbon',    certifications: ['LEED AP', 'WELL AP'], location: 'Boston, MA',    is_verified: true,  email: null, is_admin: null, bio: null, availability: null, linkedin_url: null, portfolio_url: null },
   ]
 
   const displayProfiles = hasRealProfiles ? filtered : demoProfiles
 
+  function clearAll() { setSearch(''); setFilterDiscipline(''); setFilterAvailability(''); setFilterLocation(''); setSort('newest') }
+
+  const filterBar: React.CSSProperties = { borderBottom: '1px solid #2A3145', padding: '14px 0' }
+  const rowWrap:   React.CSSProperties = { maxWidth: '1100px', margin: '0 auto', padding: '0 20px' }
+
   return (
-    <div className="min-h-screen" style={{ background: 'var(--color-bg)', fontFamily: "'Nunito Sans', sans-serif" }}>
+    <div style={{ minHeight: '100vh', background: '#0F1117', fontFamily: "'Nunito Sans', sans-serif" }}>
 
       <Navbar activeLink="talent" />
 
       {/* Hero */}
-      <div className="px-5 sm:px-10 py-10 sm:py-16 border-b" style={{ background: 'var(--color-bg-card)', borderColor: 'var(--color-border)' }}>
-        <div className="max-w-5xl mx-auto">
-          <p className="font-semibold uppercase tracking-widest mb-3 text-xs sm:text-sm" style={{ color: 'var(--color-accent)' }}>The Network</p>
-          <h1 className="font-bold text-white mb-3 sm:mb-4" style={{ fontSize: 'clamp(32px, 6vw, 48px)', fontFamily: "'Nunito', sans-serif" }}>Browse AECO Talent</h1>
-          <p className="text-gray-400 mb-6 sm:mb-8 text-base sm:text-xl">Senior practitioners available fractionally. Vetted by FractionalAECO.</p>
+      <div style={{ background: '#1B2130', borderBottom: '1px solid #2A3145', padding: 'clamp(40px,6vw,64px) 20px' }}>
+        <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
+          <p style={{ color: '#05809B', fontWeight: 700, fontSize: '13px', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '12px' }}>The Network</p>
+          <h1 style={{ fontFamily: "'Nunito', sans-serif", fontSize: 'clamp(32px,6vw,48px)', fontWeight: 800, color: 'white', marginBottom: '12px' }}>Browse AECO Talent</h1>
+          <p style={{ color: '#8892A4', fontSize: '18px', marginBottom: '28px' }}>Senior practitioners available fractionally. Vetted by FractionalAECO.</p>
 
-          {/* Stats — 2 cols on mobile, 4 on desktop */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-5 mb-6 sm:mb-8">
-            {[
-              { num: '320+', label: 'Senior professionals' },
-              { num: '42', label: 'Disciplines covered' },
-              { num: '18 yrs', label: 'Avg. experience' },
-              { num: '24h', label: 'Avg. time to match' },
-            ].map((s, i) => (
+          {/* Stats */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: '20px', marginBottom: '28px' }}>
+            {[{ num: '320+', label: 'Senior professionals' }, { num: '42', label: 'Disciplines covered' }, { num: '18 yrs', label: 'Avg. experience' }, { num: '24h', label: 'Avg. time to match' }].map((s, i) => (
               <div key={i}>
-                <div className="font-bold" style={{ color: 'var(--color-accent-light)', fontSize: 'clamp(22px, 4vw, 28px)', fontFamily: "'Nunito', sans-serif" }}>{s.num}</div>
-                <div className="text-gray-500 text-xs sm:text-sm">{s.label}</div>
+                <div style={{ color: '#05809B', fontSize: 'clamp(22px,4vw,28px)', fontWeight: 800, fontFamily: "'Nunito', sans-serif" }}>{s.num}</div>
+                <div style={{ color: '#4A5568', fontSize: '13px' }}>{s.label}</div>
               </div>
             ))}
           </div>
 
-          {/* Search */}
-          <div className="flex flex-col sm:flex-row gap-3">
-            <input
-              type="text"
-              placeholder="Search by name, role, or skill..."
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-              className="flex-1 rounded-xl px-4 sm:px-5 py-3 sm:py-4 text-white outline-none placeholder-gray-600 text-sm sm:text-base"
-              style={{ background: 'var(--color-bg)', border: '1.5px solid var(--color-border)' }}
-            />
-            <Link href="/profile"
-              className="px-5 py-3 sm:py-4 rounded-xl text-white font-semibold hover:opacity-90 transition-opacity text-center text-sm sm:text-base whitespace-nowrap"
-              style={{ background: 'var(--color-primary)' }}>
+          {/* Search + CTA */}
+          <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+            <input type="text" placeholder="Search by name, role, or skill..." value={search} onChange={e => setSearch(e.target.value)}
+              style={{ flex: 1, minWidth: '200px', background: '#0F1117', border: '1.5px solid #2A3145', borderRadius: '12px', padding: '14px 18px', color: 'white', fontSize: '15px', outline: 'none' }} />
+            <Link href="/profile" style={{ background: '#F6981F', color: 'white', textDecoration: 'none', borderRadius: '12px', padding: '14px 22px', fontSize: '15px', fontWeight: 700, whiteSpace: 'nowrap' }}>
               + Add your profile
             </Link>
           </div>
         </div>
       </div>
 
-      {/* Filters — horizontally scrollable on mobile */}
-      <div className="px-5 sm:px-10 py-4 sm:py-5 border-b" style={{ borderColor: 'var(--color-border)' }}>
-        <div className="max-w-5xl mx-auto">
-          <div className="flex gap-2 sm:gap-3 overflow-x-auto pb-1" style={{ scrollbarWidth: 'none' }}>
+      {/* ── Filter bar: Discipline pills ────────────────────────────────────── */}
+      <div style={filterBar}>
+        <div style={rowWrap}>
+          <div style={{ display: 'flex', gap: '8px', overflowX: 'auto', paddingBottom: '2px', scrollbarWidth: 'none' }}>
             {DISCIPLINES.map(d => (
-              <button key={d} onClick={() => setFilterDiscipline(d === 'All' ? '' : d)}
-                className="px-3 sm:px-4 py-2 rounded-full text-xs sm:text-sm font-medium transition-all cursor-pointer whitespace-nowrap flex-shrink-0"
-                style={{
-                  background: (filterDiscipline === d || (d === 'All' && !filterDiscipline)) ? 'var(--color-primary)' : 'var(--color-bg-card)',
-                  color: 'white',
-                  border: '1px solid var(--color-border)',
-                }}>
+              <button key={d} onClick={() => setFilterDiscipline(d === 'All' ? '' : d)} style={pill((d === 'All' && !filterDiscipline) || filterDiscipline === d)}>
                 {d}
               </button>
             ))}
@@ -110,81 +123,111 @@ export default function TalentPage() {
         </div>
       </div>
 
-      {/* Talent grid */}
-      <div className="max-w-5xl mx-auto px-5 sm:px-10 py-8 sm:py-12">
+      {/* ── Filter bar: Availability + Sort (same row) ───────────────────────── */}
+      <div style={filterBar}>
+        <div style={{ ...rowWrap, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px', flexWrap: 'wrap' }}>
+          {/* Availability pills */}
+          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+            <span style={{ color: '#4A5568', fontSize: '12px', fontWeight: 700, letterSpacing: '0.06em', alignSelf: 'center', marginRight: '4px', textTransform: 'uppercase' }}>Availability</span>
+            {AVAILABILITIES.map(a => (
+              <button key={a} onClick={() => setFilterAvailability(a === 'All' ? '' : a)} style={pill((a === 'All' && !filterAvailability) || filterAvailability === a)}>
+                {a}
+              </button>
+            ))}
+          </div>
+          {/* Sort dropdown */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span style={{ color: '#4A5568', fontSize: '12px', fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>Sort</span>
+            <select value={sort} onChange={e => setSort(e.target.value)}
+              style={{ background: '#1B2130', border: '1px solid #2A3145', borderRadius: '10px', padding: '8px 14px', color: 'white', fontSize: '13px', fontWeight: 600, outline: 'none', cursor: 'pointer' }}>
+              {SORTS.map(s => <option key={s.value} value={s.value}>{s.label}</option>)}
+            </select>
+          </div>
+        </div>
+      </div>
+
+      {/* ── Filter bar: Location ─────────────────────────────────────────────── */}
+      <div style={{ ...filterBar, display: 'flex', alignItems: 'center' }}>
+        <div style={{ ...rowWrap, display: 'flex', alignItems: 'center', gap: '10px', width: '100%' }}>
+          <span style={{ color: '#4A5568', fontSize: '12px', fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>Location</span>
+          <input type="text" placeholder="Filter by location..." value={filterLocation} onChange={e => setFilterLocation(e.target.value)}
+            style={{ flex: 1, maxWidth: '320px', background: '#1B2130', border: '1px solid #2A3145', borderRadius: '10px', padding: '8px 14px', color: 'white', fontSize: '13px', outline: 'none' }} />
+          {/* Active filter count */}
+          {activeFilterCount > 0 && (
+            <button onClick={clearAll} style={{ marginLeft: 'auto', background: 'rgba(246,152,32,0.12)', border: '1px solid rgba(246,152,32,0.3)', borderRadius: '100px', padding: '6px 14px', color: '#F6981F', fontSize: '12px', fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap' }}>
+              ✕ {activeFilterCount} active filter{activeFilterCount > 1 ? 's' : ''}
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* ── Talent grid ──────────────────────────────────────────────────────── */}
+      <div style={{ maxWidth: '1100px', margin: '0 auto', padding: 'clamp(32px,4vw,48px) 20px' }}>
         {loading ? (
-          <div className="text-center text-gray-500 py-20 text-lg">Loading talent...</div>
+          <div style={{ textAlign: 'center', padding: '80px', color: '#4A5568', fontSize: '18px' }}>Loading talent...</div>
         ) : showEmptyState ? (
-          /* TASK 4 — Empty state when search/filter returns no results */
-          <div className="text-center py-20">
-            <div className="text-5xl mb-4">🔍</div>
-            <h3 className="font-bold text-white mb-2 text-xl" style={{ fontFamily: "'Nunito', sans-serif" }}>No professionals found</h3>
-            <p className="text-gray-400 mb-6">No professionals found matching your search. Try adjusting your filters.</p>
-            <button onClick={() => { setSearch(''); setFilterDiscipline('') }}
-              className="px-6 py-3 rounded-full font-semibold text-white cursor-pointer hover:opacity-90 transition-opacity text-sm"
-              style={{ background: 'var(--color-primary)', border: 'none' }}>
-              Clear filters
+          <div style={{ textAlign: 'center', padding: '80px 20px' }}>
+            <div style={{ fontSize: '48px', marginBottom: '16px' }}>🔍</div>
+            <h3 style={{ fontFamily: "'Nunito', sans-serif", fontSize: '22px', fontWeight: 800, color: 'white', marginBottom: '10px' }}>No professionals found</h3>
+            <p style={{ color: '#8892A4', fontSize: '15px', marginBottom: '28px' }}>No professionals match your current filters. Try adjusting your search.</p>
+            <button onClick={clearAll}
+              style={{ background: '#F6981F', color: 'white', border: 'none', borderRadius: '100px', padding: '14px 28px', fontSize: '15px', fontWeight: 700, cursor: 'pointer' }}>
+              Clear all filters
             </button>
           </div>
         ) : (
           <>
-            <p className="text-gray-500 mb-6 sm:mb-8 text-sm">
-              {hasRealProfiles ? `${filtered.length} professionals found` : 'Sample profiles — sign up to see real talent'}
+            <p style={{ color: '#4A5568', fontSize: '14px', marginBottom: '24px' }}>
+              {hasRealProfiles ? `${filtered.length} professional${filtered.length !== 1 ? 's' : ''} found` : 'Sample profiles — sign up to see real talent'}
             </p>
-            {/* Cards — single col mobile, 2 col tablet, 3 col desktop */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '20px' }}>
               {displayProfiles.map((p, i) => {
                 const isDemo = p.id?.startsWith('d')
-                const cardClassName = "rounded-2xl border p-5 sm:p-6 block transition-all hover:scale-[1.02] hover:shadow-xl " + (isDemo ? "cursor-default" : "cursor-pointer")
-                const cardStyle = { background: 'var(--color-bg-card)', borderColor: 'var(--color-border)' }
-
+                const cardStyle: React.CSSProperties = {
+                  background: '#1B2130', border: '1px solid #2A3145', borderRadius: '16px',
+                  padding: '24px', display: 'block', textDecoration: 'none',
+                  cursor: isDemo ? 'default' : 'pointer', transition: 'opacity 0.15s'
+                }
                 const cardContent = (
                   <>
                     {/* Avatar + badge */}
-                    <div className="flex items-start justify-between mb-4">
-                      <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl flex items-center justify-center text-white font-bold text-lg sm:text-xl flex-shrink-0"
-                        style={{ background: 'var(--color-primary)' }}>
+                    <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '16px' }}>
+                      <div style={{ width: '52px', height: '52px', borderRadius: '12px', background: '#F6981F', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: 800, fontSize: '20px', fontFamily: "'Nunito', sans-serif" }}>
                         {p.name?.charAt(0)}
                       </div>
                       {p.is_verified ? (
-                        <span className="text-xs px-2 py-1 rounded-full font-medium" style={{ background: 'rgba(22,163,74,0.2)', color: '#4ade80', border: '1px solid rgba(22,163,74,0.3)' }}>
-                          ✓ Verified
-                        </span>
+                        <span style={{ fontSize: '12px', padding: '4px 10px', borderRadius: '100px', background: 'rgba(34,197,94,0.15)', color: '#4ade80', border: '1px solid rgba(34,197,94,0.3)', fontWeight: 700 }}>✓ Verified</span>
                       ) : isDemo ? (
-                        <span className="text-xs px-2 py-1 rounded-full font-medium" style={{ background: 'rgba(246,152,32,0.15)', color: 'var(--color-accent)', border: '1px solid rgba(246,152,32,0.3)' }}>
-                          Demo
-                        </span>
+                        <span style={{ fontSize: '12px', padding: '4px 10px', borderRadius: '100px', background: 'rgba(246,152,32,0.15)', color: '#F6981F', border: '1px solid rgba(246,152,32,0.3)', fontWeight: 700 }}>Demo</span>
                       ) : null}
                     </div>
 
-                    <h3 className="font-bold text-white mb-1 text-base sm:text-lg">{p.name}</h3>
-                    <p className="text-gray-400 mb-3 text-sm">{p.role}</p>
+                    <h3 style={{ fontFamily: "'Nunito', sans-serif", fontSize: '17px', fontWeight: 800, color: 'white', marginBottom: '4px' }}>{p.name}</h3>
+                    <p style={{ color: '#8892A4', fontSize: '14px', marginBottom: '14px' }}>{p.role}</p>
 
                     {p.skills && (
-                      <div className="flex flex-wrap gap-2 mb-3 sm:mb-4">
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginBottom: '10px' }}>
                         {p.skills.split(',').slice(0, 2).map((s: string, j: number) => (
-                          <span key={j} className="text-xs px-3 py-1 rounded-full"
-                            style={{ background: 'var(--color-bg)', color: 'var(--color-accent)', border: '1px solid var(--color-border)' }}>
-                            {s.trim()}
-                          </span>
+                          <span key={j} style={{ fontSize: '12px', padding: '4px 10px', borderRadius: '100px', background: '#0F1117', color: '#05809B', border: '1px solid #2A3145' }}>{s.trim()}</span>
                         ))}
                       </div>
                     )}
 
                     {(p.certifications?.length ?? 0) > 0 && (
-                      <div className="flex flex-wrap gap-2 mb-3 sm:mb-4">
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginBottom: '10px' }}>
                         {(p.certifications ?? []).slice(0, 3).map((c: string, j: number) => (
-                          <span key={j} className="text-xs px-2 py-1 rounded-full font-medium"
-                            style={{ background: 'var(--color-bg)', color: '#94a3b8', border: '1px solid var(--color-border)' }}>
-                            {c}
-                          </span>
+                          <span key={j} style={{ fontSize: '12px', padding: '4px 10px', borderRadius: '100px', background: '#0F1117', color: '#94a3b8', border: '1px solid #2A3145' }}>{c}</span>
                         ))}
                       </div>
                     )}
 
-                    <div className="flex items-center justify-between pt-3 sm:pt-4" style={{ borderTop: '1px solid var(--color-border)' }}>
-                      <span className="text-gray-500 text-xs sm:text-sm">{p.years_experience} yrs exp</span>
-                      <span className="font-bold text-base sm:text-lg" style={{ color: 'var(--color-accent-light)', fontFamily: "'Nunito', sans-serif" }}>
+                    {p.location && (
+                      <p style={{ color: '#4A5568', fontSize: '13px', marginBottom: '14px' }}>📍 {p.location}</p>
+                    )}
+
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: '14px', borderTop: '1px solid #2A3145' }}>
+                      <span style={{ color: '#4A5568', fontSize: '13px' }}>{p.years_experience} yrs exp</span>
+                      <span style={{ fontFamily: "'Nunito', sans-serif", fontSize: '17px', fontWeight: 800, color: '#05809B' }}>
                         {p.hourly_rate ? `$${p.hourly_rate}/h` : 'Rate TBD'}
                       </span>
                     </div>
@@ -192,24 +235,10 @@ export default function TalentPage() {
                 )
 
                 if (isDemo) {
-                  return (
-                    <div key={p.id || i}
-                      onClick={() => {}}
-                      title="This is a demo profile — sign up to see real AECO professionals"
-                      className={cardClassName}
-                      style={cardStyle}>
-                      {cardContent}
-                    </div>
-                  )
+                  return <div key={p.id || i} style={cardStyle} title="Demo profile — sign up to see real talent">{cardContent}</div>
                 }
-
-                return (
-                  <Link key={p.id || i} href={`/talent/${p.id}`}
-                    className={cardClassName}
-                    style={cardStyle}>
-                    {cardContent}
-                  </Link>
-                )
+                return <Link key={p.id || i} href={`/talent/${p.id}`} style={cardStyle}
+                  onMouseEnter={e => (e.currentTarget.style.opacity = '0.8')} onMouseLeave={e => (e.currentTarget.style.opacity = '1')}>{cardContent}</Link>
               })}
             </div>
           </>
@@ -217,18 +246,16 @@ export default function TalentPage() {
       </div>
 
       {/* CTA */}
-      <div className="text-center px-5 sm:px-8 py-12 sm:py-16 border-t" style={{ borderColor: 'var(--color-border)' }}>
-        <h3 className="font-bold text-white mb-4" style={{ fontSize: 'clamp(22px, 4vw, 32px)', fontFamily: "'Nunito', sans-serif" }}>Need senior AECO firepower?</h3>
-        <p className="text-gray-400 mb-8 text-base sm:text-lg">Tell us what you need. We&apos;ll match you with vetted senior practitioners.</p>
-        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+      <div style={{ textAlign: 'center', padding: 'clamp(48px,6vw,64px) 20px', borderTop: '1px solid #2A3145' }}>
+        <h3 style={{ fontFamily: "'Nunito', sans-serif", fontSize: 'clamp(22px,4vw,32px)', fontWeight: 800, color: 'white', marginBottom: '12px' }}>Need senior AECO firepower?</h3>
+        <p style={{ color: '#8892A4', fontSize: '17px', marginBottom: '32px' }}>Tell us what you need. We&apos;ll match you with vetted senior practitioners.</p>
+        <div style={{ display: 'flex', gap: '14px', justifyContent: 'center', flexWrap: 'wrap' }}>
           <a href="https://www.fractionalaeco.com/contact" target="_blank" rel="noopener noreferrer"
-            className="px-8 py-4 rounded-full font-semibold text-white hover:opacity-90 transition-all text-base sm:text-lg"
-            style={{ background: 'var(--color-primary)' }}>
+            style={{ background: '#05809B', color: 'white', textDecoration: 'none', borderRadius: '100px', padding: '16px 32px', fontSize: '16px', fontWeight: 700 }}>
             Talk to Fractional AECO
           </a>
           <Link href="/signup"
-            className="px-8 py-4 rounded-full font-semibold hover:opacity-80 transition-all text-base sm:text-lg"
-            style={{ border: '1.5px solid var(--color-border)', color: 'var(--color-accent-light)' }}>
+            style={{ border: '1.5px solid #2A3145', color: '#8892A4', textDecoration: 'none', borderRadius: '100px', padding: '16px 32px', fontSize: '16px', fontWeight: 600 }}>
             Join as talent
           </Link>
         </div>
