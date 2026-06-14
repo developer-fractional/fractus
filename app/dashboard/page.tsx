@@ -5,19 +5,40 @@ import type { User } from '@supabase/supabase-js'
 import { supabase } from '../lib/supabase'
 import Navbar from '../components/Navbar'
 
+const TALENT_ROLES = ['Fractional Professional', 'Contractor', 'Architect', 'Engineer']
+const EMPLOYER_ROLES = ['Employer / Hiring', 'Owner / Operator']
+
+interface Profile {
+  role: string | null
+  name: string | null
+  discipline: string | null
+  is_admin: boolean | null
+}
+
+interface DashCard {
+  icon: string
+  title: string
+  desc: string
+  href: string
+  accent?: string   // border/icon colour override
+  prominent?: boolean
+}
+
 export default function Dashboard() {
   const [user, setUser] = useState<User | null>(null)
+  const [profile, setProfile] = useState<Profile | null>(null)
   const [loading, setLoading] = useState(true)
-  const [profileComplete, setProfileComplete] = useState(true)
 
   useEffect(() => {
     supabase.auth.getUser().then(async ({ data }) => {
       if (!data.user) { window.location.href = '/login'; return }
       setUser(data.user)
-      // Check if profile has the key fields filled in
-      const { data: profile } = await supabase
-        .from('profiles').select('name, discipline, bio').eq('id', data.user.id).single()
-      setProfileComplete(!!(profile?.name && profile?.discipline && profile?.bio))
+      const { data: p } = await supabase
+        .from('profiles')
+        .select('role, name, discipline, is_admin')
+        .eq('id', data.user.id)
+        .single()
+      setProfile(p ?? null)
       setLoading(false)
     })
   }, [])
@@ -28,72 +49,152 @@ export default function Dashboard() {
   }
 
   if (loading) return (
-    <div className="min-h-screen flex items-center justify-center" style={{ background: '#0F1117' }}>
-      <p className="text-xl" style={{ color: '#F6981F', fontFamily: "'Nunito Sans', sans-serif" }}>Loading...</p>
+    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#0F1117' }}>
+      <p style={{ color: '#F6981F', fontSize: '20px', fontFamily: "'Nunito Sans', sans-serif" }}>Loading...</p>
     </div>
   )
 
+  // ── Derive view type ──────────────────────────────────────────────────────
+  const isAdmin   = !!profile?.is_admin
+  const role      = profile?.role ?? ''
+  const name      = profile?.name ?? user?.email ?? ''
+  const isTalent  = !isAdmin && (TALENT_ROLES.includes(role) || !EMPLOYER_ROLES.includes(role))
+  const isEmployer = !isAdmin && EMPLOYER_ROLES.includes(role)
+
+  const profileComplete = !!(profile?.name && profile?.discipline)
+
+  // ── Card sets ─────────────────────────────────────────────────────────────
+  const talentCards: DashCard[] = [
+    profileComplete
+      ? { icon: '✅', title: 'Profile Looks Great', desc: 'Your profile is visible to employers — keep it up to date', href: '/profile', accent: '#22c55e' }
+      : { icon: '👤', title: 'Complete Your Profile', desc: 'Add your name, discipline, and bio so companies can find and book you', href: '/profile', accent: '#05809B' },
+    { icon: '🔍', title: 'Browse Jobs',            desc: 'Find fractional AECO opportunities',            href: '/listings' },
+    { icon: '🌐', title: 'Browse Talent Network',  desc: 'Connect with other AECO professionals',         href: '/talent' },
+    { icon: '📨', title: 'My Applications',        desc: 'Track your job applications',                   href: '/dashboard/applications' },
+  ]
+
+  const employerCards: DashCard[] = [
+    { icon: '➕', title: 'Post a Listing',       desc: 'Find fractional AECO talent for your project',  href: '/listings/new',               accent: '#F6981F', prominent: true },
+    { icon: '📋', title: 'My Listings',          desc: 'Manage your posted opportunities',              href: '/listings' },
+    { icon: '🔍', title: 'Browse Talent',        desc: 'Search verified AECO professionals',            href: '/talent' },
+    { icon: '📥', title: 'Applications Received', desc: 'Review candidates who applied',                href: '/dashboard/applications' },
+  ]
+
+  const adminCards: DashCard[] = [
+    { icon: '🛠️', title: 'Manage Users',    desc: 'View and manage all users',           href: '/admin' },
+    { icon: '📋', title: 'All Listings',    desc: 'View all active listings',             href: '/listings' },
+    { icon: '🌐', title: 'Browse Talent',   desc: 'Search all talent profiles',           href: '/talent' },
+    { icon: '➕', title: 'Post a Listing',  desc: 'Post on behalf of a client',           href: '/listings/new', accent: '#F6981F' },
+  ]
+
+  const cards    = isAdmin ? adminCards : isEmployer ? employerCards : talentCards
+  const greeting = isAdmin ? 'Admin Dashboard 🛠️' : `Welcome back, ${name.split(' ')[0] || name}! 👋`
+
+  // Role pill
+  const pillLabel = isAdmin ? 'Admin' : role || 'Fractional Professional'
+  const pillColor = isAdmin ? '#F6981F' : isEmployer ? '#F6981F' : '#05809B'
+
   return (
-    <main className="min-h-screen" style={{ background: '#0F1117', fontFamily: "'Nunito Sans', sans-serif" }}>
+    <main style={{ minHeight: '100vh', background: '#0F1117', fontFamily: "'Nunito Sans', sans-serif" }}>
 
       <Navbar activeLink="dashboard" />
 
-      <div className="max-w-5xl mx-auto px-5 sm:px-8 py-10 sm:py-16">
+      <div style={{ maxWidth: '900px', margin: '0 auto', padding: 'clamp(32px, 6vw, 64px) clamp(20px, 4vw, 32px)' }}>
 
         {/* Header row */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8 sm:mb-12">
+        <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'flex-start', justifyContent: 'space-between', gap: '16px', marginBottom: '40px' }}>
           <div>
-            <h2 className="font-bold text-white mb-2" style={{ fontSize: 'clamp(28px, 5vw, 40px)', fontFamily: "'Nunito', sans-serif" }}>
-              Welcome to Fractus! 👋
+            <h2 style={{ fontFamily: "'Nunito', sans-serif", fontSize: 'clamp(26px, 5vw, 38px)', fontWeight: 800, color: 'white', marginBottom: '10px', letterSpacing: '-0.5px' }}>
+              {greeting}
             </h2>
-            <p className="text-gray-400 text-base sm:text-lg">
-              Logged in as: <span style={{ color: '#05809B' }}>{user?.email}</span>
-            </p>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+              <span style={{ fontSize: '14px', color: '#8892A4' }}>
+                {user?.email}
+              </span>
+              <span style={{
+                fontSize: '12px', fontWeight: 700, padding: '3px 12px', borderRadius: '100px',
+                background: `${pillColor}1A`, color: pillColor, border: `1px solid ${pillColor}40`,
+                letterSpacing: '0.03em'
+              }}>
+                {pillLabel}
+              </span>
+            </div>
           </div>
           <button onClick={handleLogout}
-            className="self-start sm:self-auto text-sm font-semibold px-5 py-2 rounded-full border cursor-pointer transition-colors hover:text-white"
-            style={{ color: '#8892A4', background: 'none', borderColor: '#2A3145' }}>
+            style={{ color: '#8892A4', background: 'none', border: '1px solid #2A3145', borderRadius: '100px', padding: '8px 20px', fontSize: '14px', fontWeight: 600, cursor: 'pointer' }}>
             Log out
           </button>
         </div>
 
-        {/* Incomplete profile banner — TASK 4 empty state */}
-        {!profileComplete && (
-          <div className="rounded-2xl border p-5 mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
-            style={{ background: 'rgba(246,152,32,0.08)', borderColor: 'rgba(246,152,32,0.3)' }}>
-            <div className="flex items-start gap-3">
-              <span className="text-xl mt-0.5">⚠️</span>
+        {/* Profile completion banner — talent only, when incomplete */}
+        {isTalent && !profileComplete && (
+          <div style={{
+            borderRadius: '16px', border: '1px solid rgba(246,152,32,0.3)',
+            background: 'rgba(246,152,32,0.07)', padding: '20px 24px',
+            display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between',
+            gap: '16px', marginBottom: '32px'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
+              <span style={{ fontSize: '20px', marginTop: '2px' }}>⚠️</span>
               <div>
-                <p className="font-bold text-white mb-1">Complete your profile to appear in talent search</p>
-                <p className="text-sm text-gray-400">Add your name, discipline, and bio so companies can find and book you.</p>
+                <p style={{ color: 'white', fontWeight: 700, marginBottom: '4px' }}>Complete your profile to appear in talent search</p>
+                <p style={{ color: '#8892A4', fontSize: '14px' }}>Add your name, discipline, and bio so companies can find and book you.</p>
               </div>
             </div>
-            <Link href="/profile"
-              className="text-white font-bold px-5 py-2 rounded-full text-sm whitespace-nowrap hover:opacity-90 transition-opacity self-start sm:self-auto"
-              style={{ background: '#F6981F', textDecoration: 'none' }}>
+            <Link href="/profile" style={{
+              background: '#F6981F', color: 'white', textDecoration: 'none',
+              borderRadius: '100px', padding: '10px 22px', fontSize: '14px', fontWeight: 700,
+              whiteSpace: 'nowrap'
+            }}>
               Go to Profile →
             </Link>
           </div>
         )}
 
-        {/* Cards — single column on mobile, 3 columns on desktop */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 sm:gap-6">
-          {[
-            { icon: '👤', title: 'My Profile', desc: 'Build your AECO profile so companies can find and book you', href: '/profile' },
-            { icon: '🔍', title: 'Find Talent', desc: 'Browse verified fractional AECO professionals', href: '/talent' },
-            { icon: '📋', title: 'My Listings', desc: 'Post fractional gigs and manage your opportunities', href: '/listings' },
-          ].map((card, i) => (
-            <Link key={i} href={card.href}
-              className="p-7 sm:p-8 rounded-2xl border block hover:opacity-80 transition-all cursor-pointer"
-              style={{ background: '#1B2130', borderColor: '#2A3145', textDecoration: 'none' }}>
-              <div className="text-4xl mb-4">{card.icon}</div>
-              <h3 className="font-bold text-white mb-2 text-lg sm:text-xl" style={{ fontFamily: "'Nunito', sans-serif" }}>{card.title}</h3>
-              <p className="text-gray-400 text-sm sm:text-base">{card.desc}</p>
-            </Link>
-          ))}
+        {/* Dashboard cards */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '16px' }}>
+          {cards.map((card, i) => {
+            const accent = card.accent ?? '#05809B'
+            return (
+              <Link key={i} href={card.href} style={{ textDecoration: 'none' }}>
+                <div style={{
+                  background: '#1B2130',
+                  border: `1px solid ${card.prominent ? accent + '50' : '#2A3145'}`,
+                  borderRadius: '16px',
+                  padding: '28px 24px',
+                  height: '100%',
+                  cursor: 'pointer',
+                  transition: 'opacity 0.15s',
+                  boxSizing: 'border-box',
+                  ...(card.prominent ? { boxShadow: `0 0 0 1px ${accent}30` } : {}),
+                }}
+                  onMouseEnter={e => (e.currentTarget.style.opacity = '0.8')}
+                  onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
+                >
+                  <div style={{
+                    width: '48px', height: '48px', borderRadius: '12px',
+                    background: `${accent}18`, border: `1px solid ${accent}35`,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontSize: '22px', marginBottom: '18px'
+                  }}>
+                    {card.icon}
+                  </div>
+                  <h3 style={{
+                    fontFamily: "'Nunito', sans-serif", fontSize: '17px', fontWeight: 800,
+                    color: card.prominent ? accent : 'white', marginBottom: '8px'
+                  }}>
+                    {card.title}
+                  </h3>
+                  <p style={{ color: '#8892A4', fontSize: '14px', lineHeight: 1.6 }}>
+                    {card.desc}
+                  </p>
+                </div>
+              </Link>
+            )
+          })}
         </div>
-      </div>
 
+      </div>
     </main>
   )
 }
