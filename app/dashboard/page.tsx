@@ -76,6 +76,7 @@ export default function Dashboard() {
   const employerCards: DashCard[] = [
     { icon: '➕', title: 'Post a Listing',        desc: 'Find fractional AECO talent for your project',  href: '/listings/new',               accent: '#F6981F', prominent: true },
     { icon: '📋', title: 'Manage Listings',       desc: 'View and manage your posted roles',             href: '/dashboard/listings' },
+    { icon: '🏢', title: 'Company Profile',       desc: 'Manage your company profile',                   href: '/dashboard/company' },
     { icon: '🔍', title: 'Browse Talent',         desc: 'Search verified AECO professionals',            href: '/talent' },
     { icon: '📥', title: 'Applications Received', desc: 'Review candidates who applied',                 href: '/dashboard/applications' },
   ]

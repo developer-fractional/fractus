@@ -17,22 +17,28 @@ export default function ListingDetailPage() {
   const [message, setMessage] = useState('')
   const [saved, setSaved] = useState(false)
   const [saving, setSaving] = useState(false)
+  const [companyProfile, setCompanyProfile] = useState<{id: string; name: string} | null>(null)
 
   useEffect(() => {
     supabase.auth.getUser().then(async ({ data }) => {
       setUser(data.user)
       if (data.user && id) {
         const { data: sv } = await supabase
-          .from('saved_listings')
-          .select('id')
-          .eq('user_id', data.user.id)
-          .eq('listing_id', id)
-          .maybeSingle()
+          .from('saved_listings').select('id')
+          .eq('user_id', data.user.id).eq('listing_id', id).maybeSingle()
         setSaved(!!sv)
       }
     })
     supabase.from('listings').select('*').eq('id', id).single()
-      .then(({ data }) => { setListing(data); setLoading(false) })
+      .then(async ({ data }) => {
+        setListing(data)
+        setLoading(false)
+        if (data?.posted_by) {
+          const { data: co } = await supabase
+            .from('companies').select('id, name').eq('owner_id', data.posted_by).maybeSingle()
+          if (co) setCompanyProfile({ id: co.id, name: co.name })
+        }
+      })
   }, [id])
 
   async function handleApply() {
@@ -49,7 +55,6 @@ export default function ListingDetailPage() {
       else setMessage('Error applying: ' + error.message)
     } else {
       setApplied(true)
-      // Fire-and-forget notification — does not block UI
       fetch('/api/notify-application', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -62,14 +67,10 @@ export default function ListingDetailPage() {
     if (!user) return router.push('/login')
     setSaving(true)
     if (saved) {
-      await supabase.from('saved_listings')
-        .delete()
-        .eq('user_id', user.id)
-        .eq('listing_id', id)
+      await supabase.from('saved_listings').delete().eq('user_id', user.id).eq('listing_id', id)
       setSaved(false)
     } else {
-      await supabase.from('saved_listings')
-        .insert({ user_id: user.id, listing_id: id })
+      await supabase.from('saved_listings').insert({ user_id: user.id, listing_id: id })
       setSaved(true)
     }
     setSaving(false)
@@ -115,7 +116,14 @@ export default function ListingDetailPage() {
               <h1 style={{ fontFamily: "'Nunito', sans-serif", fontSize: '28px', fontWeight: 800, color: 'white', marginBottom: '8px', letterSpacing: '-0.5px' }}>
                 {listing.title}
               </h1>
-              <p style={{ color: '#05809B', fontSize: '18px', fontWeight: 700 }}>{listing.company}</p>
+              {companyProfile ? (
+                <Link href={`/company/${companyProfile.id}`}
+                  style={{ color: '#05809B', fontSize: '18px', fontWeight: 700, textDecoration: 'none' }}>
+                  {listing.company} ↗
+                </Link>
+              ) : (
+                <p style={{ color: '#05809B', fontSize: '18px', fontWeight: 700 }}>{listing.company}</p>
+              )}
             </div>
             <span style={{ padding: '6px 16px', borderRadius: '100px', fontSize: '13px', fontWeight: 700, background: 'rgba(246,152,32,0.15)', color: '#F6981F', border: '1px solid rgba(246,152,32,0.3)', whiteSpace: 'nowrap' }}>
               {listing.status === 'active' ? '● Active' : listing.status}

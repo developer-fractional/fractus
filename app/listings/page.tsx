@@ -44,12 +44,21 @@ export default function ListingsPage() {
   const [filterEngagement, setFilterEngagement] = useState('')
   const [filterRemote,     setFilterRemote]     = useState('')   // '' | 'remote' | 'onsite'
   const [sort,             setSort]             = useState('newest')
+  const [companyMap,       setCompanyMap]       = useState<Map<string, {id: string, name: string}>>(new Map())
 
   useEffect(() => {
-    supabase.from('listings')
-      .select('*')
-      .eq('status', 'active')
-      .then(({ data }) => { setListings(data || []); setLoading(false) })
+    supabase.from('listings').select('*').eq('status', 'active')
+      .then(async ({ data }) => {
+        const rows = data || []
+        setListings(rows)
+        const ownerIds = [...new Set(rows.map(l => l.posted_by).filter(Boolean))] as string[]
+        if (ownerIds.length > 0) {
+          const { data: cos } = await supabase
+            .from('companies').select('id, owner_id, name').in('owner_id', ownerIds)
+          if (cos) setCompanyMap(new Map(cos.map(c => [c.owner_id, { id: c.id, name: c.name }])))
+        }
+        setLoading(false)
+      })
   }, [])
 
   // ── Active filter count ────────────────────────────────────────────────────
@@ -195,7 +204,9 @@ export default function ListingsPage() {
               {filtered.length} listing{filtered.length !== 1 ? 's' : ''} found
             </p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-              {filtered.map((l, i) => (
+              {filtered.map((l, i) => {
+              const co = l.posted_by ? companyMap.get(l.posted_by) : null
+              return (
                 <Link key={l.id || i} href={'/listings/' + l.id}
                   style={{ textDecoration: 'none', display: 'block', background: '#1B2130', border: '1px solid #2A3145', borderRadius: '16px', padding: 'clamp(20px,3vw,28px)', transition: 'opacity 0.15s' }}
                   onMouseEnter={e => (e.currentTarget.style.opacity = '0.85')}
@@ -204,7 +215,11 @@ export default function ListingsPage() {
                   <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '12px', marginBottom: '12px', flexWrap: 'wrap' }}>
                     <div>
                       <h3 style={{ fontFamily: "'Nunito', sans-serif", fontSize: '19px', fontWeight: 800, color: 'white', marginBottom: '4px' }}>{l.title}</h3>
-                      <p style={{ color: '#05809B', fontSize: '15px', fontWeight: 600 }}>{l.company}</p>
+                      <p
+                        style={{ color: '#05809B', fontSize: '15px', fontWeight: 600, cursor: co ? 'pointer' : 'default' }}
+                        onClick={co ? e => { e.stopPropagation(); window.location.href = `/company/${co.id}` } : undefined}>
+                        {l.company}
+                      </p>
                     </div>
                     <span style={{ fontSize: '12px', padding: '4px 12px', borderRadius: '100px', fontWeight: 700, background: 'rgba(246,152,32,0.15)', color: '#F6981F', border: '1px solid rgba(246,152,32,0.3)', whiteSpace: 'nowrap' }}>
                       {l.status === 'active' ? '● Active' : l.status}
@@ -230,7 +245,8 @@ export default function ListingsPage() {
                     {l.created_at  && <span style={{ color: '#4A5568', fontSize: '13px' }}>🗓 {new Date(l.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>}
                   </div>
                 </Link>
-              ))}
+              )
+            })}
             </div>
           </>
         )}
