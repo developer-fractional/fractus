@@ -7,7 +7,7 @@ import Navbar from '../components/Navbar'
 
 const DISCIPLINES = ['Architecture', 'Structural Engineering', 'MEP Engineering', 'Civil Engineering', 'Construction Management', 'BIM/VDC', 'Sustainability', 'Owner/Operator', 'Project Controls', 'Cost Management']
 const CERTIFICATIONS = ['LEED AP', 'AIA', 'PE', 'PMP', 'RIBA', 'WELL AP', 'ISO 19650', 'CCM', 'DBIA', 'Revit Certified']
-const AVAILABILITY = ['1–2 days/week', '3 days/week', '4 days/week', 'Full-time fractional', 'Project-based only']
+const AVAILABILITY = ['Available Now', 'Open to Work', 'Not Available']
 
 export default function ProfilePage() {
   const [user, setUser] = useState<User | null>(null)
@@ -97,6 +97,23 @@ export default function ProfilePage() {
             </div>
           </div>
         </div>
+
+        {/* Completeness bar */}
+        {(() => {
+          const fields = [form.name, form.discipline, form.bio, form.years_experience, form.hourly_rate, form.availability, form.linkedin_url]
+          const filled = fields.filter(Boolean).length
+          const pct   = Math.round((filled / fields.length) * 100)
+          return (
+            <div style={{ marginBottom: '32px', padding: '20px 24px', background: '#1B2130', borderRadius: '16px', border: '1px solid #2A3145' }}>
+              <p style={{ color: pct === 100 ? '#22c55e' : '#05809B', fontSize: '14px', fontWeight: 700, marginBottom: '10px' }}>
+                {pct === 100 ? '✓ Profile complete — you\'re discoverable!' : `Profile ${pct}% complete`}
+              </p>
+              <div style={{ background: '#2A3145', borderRadius: '100px', height: '8px', overflow: 'hidden' }}>
+                <div style={{ background: pct === 100 ? '#22c55e' : '#05809B', width: `${pct}%`, height: '100%', borderRadius: '100px', transition: 'width 0.3s' }} />
+              </div>
+            </div>
+          )
+        })()}
 
         {/* Form sections */}
         <div className="space-y-8">

@@ -2,9 +2,25 @@
 import { useState, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
+import { createClient } from '@supabase/supabase-js'
 import { supabase } from '../../lib/supabase'
 import Navbar from '../../components/Navbar'
 import type { Listing } from '../../lib/types'
+
+// Server-side client for generateMetadata (anon key is safe here)
+const supabaseServer = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+)
+
+export async function generateMetadata({ params }: { params: { id: string } }) {
+  const { data } = await supabaseServer
+    .from('listings').select('title, company, description').eq('id', params.id).single()
+  return {
+    title: data ? `${data.title} at ${data.company} | Fractus` : 'Listing | Fractus',
+    description: data?.description?.substring(0, 160) ?? 'Fractional AECO opportunity on Fractus',
+  }
+}
 
 export default function ListingDetailPage() {
   const { id } = useParams()

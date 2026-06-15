@@ -11,7 +11,8 @@ export default function AdminPage() {
   const [activeTab, setActiveTab] = useState('overview')
   const [users, setUsers] = useState<Profile[]>([])
   const [listings, setListings] = useState<Listing[]>([])
-  const [stats, setStats] = useState({ users: 0, listings: 0, verified: 0 })
+  const [stats, setStats] = useState({ users: 0, listings: 0, verified: 0, applications: 0 })
+  const [userSearch, setUserSearch] = useState('')
 
   useEffect(() => {
     supabase.auth.getUser().then(async ({ data }) => {
@@ -26,14 +27,18 @@ export default function AdminPage() {
   }, [])
 
   async function loadAll() {
-    const { data: u } = await supabase.from('profiles').select('*').order('created_at', { ascending: false })
-    const { data: l } = await supabase.from('listings').select('*').order('created_at', { ascending: false })
+    const [{ data: u }, { data: l }, { count: appCount }] = await Promise.all([
+      supabase.from('profiles').select('*').order('created_at', { ascending: false }),
+      supabase.from('listings').select('*').order('created_at', { ascending: false }),
+      supabase.from('applications').select('*', { count: 'exact', head: true }),
+    ])
     setUsers(u || [])
     setListings(l || [])
     setStats({
-      users: u?.length || 0,
-      listings: l?.length || 0,
-      verified: u?.filter((x) => x.is_verified).length || 0,
+      users:        u?.length || 0,
+      listings:     l?.length || 0,
+      verified:     u?.filter(x => x.is_verified).length || 0,
+      applications: appCount ?? 0,
     })
   }
 
@@ -46,20 +51,21 @@ export default function AdminPage() {
   }
 
   async function toggleListing(id: string, current: string) {
-    await supabase.from('listings').update({ status: current === 'active' ? 'closed' : 'active' }).eq('id', id)
-    loadAll()
+    const newStatus = current === 'active' ? 'closed' : 'active'
+    setListings(prev => prev.map(l => l.id === id ? { ...l, status: newStatus } : l))
+    await supabase.from('listings').update({ status: newStatus }).eq('id', id)
   }
 
   async function deleteUser(userId: string) {
     if (!confirm('Delete this user?')) return
+    setUsers(prev => prev.filter(u => u.id !== userId))
     await supabase.from('profiles').delete().eq('id', userId)
-    loadAll()
   }
 
   async function deleteListing(id: string) {
     if (!confirm('Delete this listing?')) return
+    setListings(prev => prev.filter(l => l.id !== id))
     await supabase.from('listings').delete().eq('id', id)
-    loadAll()
   }
 
   if (loading) return (
@@ -107,10 +113,10 @@ export default function AdminPage() {
         {/* Stats */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginBottom: '36px' }}>
           {[
-            { label: 'Total Users', value: stats.users, color: '#F6981F' },
-            { label: 'Verified Pros', value: stats.verified, color: '#05809B' },
-            { label: 'Active Listings', value: listings.filter(l => l.status === 'active').length, color: '#F6981F' },
-            { label: 'Total Listings', value: stats.listings, color: '#05809B' },
+            { label: 'Total Users',        value: stats.users,        color: '#F6981F' },
+            { label: 'Total Listings',     value: stats.listings,     color: '#05809B' },
+            { label: 'Total Applications', value: stats.applications, color: '#F6981F' },
+            { label: 'Verified Talent',    value: stats.verified,     color: '#05809B' },
           ].map((s, i) => (
             <div key={i} style={{ background: '#1B2130', border: '1px solid #2A3145', borderRadius: '12px', padding: '24px' }}>
               <div style={{ color: s.color, fontSize: '36px', fontWeight: 800, fontFamily: "'Nunito', sans-serif" }}>{s.value}</div>
@@ -167,7 +173,16 @@ export default function AdminPage() {
         {/* Users tab */}
         {activeTab === 'users' && (
           <div>
-            <h2 style={{ color: 'white', fontSize: '24px', fontWeight: 800, fontFamily: "'Nunito', sans-serif", marginBottom: '20px' }}>All Users</h2>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px', marginBottom: '20px', flexWrap: 'wrap' }}>
+              <h2 style={{ color: 'white', fontSize: '24px', fontWeight: 800, fontFamily: "'Nunito', sans-serif" }}>All Users</h2>
+              <input
+                type="text"
+                value={userSearch}
+                onChange={e => setUserSearch(e.target.value)}
+                placeholder="Search by name or email..."
+                style={{ background: '#1B2130', border: '1px solid #2A3145', borderRadius: '10px', padding: '10px 16px', color: 'white', fontSize: '14px', outline: 'none', minWidth: '260px' }}
+              />
+            </div>
             <div style={{ background: '#1B2130', border: '1px solid #2A3145', borderRadius: '12px', overflow: 'hidden' }}>
               <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                 <thead>
@@ -178,7 +193,7 @@ export default function AdminPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {users.map((u, i) => (
+                  {users.filter(u => !userSearch || u.name?.toLowerCase().includes(userSearch.toLowerCase()) || u.email?.toLowerCase().includes(userSearch.toLowerCase())).map((u, i) => (
                     <tr key={u.id} style={{ borderBottom: i < users.length - 1 ? '1px solid #161C28' : 'none' }}>
                       <td style={{ padding: '14px 16px', color: 'white', fontSize: '14px', fontWeight: 600 }}>{u.name || '—'}</td>
                       <td style={{ padding: '14px 16px', color: '#8892A4', fontSize: '13px' }}>{u.email}</td>
