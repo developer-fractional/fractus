@@ -80,7 +80,7 @@ export default function TalentProfilePage() {
             <div className="flex items-center gap-3 mb-1 flex-wrap">
               <h1 className="font-bold text-white" style={{ fontSize: '28px', fontFamily: "'Nunito', sans-serif" }}>{profile.name || 'Unnamed professional'}</h1>
               {profile.is_verified && (
-                <span className="text-xs px-3 py-1 rounded-full font-semibold" style={{ background: 'rgba(5,128,155,0.15)', color: '#05809B', border: '1px solid rgba(5,128,155,0.3)' }}>
+                <span style={{ background: 'rgba(5,128,155,0.15)', color: '#05809B', border: '1px solid rgba(5,128,155,0.3)', borderRadius: '100px', fontSize: '13px', padding: '4px 14px', fontWeight: 700 }}>
                   ✓ Verified
                 </span>
               )}

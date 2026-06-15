@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { supabase } from '../lib/supabase'
 import type { Profile } from '../lib/types'
@@ -209,19 +209,22 @@ export default function TalentPage() {
                 }
                 const cardContent = (
                   <>
-                    {/* Avatar + badge */}
+                    {/* Avatar + Demo badge */}
                     <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '16px' }}>
                       <div style={{ width: '52px', height: '52px', borderRadius: '12px', background: '#F6981F', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: 800, fontSize: '20px', fontFamily: "'Nunito', sans-serif" }}>
                         {p.name?.charAt(0)}
                       </div>
-                      {p.is_verified ? (
-                        <span style={{ fontSize: '12px', padding: '4px 10px', borderRadius: '100px', background: 'rgba(34,197,94,0.15)', color: '#4ade80', border: '1px solid rgba(34,197,94,0.3)', fontWeight: 700 }}>✓ Verified</span>
-                      ) : isDemo ? (
+                      {isDemo && (
                         <span style={{ fontSize: '12px', padding: '4px 10px', borderRadius: '100px', background: 'rgba(246,152,32,0.15)', color: '#F6981F', border: '1px solid rgba(246,152,32,0.3)', fontWeight: 700 }}>Demo</span>
-                      ) : null}
+                      )}
                     </div>
 
-                    <h3 style={{ fontFamily: "'Nunito', sans-serif", fontSize: '17px', fontWeight: 800, color: 'white', marginBottom: '4px' }}>{p.name}</h3>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px', flexWrap: 'wrap' }}>
+                      <h3 style={{ fontFamily: "'Nunito', sans-serif", fontSize: '17px', fontWeight: 800, color: 'white' }}>{p.name}</h3>
+                      {p.is_verified && (
+                        <span style={{ background: 'rgba(5,128,155,0.15)', color: '#05809B', border: '1px solid rgba(5,128,155,0.3)', borderRadius: '100px', padding: '2px 10px', fontSize: '12px', fontWeight: 700 }}>✓ Verified</span>
+                      )}
+                    </div>
                     <p style={{ color: '#8892A4', fontSize: '14px', marginBottom: '14px' }}>{p.role}</p>
 
                     {p.skills && (

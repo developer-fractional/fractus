@@ -38,8 +38,11 @@ export default function AdminPage() {
   }
 
   async function toggleVerified(userId: string, current: boolean) {
-    await supabase.from('profiles').update({ is_verified: !current }).eq('id', userId)
-    loadAll()
+    // Optimistic update
+    const newVal = !current
+    setUsers(prev => prev.map(u => u.id === userId ? { ...u, is_verified: newVal } : u))
+    setStats(prev => ({ ...prev, verified: prev.verified + (newVal ? 1 : -1) }))
+    await supabase.from('profiles').update({ is_verified: newVal }).eq('id', userId)
   }
 
   async function toggleListing(id: string, current: string) {
