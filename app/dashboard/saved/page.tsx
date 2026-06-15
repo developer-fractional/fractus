@@ -31,7 +31,7 @@ export default function SavedListingsPage() {
         .eq('user_id', data.user.id)
         .order('created_at', { ascending: false })
 
-      setRows((saved as SavedRow[]) ?? [])
+      setRows((saved as unknown as SavedRow[]) ?? [])
       setLoading(false)
     })
   }, [])
