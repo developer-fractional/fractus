@@ -2,9 +2,9 @@
 import React, { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
 import Link from 'next/link'
-import { supabase } from '../../../lib/supabase'
-import Navbar from '../../../components/Navbar'
-import type { Listing } from '../../../lib/types'
+import { supabase } from '../../lib/supabase'
+import Navbar from '../../components/Navbar'
+import type { Listing } from '../../lib/types'
 
 interface Company {
   id: string
@@ -75,7 +75,6 @@ export default function CompanyPage() {
         {/* Company card */}
         <div style={{ background: '#1B2130', borderRadius: '16px', border: '1px solid #2A3145', padding: '36px', marginTop: '24px', marginBottom: '32px' }}>
           <div style={{ display: 'flex', alignItems: 'flex-start', gap: '20px', marginBottom: '20px' }}>
-            {/* Logo / placeholder */}
             <div style={{ width: '72px', height: '72px', borderRadius: '16px', background: 'rgba(5,128,155,0.12)', border: '1px solid rgba(5,128,155,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '28px', flexShrink: 0, overflow: 'hidden' }}>
               {company.logo_url
                 ? <img src={company.logo_url} alt={company.name} style={{ width: '72px', height: '72px', objectFit: 'cover' }} />
