@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabaseAdmin } from '../../lib/supabase-admin'
+import { getSupabaseAdmin } from '../../lib/supabase-admin'
 
 export async function POST(req: NextRequest) {
   try {
@@ -8,6 +8,8 @@ export async function POST(req: NextRequest) {
     if (!listing_id || !applicant_id) {
       return NextResponse.json({ error: 'Missing listing_id or applicant_id' }, { status: 400 })
     }
+
+    const supabaseAdmin = getSupabaseAdmin()
 
     // Fetch listing
     const { data: listing } = await supabaseAdmin
