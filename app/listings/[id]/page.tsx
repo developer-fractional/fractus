@@ -15,9 +15,22 @@ export default function ListingDetailPage() {
   const [applying, setApplying] = useState(false)
   const [applied, setApplied] = useState(false)
   const [message, setMessage] = useState('')
+  const [saved, setSaved] = useState(false)
+  const [saving, setSaving] = useState(false)
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => setUser(data.user))
+    supabase.auth.getUser().then(async ({ data }) => {
+      setUser(data.user)
+      if (data.user && id) {
+        const { data: sv } = await supabase
+          .from('saved_listings')
+          .select('id')
+          .eq('user_id', data.user.id)
+          .eq('listing_id', id)
+          .maybeSingle()
+        setSaved(!!sv)
+      }
+    })
     supabase.from('listings').select('*').eq('id', id).single()
       .then(({ data }) => { setListing(data); setLoading(false) })
   }, [id])
@@ -37,6 +50,23 @@ export default function ListingDetailPage() {
     } else {
       setApplied(true)
     }
+  }
+
+  async function handleSave() {
+    if (!user) return router.push('/login')
+    setSaving(true)
+    if (saved) {
+      await supabase.from('saved_listings')
+        .delete()
+        .eq('user_id', user.id)
+        .eq('listing_id', id)
+      setSaved(false)
+    } else {
+      await supabase.from('saved_listings')
+        .insert({ user_id: user.id, listing_id: id })
+      setSaved(true)
+    }
+    setSaving(false)
   }
 
   const tagStyle = {
@@ -129,7 +159,7 @@ export default function ListingDetailPage() {
           {/* Divider */}
           <div style={{ height: '1px', background: '#2A3145', margin: '32px 0' }} />
 
-          {/* Apply section */}
+          {/* Apply + Save section */}
           {applied ? (
             <div style={{ textAlign: 'center', padding: '24px', background: 'rgba(5,128,155,0.08)', borderRadius: '12px', border: '1px solid rgba(5,128,155,0.2)' }}>
               <div style={{ fontSize: '32px', marginBottom: '12px' }}>✅</div>
@@ -143,17 +173,34 @@ export default function ListingDetailPage() {
                   {message}
                 </div>
               )}
-              <button onClick={handleApply} disabled={applying} style={{
-                width: '100%', background: '#F6981F', color: 'white', border: 'none',
-                borderRadius: '100px', padding: '18px', fontSize: '17px', fontWeight: 700,
-                cursor: applying ? 'not-allowed' : 'pointer', opacity: applying ? 0.7 : 1,
-                fontFamily: "'Nunito Sans', sans-serif"
-              }}>
-                {applying ? 'Submitting...' : user ? 'Apply for this role →' : 'Sign in to apply →'}
-              </button>
+              <div style={{ display: 'flex', gap: '10px' }}>
+                <button onClick={handleApply} disabled={applying} style={{
+                  flex: 1, background: '#F6981F', color: 'white', border: 'none',
+                  borderRadius: '100px', padding: '18px', fontSize: '17px', fontWeight: 700,
+                  cursor: applying ? 'not-allowed' : 'pointer', opacity: applying ? 0.7 : 1,
+                  fontFamily: "'Nunito Sans', sans-serif"
+                }}>
+                  {applying ? 'Submitting...' : user ? 'Apply for this role →' : 'Sign in to apply →'}
+                </button>
+                <button onClick={handleSave} disabled={saving} style={{
+                  background: saved ? 'rgba(5,128,155,0.12)' : 'transparent',
+                  color: saved ? '#05809B' : '#8892A4',
+                  border: saved ? '1px solid rgba(5,128,155,0.3)' : '1px solid #2A3145',
+                  borderRadius: '100px', padding: '18px 22px', fontSize: '20px',
+                  cursor: saving ? 'not-allowed' : 'pointer', opacity: saving ? 0.6 : 1,
+                  transition: 'all 0.15s',
+                }}>
+                  🔖
+                </button>
+              </div>
               {!user && (
                 <p style={{ textAlign: 'center', color: '#8892A4', fontSize: '14px' }}>
                   <Link href="/login" style={{ color: '#05809B', textDecoration: 'none', fontWeight: 700 }}>Sign in</Link> or <Link href="/signup" style={{ color: '#05809B', textDecoration: 'none', fontWeight: 700 }}>create an account</Link> to apply
+                </p>
+              )}
+              {saved && (
+                <p style={{ textAlign: 'center', color: '#05809B', fontSize: '13px', fontWeight: 600 }}>
+                  🔖 Saved to your <Link href="/dashboard/saved" style={{ color: '#05809B', textDecoration: 'underline' }}>saved listings</Link>
                 </p>
               )}
             </div>

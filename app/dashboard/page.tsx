@@ -69,15 +69,15 @@ export default function Dashboard() {
       ? { icon: '✅', title: 'Profile Looks Great', desc: 'Your profile is visible to employers — keep it up to date', href: '/profile', accent: '#22c55e' }
       : { icon: '👤', title: 'Complete Your Profile', desc: 'Add your name, discipline, and bio so companies can find and book you', href: '/profile', accent: '#05809B' },
     { icon: '🔍', title: 'Browse Jobs',            desc: 'Find fractional AECO opportunities',            href: '/listings' },
-    { icon: '🌐', title: 'Browse Talent Network',  desc: 'Connect with other AECO professionals',         href: '/talent' },
     { icon: '📨', title: 'My Applications',        desc: 'Track your job applications',                   href: '/dashboard/applications' },
+    { icon: '🔖', title: 'Saved Listings',         desc: "Listings you've bookmarked",                    href: '/dashboard/saved' },
   ]
 
   const employerCards: DashCard[] = [
-    { icon: '➕', title: 'Post a Listing',       desc: 'Find fractional AECO talent for your project',  href: '/listings/new',               accent: '#F6981F', prominent: true },
-    { icon: '📋', title: 'My Listings',          desc: 'Manage your posted opportunities',              href: '/listings' },
-    { icon: '🔍', title: 'Browse Talent',        desc: 'Search verified AECO professionals',            href: '/talent' },
-    { icon: '📥', title: 'Applications Received', desc: 'Review candidates who applied',                href: '/dashboard/applications' },
+    { icon: '➕', title: 'Post a Listing',        desc: 'Find fractional AECO talent for your project',  href: '/listings/new',               accent: '#F6981F', prominent: true },
+    { icon: '📋', title: 'Manage Listings',       desc: 'View and manage your posted roles',             href: '/dashboard/listings' },
+    { icon: '🔍', title: 'Browse Talent',         desc: 'Search verified AECO professionals',            href: '/talent' },
+    { icon: '📥', title: 'Applications Received', desc: 'Review candidates who applied',                 href: '/dashboard/applications' },
   ]
 
   const adminCards: DashCard[] = [
