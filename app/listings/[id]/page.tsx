@@ -49,6 +49,12 @@ export default function ListingDetailPage() {
       else setMessage('Error applying: ' + error.message)
     } else {
       setApplied(true)
+      // Fire-and-forget notification — does not block UI
+      fetch('/api/notify-application', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ listing_id: id, applicant_id: user.id }),
+      })
     }
   }
 
