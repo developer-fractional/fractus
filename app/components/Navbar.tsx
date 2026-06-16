@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { supabase } from '../lib/supabase'
+import { useTheme } from '../lib/ThemeContext'
 
 interface NavbarProps {
   /** Highlight the active page link — 'talent' | 'listings' | 'profile' etc. */
@@ -13,6 +14,7 @@ interface NavbarProps {
 export default function Navbar({ activeLink, rightSlot }: NavbarProps) {
   const [loggedIn, setLoggedIn] = useState<boolean | null>(null)
   const [menuOpen, setMenuOpen] = useState(false)
+  const { theme, toggleTheme } = useTheme()
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => setLoggedIn(!!data.session))
@@ -22,9 +24,19 @@ export default function Navbar({ activeLink, rightSlot }: NavbarProps) {
 
   const linkStyle = (key: string) => ({
     textDecoration: 'none' as const,
-    color: activeLink === key ? 'white' : '#8892A4',
+    color: activeLink === key ? 'var(--text-primary)' : 'var(--text-muted)',
     fontWeight: 600,
   })
+
+  const toggleBtnStyle: React.CSSProperties = {
+    background: 'var(--bg-card)',
+    border: '1px solid var(--border-color)',
+    borderRadius: '8px',
+    padding: '6px 10px',
+    cursor: 'pointer',
+    fontSize: '16px',
+    lineHeight: 1,
+  }
 
   return (
     <>
@@ -40,26 +52,29 @@ export default function Navbar({ activeLink, rightSlot }: NavbarProps) {
 
       {/* Nav */}
       <nav className="flex items-center justify-between px-5 sm:px-10 py-4 sm:py-5 border-b relative"
-        style={{ background: '#0F1117', borderColor: '#2A3145' }}>
+        style={{ background: 'var(--bg-nav)', borderColor: 'var(--border-color)' }}>
 
         {/* Logo */}
         <Link href="/" className="flex flex-col" style={{ textDecoration: 'none' }}>
           <span className="text-2xl sm:text-3xl font-bold"
             style={{ color: '#F6981F', fontFamily: "'Nunito', sans-serif" }}>Fractus</span>
-          <span className="text-xs leading-none" style={{ color: '#4A5568' }}>by FractionalAECO</span>
+          <span className="text-xs leading-none" style={{ color: 'var(--text-muted)' }}>by FractionalAECO</span>
         </Link>
 
         {/* Desktop centre links */}
         <div className="hidden md:flex gap-6 items-center">
-          <Link href="/talent" className="text-sm hover:text-white transition-colors"
+          <Link href="/talent" className="text-sm hover:opacity-80 transition-opacity"
             style={linkStyle('talent')}>Browse Talent</Link>
-          <Link href="/listings" className="text-sm hover:text-white transition-colors"
+          <Link href="/listings" className="text-sm hover:opacity-80 transition-opacity"
             style={linkStyle('listings')}>Listings</Link>
           {rightSlot}
         </div>
 
-        {/* Desktop auth */}
+        {/* Desktop right: theme toggle + auth */}
         <div className="hidden md:flex gap-3 items-center">
+          <button onClick={toggleTheme} style={toggleBtnStyle} aria-label="Toggle theme">
+            {theme === 'dark' ? '☀️' : '🌙'}
+          </button>
           {loggedIn ? (
             <Link href="/dashboard"
               className="text-white font-bold px-5 py-2 rounded-full text-sm hover:opacity-90 transition-opacity"
@@ -68,8 +83,8 @@ export default function Navbar({ activeLink, rightSlot }: NavbarProps) {
             </Link>
           ) : (
             <>
-              <Link href="/login" className="text-sm font-semibold hover:text-white transition-colors"
-                style={{ color: '#8892A4', textDecoration: 'none' }}>Sign in</Link>
+              <Link href="/login" className="text-sm font-semibold hover:opacity-80 transition-opacity"
+                style={{ color: 'var(--text-muted)', textDecoration: 'none' }}>Sign in</Link>
               <Link href="/signup"
                 className="text-white font-bold px-5 py-2 rounded-full text-sm hover:opacity-90 transition-opacity"
                 style={{ background: '#F6981F', textDecoration: 'none' }}>
@@ -85,22 +100,25 @@ export default function Navbar({ activeLink, rightSlot }: NavbarProps) {
           onClick={() => setMenuOpen(o => !o)}
           style={{ background: 'none', border: 'none', padding: '4px' }}
           aria-label="Toggle menu">
-          <span className={`block h-0.5 bg-gray-400 transition-all duration-200 ${menuOpen ? 'rotate-45 translate-y-[7px] w-6' : 'w-6'}`} />
-          <span className={`block h-0.5 bg-gray-400 transition-all duration-200 ${menuOpen ? 'opacity-0 w-6' : 'w-6'}`} />
-          <span className={`block h-0.5 bg-gray-400 transition-all duration-200 ${menuOpen ? '-rotate-45 -translate-y-[7px] w-6' : 'w-6'}`} />
+          <span className={`block h-0.5 transition-all duration-200 ${menuOpen ? 'rotate-45 translate-y-[7px] w-6' : 'w-6'}`} style={{ background: 'var(--text-muted)' }} />
+          <span className={`block h-0.5 transition-all duration-200 ${menuOpen ? 'opacity-0 w-6' : 'w-6'}`} style={{ background: 'var(--text-muted)' }} />
+          <span className={`block h-0.5 transition-all duration-200 ${menuOpen ? '-rotate-45 -translate-y-[7px] w-6' : 'w-6'}`} style={{ background: 'var(--text-muted)' }} />
         </button>
 
         {/* Mobile dropdown */}
         {menuOpen && (
           <div className="absolute top-full left-0 right-0 z-50 border-b flex flex-col py-3 md:hidden"
-            style={{ background: '#0F1117', borderColor: '#2A3145' }}>
-            <Link href="/talent" className="px-5 py-3 text-sm font-semibold hover:text-white transition-colors"
+            style={{ background: 'var(--bg-nav)', borderColor: 'var(--border-color)' }}>
+            <Link href="/talent" className="px-5 py-3 text-sm font-semibold hover:opacity-80 transition-opacity"
               style={{ ...linkStyle('talent'), textDecoration: 'none' }}
               onClick={() => setMenuOpen(false)}>Browse Talent</Link>
-            <Link href="/listings" className="px-5 py-3 text-sm font-semibold hover:text-white transition-colors"
+            <Link href="/listings" className="px-5 py-3 text-sm font-semibold hover:opacity-80 transition-opacity"
               style={{ ...linkStyle('listings'), textDecoration: 'none' }}
               onClick={() => setMenuOpen(false)}>Listings</Link>
             <div className="px-5 pt-3 pb-1 flex flex-col gap-3">
+              <button onClick={() => { toggleTheme(); setMenuOpen(false) }} style={{ ...toggleBtnStyle, width: 'fit-content' }}>
+                {theme === 'dark' ? '☀️ Light mode' : '🌙 Dark mode'}
+              </button>
               {loggedIn ? (
                 <Link href="/dashboard"
                   className="text-center py-3 rounded-xl font-bold text-white"
@@ -110,7 +128,7 @@ export default function Navbar({ activeLink, rightSlot }: NavbarProps) {
                 <>
                   <Link href="/login"
                     className="text-center py-3 rounded-xl font-semibold border text-sm"
-                    style={{ color: '#8892A4', textDecoration: 'none', borderColor: '#2A3145' }}
+                    style={{ color: 'var(--text-muted)', textDecoration: 'none', borderColor: 'var(--border-color)' }}
                     onClick={() => setMenuOpen(false)}>Sign in</Link>
                   <Link href="/signup"
                     className="text-center py-3 rounded-xl font-bold text-white"

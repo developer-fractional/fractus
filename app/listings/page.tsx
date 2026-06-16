@@ -13,21 +13,19 @@ const SORTS = [
   { label: 'Oldest first', value: 'oldest' },
 ]
 
-// ── Style helpers ─────────────────────────────────────────────────────────────
-
 function pill(active: boolean): React.CSSProperties {
   return active
-    ? { background: 'rgba(5,128,155,0.15)', border: '1px solid #05809B',  color: '#05809B',  borderRadius: '100px', padding: '7px 16px', fontSize: '13px', fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0 }
-    : { background: '#1B2130',               border: '1px solid #2A3145',  color: '#8892A4',  borderRadius: '100px', padding: '7px 16px', fontSize: '13px', fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0 }
+    ? { background: 'rgba(5,128,155,0.15)', border: '1px solid #05809B', color: '#05809B', borderRadius: '100px', padding: '7px 16px', fontSize: '13px', fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0 }
+    : { background: 'var(--bg-card)', border: '1px solid var(--border-color)', color: 'var(--text-muted)', borderRadius: '100px', padding: '7px 16px', fontSize: '13px', fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0 }
 }
 
 const filterLabel: React.CSSProperties = {
-  color: '#4A5568', fontSize: '12px', fontWeight: 700, letterSpacing: '0.06em',
+  color: 'var(--text-secondary)', fontSize: '12px', fontWeight: 700, letterSpacing: '0.06em',
   textTransform: 'uppercase', whiteSpace: 'nowrap', alignSelf: 'center', marginRight: '4px'
 }
 
 const filterBar: React.CSSProperties = {
-  borderBottom: '1px solid #2A3145', padding: '14px 0'
+  borderBottom: '1px solid var(--border-color)', padding: '14px 0'
 }
 
 const innerRow = (extra?: React.CSSProperties): React.CSSProperties => ({
@@ -42,7 +40,7 @@ export default function ListingsPage() {
   const [search,           setSearch]           = useState('')
   const [filterDiscipline, setFilterDiscipline] = useState('')
   const [filterEngagement, setFilterEngagement] = useState('')
-  const [filterRemote,     setFilterRemote]     = useState('')   // '' | 'remote' | 'onsite'
+  const [filterRemote,     setFilterRemote]     = useState('')
   const [sort,             setSort]             = useState('newest')
   const [companyMap,       setCompanyMap]       = useState<Map<string, {id: string, name: string}>>(new Map())
 
@@ -61,10 +59,8 @@ export default function ListingsPage() {
       })
   }, [])
 
-  // ── Active filter count ────────────────────────────────────────────────────
   const activeFilterCount = [filterDiscipline, filterEngagement, filterRemote, sort !== 'newest' ? sort : ''].filter(Boolean).length
 
-  // ── Filter + sort ──────────────────────────────────────────────────────────
   const filtered = listings
     .filter(l => {
       const q = search.toLowerCase()
@@ -85,24 +81,24 @@ export default function ListingsPage() {
   function clearAll() { setSearch(''); setFilterDiscipline(''); setFilterEngagement(''); setFilterRemote(''); setSort('newest') }
 
   return (
-    <div style={{ minHeight: '100vh', background: '#0F1117', fontFamily: "'Nunito Sans', sans-serif" }}>
+    <div style={{ minHeight: '100vh', background: 'var(--bg-primary)', fontFamily: "'Nunito Sans', sans-serif" }}>
 
       <Navbar activeLink="listings" />
 
       {/* Hero */}
-      <div style={{ background: '#1B2130', borderBottom: '1px solid #2A3145', padding: 'clamp(40px,6vw,64px) 20px' }}>
+      <div style={{ background: 'var(--bg-card)', borderBottom: '1px solid var(--border-color)', padding: 'clamp(40px,6vw,64px) 20px' }}>
         <div style={{ maxWidth: '960px', margin: '0 auto' }}>
           <p style={{ color: '#F6981F', fontWeight: 700, fontSize: '13px', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '12px' }}>Opportunities</p>
-          <h1 style={{ fontFamily: "'Nunito', sans-serif", fontSize: 'clamp(28px,6vw,48px)', fontWeight: 800, color: 'white', marginBottom: '12px' }}>
+          <h1 style={{ fontFamily: "'Nunito', sans-serif", fontSize: 'clamp(28px,6vw,48px)', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '12px' }}>
             Fractional AECO Jobs
           </h1>
-          <p style={{ color: '#8892A4', fontSize: '18px', marginBottom: '28px' }}>
+          <p style={{ color: 'var(--text-muted)', fontSize: '18px', marginBottom: '28px' }}>
             Part-time, project-based, and fractional roles for senior AECO professionals.
           </p>
           <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
             <input type="text" placeholder="Search listings by title, company, or description..."
               value={search} onChange={e => setSearch(e.target.value)}
-              style={{ flex: 1, minWidth: '200px', background: '#0F1117', border: '1.5px solid #2A3145', borderRadius: '12px', padding: '14px 18px', color: 'white', fontSize: '15px', outline: 'none' }} />
+              style={{ flex: 1, minWidth: '200px', background: 'var(--input-bg)', border: '1.5px solid var(--border-color)', borderRadius: '12px', padding: '14px 18px', color: 'var(--text-primary)', fontSize: '15px', outline: 'none' }} />
             <Link href="/listings/new"
               style={{ background: '#F6981F', color: 'white', textDecoration: 'none', borderRadius: '12px', padding: '14px 22px', fontSize: '15px', fontWeight: 700, whiteSpace: 'nowrap' }}>
               + Post a listing
@@ -111,7 +107,7 @@ export default function ListingsPage() {
         </div>
       </div>
 
-      {/* ── Filter bar: Discipline pills ────────────────────────────────────── */}
+      {/* Filter bar: Discipline */}
       <div style={filterBar}>
         <div style={{ maxWidth: '960px', margin: '0 auto', padding: '0 20px' }}>
           <div style={{ display: 'flex', gap: '8px', overflowX: 'auto', paddingBottom: '2px', scrollbarWidth: 'none', alignItems: 'center' }}>
@@ -125,7 +121,7 @@ export default function ListingsPage() {
         </div>
       </div>
 
-      {/* ── Filter bar: Engagement type pills ──────────────────────────────── */}
+      {/* Filter bar: Engagement type */}
       <div style={filterBar}>
         <div style={{ maxWidth: '960px', margin: '0 auto', padding: '0 20px' }}>
           <div style={{ display: 'flex', gap: '8px', overflowX: 'auto', paddingBottom: '2px', scrollbarWidth: 'none', alignItems: 'center' }}>
@@ -139,10 +135,9 @@ export default function ListingsPage() {
         </div>
       </div>
 
-      {/* ── Filter bar: Remote toggle + Sort (same row) ─────────────────────── */}
+      {/* Filter bar: Remote + Sort */}
       <div style={filterBar}>
         <div style={innerRow({ justifyContent: 'space-between' })}>
-          {/* Remote pills */}
           <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
             <span style={filterLabel}>Location</span>
             {REMOTE_OPTIONS.map(r => {
@@ -154,7 +149,6 @@ export default function ListingsPage() {
               )
             })}
           </div>
-          {/* Sort + active count */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
             {activeFilterCount > 0 && (
               <button onClick={clearAll}
@@ -164,24 +158,24 @@ export default function ListingsPage() {
             )}
             <span style={filterLabel}>Sort</span>
             <select value={sort} onChange={e => setSort(e.target.value)}
-              style={{ background: '#1B2130', border: '1px solid #2A3145', borderRadius: '10px', padding: '8px 14px', color: 'white', fontSize: '13px', fontWeight: 600, outline: 'none', cursor: 'pointer' }}>
+              style={{ background: 'var(--bg-card)', border: '1px solid var(--border-color)', borderRadius: '10px', padding: '8px 14px', color: 'var(--text-primary)', fontSize: '13px', fontWeight: 600, outline: 'none', cursor: 'pointer' }}>
               {SORTS.map(s => <option key={s.value} value={s.value}>{s.label}</option>)}
             </select>
           </div>
         </div>
       </div>
 
-      {/* ── Listings ─────────────────────────────────────────────────────────── */}
+      {/* Listings */}
       <div style={{ maxWidth: '960px', margin: '0 auto', padding: 'clamp(32px,4vw,48px) 20px' }}>
         {loading ? (
-          <div style={{ textAlign: 'center', padding: '80px', color: '#4A5568', fontSize: '18px' }}>Loading listings...</div>
+          <div style={{ textAlign: 'center', padding: '80px', color: 'var(--text-secondary)', fontSize: '18px' }}>Loading listings...</div>
         ) : filtered.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '80px 20px' }}>
             <div style={{ fontSize: '48px', marginBottom: '16px' }}>📋</div>
-            <h3 style={{ fontFamily: "'Nunito', sans-serif", fontSize: '22px', fontWeight: 800, color: 'white', marginBottom: '10px' }}>
+            <h3 style={{ fontFamily: "'Nunito', sans-serif", fontSize: '22px', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '10px' }}>
               {search || activeFilterCount > 0 ? 'No listings match your filters' : 'No listings yet'}
             </h3>
-            <p style={{ color: '#8892A4', fontSize: '15px', marginBottom: '28px', maxWidth: '400px', margin: '0 auto 28px' }}>
+            <p style={{ color: 'var(--text-muted)', fontSize: '15px', marginBottom: '28px', maxWidth: '400px', margin: '0 auto 28px' }}>
               {search || activeFilterCount > 0
                 ? 'Try adjusting your search or clearing the filters.'
                 : 'No listings found. Be the first to post a fractional opportunity!'}
@@ -200,7 +194,7 @@ export default function ListingsPage() {
           </div>
         ) : (
           <>
-            <p style={{ color: '#4A5568', fontSize: '14px', marginBottom: '20px' }}>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '14px', marginBottom: '20px' }}>
               {filtered.length} listing{filtered.length !== 1 ? 's' : ''} found
             </p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
@@ -208,13 +202,13 @@ export default function ListingsPage() {
               const co = l.posted_by ? companyMap.get(l.posted_by) : null
               return (
                 <Link key={l.id || i} href={'/listings/' + l.id}
-                  style={{ textDecoration: 'none', display: 'block', background: '#1B2130', border: '1px solid #2A3145', borderRadius: '16px', padding: 'clamp(20px,3vw,28px)', transition: 'opacity 0.15s' }}
+                  style={{ textDecoration: 'none', display: 'block', background: 'var(--bg-card)', border: '1px solid var(--border-color)', borderRadius: '16px', padding: 'clamp(20px,3vw,28px)', transition: 'opacity 0.15s' }}
                   onMouseEnter={e => (e.currentTarget.style.opacity = '0.85')}
                   onMouseLeave={e => (e.currentTarget.style.opacity = '1')}>
 
                   <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '12px', marginBottom: '12px', flexWrap: 'wrap' }}>
                     <div>
-                      <h3 style={{ fontFamily: "'Nunito', sans-serif", fontSize: '19px', fontWeight: 800, color: 'white', marginBottom: '4px' }}>{l.title}</h3>
+                      <h3 style={{ fontFamily: "'Nunito', sans-serif", fontSize: '19px', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '4px' }}>{l.title}</h3>
                       <p
                         style={{ color: '#05809B', fontSize: '15px', fontWeight: 600, cursor: co ? 'pointer' : 'default' }}
                         onClick={co ? e => { e.stopPropagation(); window.location.href = `/company/${co.id}` } : undefined}>
@@ -226,23 +220,22 @@ export default function ListingsPage() {
                     </span>
                   </div>
 
-                  {/* Tags */}
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '14px' }}>
                     {l.discipline    && <span style={{ fontSize: '12px', padding: '4px 12px', borderRadius: '100px', background: 'rgba(5,128,155,0.1)', color: '#05809B', border: '1px solid rgba(5,128,155,0.2)', fontWeight: 600 }}>{l.discipline}</span>}
                     {l.engagement_type && <span style={{ fontSize: '12px', padding: '4px 12px', borderRadius: '100px', background: 'rgba(5,128,155,0.1)', color: '#05809B', border: '1px solid rgba(5,128,155,0.2)', fontWeight: 600 }}>{l.engagement_type}</span>}
-                    {l.remote        && <span style={{ fontSize: '12px', padding: '4px 12px', borderRadius: '100px', background: '#1B2130', color: '#8892A4', border: '1px solid #2A3145', fontWeight: 600 }}>🌐 Remote</span>}
+                    {l.remote        && <span style={{ fontSize: '12px', padding: '4px 12px', borderRadius: '100px', background: 'var(--bg-card)', color: 'var(--text-muted)', border: '1px solid var(--border-color)', fontWeight: 600 }}>🌐 Remote</span>}
                   </div>
 
                   {l.description && (
-                    <p style={{ color: '#8892A4', fontSize: '14px', lineHeight: 1.6, marginBottom: '14px', display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                    <p style={{ color: 'var(--text-muted)', fontSize: '14px', lineHeight: 1.6, marginBottom: '14px', display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
                       {l.description}
                     </p>
                   )}
 
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px' }}>
-                    {l.location    && <span style={{ color: '#4A5568', fontSize: '13px' }}>📍 {l.location}</span>}
-                    {l.rate        && <span style={{ color: '#4A5568', fontSize: '13px' }}>💰 {l.rate}</span>}
-                    {l.created_at  && <span style={{ color: '#4A5568', fontSize: '13px' }}>🗓 {new Date(l.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>}
+                    {l.location    && <span style={{ color: 'var(--text-secondary)', fontSize: '13px' }}>📍 {l.location}</span>}
+                    {l.rate        && <span style={{ color: 'var(--text-secondary)', fontSize: '13px' }}>💰 {l.rate}</span>}
+                    {l.created_at  && <span style={{ color: 'var(--text-secondary)', fontSize: '13px' }}>🗓 {new Date(l.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>}
                   </div>
                 </Link>
               )

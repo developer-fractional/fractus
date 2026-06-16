@@ -1,25 +1,73 @@
 @import "tailwindcss";
 
-:root {
-  --color-primary: #F6981F;
-  --color-teal: #05809B;
-  --color-bg: #0F1117;
-  --color-bg-card: #1B2130;
-  --color-border: #2A3145;
-  --color-muted: #8892A4;
+/* ── Light theme ─────────────────────────────────────────────────────────── */
+[data-theme="light"] {
+  --bg-primary:   #EEF4F2;
+  --bg-card:      #FFFFFF;
+  --bg-nav:       #FFFFFF;
+  --border-color: #E2EAE7;
+  --text-primary: #0F1117;
+  --text-secondary: #4A5568;
+  --text-muted:   #8892A4;
+  --input-bg:     #F7FAF9;
+  --shadow:       0 1px 3px rgba(0,0,0,0.08);
 
-  /* Aliases used across dashboard/profile/talent pages.
-     "accent" = brand orange, "accent-light" = brand teal. Keeping both names
-     defined avoids text silently rendering with no color (the CSS falls back
-     to "unset" when a variable is missing). */
-  --color-accent: #F6981F;
+  /* Legacy variable aliases (for pages that already use these names) */
+  --color-bg:       #EEF4F2;
+  --color-bg-card:  #FFFFFF;
+  --color-border:   #E2EAE7;
+  --color-muted:    #8892A4;
+}
+
+/* ── Dark theme ──────────────────────────────────────────────────────────── */
+[data-theme="dark"] {
+  --bg-primary:   #0F1117;
+  --bg-card:      #1B2130;
+  --bg-nav:       #0F1117;
+  --border-color: #2A3145;
+  --text-primary: #FFFFFF;
+  --text-secondary: #C0C8D8;
+  --text-muted:   #8892A4;
+  --input-bg:     #1B2130;
+  --shadow:       none;
+
+  /* Legacy variable aliases */
+  --color-bg:       #0F1117;
+  --color-bg-card:  #1B2130;
+  --color-border:   #2A3145;
+  --color-muted:    #8892A4;
+}
+
+/* ── Defaults (applied before JS/hydration — matches light theme) ─────────── */
+:root {
+  --bg-primary:   #EEF4F2;
+  --bg-card:      #FFFFFF;
+  --bg-nav:       #FFFFFF;
+  --border-color: #E2EAE7;
+  --text-primary: #0F1117;
+  --text-secondary: #4A5568;
+  --text-muted:   #8892A4;
+  --input-bg:     #F7FAF9;
+  --shadow:       0 1px 3px rgba(0,0,0,0.08);
+
+  /* Brand colors — unchanged in both themes */
+  --color-primary:      #F6981F;
+  --color-teal:         #05809B;
+  --color-accent:       #F6981F;
   --color-accent-light: #05809B;
+
+  /* Legacy aliases */
+  --color-bg:       #EEF4F2;
+  --color-bg-card:  #FFFFFF;
+  --color-border:   #E2EAE7;
+  --color-muted:    #8892A4;
 }
 
 html, body {
-  background-color: #0F1117;
-  color: white;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
   margin: 0;
   padding: 0;
   font-family: 'Nunito Sans', sans-serif;
+  transition: background-color 0.2s, color 0.2s;
 }

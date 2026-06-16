@@ -20,7 +20,7 @@ interface DashCard {
   title: string
   desc: string
   href: string
-  accent?: string   // border/icon colour override
+  accent?: string
   prominent?: boolean
 }
 
@@ -49,12 +49,11 @@ export default function Dashboard() {
   }
 
   if (loading) return (
-    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#0F1117' }}>
+    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg-primary)' }}>
       <p style={{ color: '#F6981F', fontSize: '20px', fontFamily: "'Nunito Sans', sans-serif" }}>Loading...</p>
     </div>
   )
 
-  // ── Derive view type ──────────────────────────────────────────────────────
   const isAdmin   = !!profile?.is_admin
   const role      = profile?.role ?? ''
   const name      = profile?.name ?? user?.email ?? ''
@@ -63,7 +62,6 @@ export default function Dashboard() {
 
   const profileComplete = !!(profile?.name && profile?.discipline)
 
-  // ── Card sets ─────────────────────────────────────────────────────────────
   const talentCards: DashCard[] = [
     profileComplete
       ? { icon: '✅', title: 'Profile Looks Great', desc: 'Your profile is visible to employers — keep it up to date', href: '/profile', accent: '#22c55e' }
@@ -91,12 +89,11 @@ export default function Dashboard() {
   const cards    = isAdmin ? adminCards : isEmployer ? employerCards : talentCards
   const greeting = isAdmin ? 'Admin Dashboard 🛠️' : `Welcome back, ${name.split(' ')[0] || name}! 👋`
 
-  // Role pill
   const pillLabel = isAdmin ? 'Admin' : role || 'Fractional Professional'
   const pillColor = isAdmin ? '#F6981F' : isEmployer ? '#F6981F' : '#05809B'
 
   return (
-    <main style={{ minHeight: '100vh', background: '#0F1117', fontFamily: "'Nunito Sans', sans-serif" }}>
+    <main style={{ minHeight: '100vh', background: 'var(--bg-primary)', fontFamily: "'Nunito Sans', sans-serif" }}>
 
       <Navbar activeLink="dashboard" />
 
@@ -105,11 +102,11 @@ export default function Dashboard() {
         {/* Header row */}
         <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'flex-start', justifyContent: 'space-between', gap: '16px', marginBottom: '40px' }}>
           <div>
-            <h2 style={{ fontFamily: "'Nunito', sans-serif", fontSize: 'clamp(26px, 5vw, 38px)', fontWeight: 800, color: 'white', marginBottom: '10px', letterSpacing: '-0.5px' }}>
+            <h2 style={{ fontFamily: "'Nunito', sans-serif", fontSize: 'clamp(26px, 5vw, 38px)', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '10px', letterSpacing: '-0.5px' }}>
               {greeting}
             </h2>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
-              <span style={{ fontSize: '14px', color: '#8892A4' }}>
+              <span style={{ fontSize: '14px', color: 'var(--text-muted)' }}>
                 {user?.email}
               </span>
               <span style={{
@@ -122,12 +119,12 @@ export default function Dashboard() {
             </div>
           </div>
           <button onClick={handleLogout}
-            style={{ color: '#8892A4', background: 'none', border: '1px solid #2A3145', borderRadius: '100px', padding: '8px 20px', fontSize: '14px', fontWeight: 600, cursor: 'pointer' }}>
+            style={{ color: 'var(--text-muted)', background: 'none', border: '1px solid var(--border-color)', borderRadius: '100px', padding: '8px 20px', fontSize: '14px', fontWeight: 600, cursor: 'pointer' }}>
             Log out
           </button>
         </div>
 
-        {/* Profile completion banner — talent only, when incomplete */}
+        {/* Profile completion banner */}
         {isTalent && !profileComplete && (
           <div style={{
             borderRadius: '16px', border: '1px solid rgba(246,152,32,0.3)',
@@ -138,8 +135,8 @@ export default function Dashboard() {
             <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
               <span style={{ fontSize: '20px', marginTop: '2px' }}>⚠️</span>
               <div>
-                <p style={{ color: 'white', fontWeight: 700, marginBottom: '4px' }}>Complete your profile to appear in talent search</p>
-                <p style={{ color: '#8892A4', fontSize: '14px' }}>Add your name, discipline, and bio so companies can find and book you.</p>
+                <p style={{ color: 'var(--text-primary)', fontWeight: 700, marginBottom: '4px' }}>Complete your profile to appear in talent search</p>
+                <p style={{ color: 'var(--text-muted)', fontSize: '14px' }}>Add your name, discipline, and bio so companies can find and book you.</p>
               </div>
             </div>
             <Link href="/profile" style={{
@@ -159,15 +156,15 @@ export default function Dashboard() {
             return (
               <Link key={i} href={card.href} style={{ textDecoration: 'none' }}>
                 <div style={{
-                  background: '#1B2130',
-                  border: `1px solid ${card.prominent ? accent + '50' : '#2A3145'}`,
+                  background: 'var(--bg-card)',
+                  border: `1px solid ${card.prominent ? accent + '50' : 'var(--border-color)'}`,
                   borderRadius: '16px',
                   padding: '28px 24px',
                   height: '100%',
                   cursor: 'pointer',
                   transition: 'opacity 0.15s',
                   boxSizing: 'border-box',
-                  ...(card.prominent ? { boxShadow: `0 0 0 1px ${accent}30` } : {}),
+                  boxShadow: card.prominent ? `0 0 0 1px ${accent}30` : 'var(--shadow)',
                 }}
                   onMouseEnter={e => (e.currentTarget.style.opacity = '0.8')}
                   onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
@@ -182,11 +179,11 @@ export default function Dashboard() {
                   </div>
                   <h3 style={{
                     fontFamily: "'Nunito', sans-serif", fontSize: '17px', fontWeight: 800,
-                    color: card.prominent ? accent : 'white', marginBottom: '8px'
+                    color: card.prominent ? accent : 'var(--text-primary)', marginBottom: '8px'
                   }}>
                     {card.title}
                   </h3>
-                  <p style={{ color: '#8892A4', fontSize: '14px', lineHeight: 1.6 }}>
+                  <p style={{ color: 'var(--text-muted)', fontSize: '14px', lineHeight: 1.6 }}>
                     {card.desc}
                   </p>
                 </div>
