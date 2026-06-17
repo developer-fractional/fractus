@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getSupabaseAdmin } from '../../lib/supabase-admin'
+import { resend, FROM_EMAIL } from '../../lib/resend'
+import { brandedEmail } from '../../lib/email-template'
 
 export async function POST(req: NextRequest) {
   try {
@@ -36,26 +38,32 @@ export async function POST(req: NextRequest) {
     const listing_title  = listing?.title ?? 'Unknown listing'
     const applicant_name = applicant?.name ?? 'Someone'
 
-    console.log('[notify-application]', {
-      employer_email,
-      employer_name: employer?.name,
-      listing_title,
-      listing_company: listing?.company,
-      applicant_name,
-      applicant_discipline: applicant?.discipline,
-      applicant_years: applicant?.years_experience,
-    })
-
-    // TODO: replace with Resend email send in a later phase
-    // Example body when ready:
-    // Subject: `New application for "${listing_title}" on Fractus`
-    // Body: `${applicant_name} (${applicant?.discipline}, ${applicant?.years_experience} yrs)
-    //        applied to your listing "${listing_title}" at ${listing?.company}.
-    //        View their profile on Fractus.`
+    try {
+      if (employer_email) {
+        await resend.emails.send({
+          from: FROM_EMAIL,
+          to: employer_email,
+          subject: `New application: ${applicant_name} applied to ${listing_title}`,
+          html: brandedEmail({
+            greeting: `Hi ${employer?.name ?? 'there'},`,
+            bodyHtml: `
+              <p style="margin: 0 0 12px;"><strong>${applicant_name}</strong> just applied to your listing <strong>"${listing_title}"</strong>${listing?.company ? ` at ${listing.company}` : ''}.</p>
+              <p style="margin: 0;">
+                ${applicant?.discipline ? `Discipline: ${applicant.discipline}<br/>` : ''}
+                ${applicant?.years_experience ? `Experience: ${applicant.years_experience} years` : ''}
+              </p>
+            `,
+            buttonText: 'Review application',
+            buttonUrl: 'https://fractus.fractionalaeco.com/dashboard/applications',
+          }),
+        })
+      }
+    } catch (emailErr) {
+      console.error('[notify-application] email send failed:', emailErr)
+    }
 
     return NextResponse.json({
       success: true,
-      message: 'Notification logged',
       employer_email,
       listing_title,
       applicant_name,

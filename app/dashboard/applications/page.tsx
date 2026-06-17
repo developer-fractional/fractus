@@ -121,9 +121,18 @@ export default function ApplicationsPage() {
 
   async function updateStatus(appId: string, status: 'accepted' | 'rejected') {
     setUpdating(appId)
-    await supabase.from('applications').update({ status }).eq('id', appId)
+    const { error } = await supabase.from('applications').update({ status }).eq('id', appId)
     setEmployerApps(prev => prev.map(a => a.id === appId ? { ...a, status } : a))
     setUpdating(null)
+
+    if (!error) {
+      // Fire-and-forget: notify the applicant by email
+      fetch('/api/notify-application-status', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ application_id: appId, status }),
+      }).catch(err => console.error('[notify-application-status] request failed:', err))
+    }
   }
 
   // ── Loading ────────────────────────────────────────────────────────────────
