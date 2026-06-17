@@ -244,7 +244,7 @@ export default function ProfilePage() {
         </div>
 
         {/* ── Cover + avatar (LinkedIn-style header) ──────────────────────── */}
-        <div className="relative" style={{ marginBottom: '24px' }}>
+        <div className="relative">
           {/* Cover banner */}
           <div className="group relative rounded-2xl overflow-hidden" style={{
             height: '200px',
@@ -282,12 +282,11 @@ export default function ProfilePage() {
           </div>
         </div>
 
-        {(avatarError || coverError) && (
-          <p style={{ color: '#f87171', fontSize: '13px', marginTop: '-12px', marginBottom: '20px' }}>{avatarError || coverError}</p>
-        )}
-
-        {/* Name / role / tags — sits below the avatar */}
-        <div style={{ paddingTop: '52px', marginBottom: '32px' }}>
+        {/* Name / role / tags — sits below the avatar (single paddingTop clears the 60px avatar overlap + a 16px gap) */}
+        <div style={{ paddingTop: '76px', marginBottom: '32px' }}>
+          {(avatarError || coverError) && (
+            <p style={{ color: '#f87171', fontSize: '13px', marginBottom: '12px' }}>{avatarError || coverError}</p>
+          )}
           <div className="flex items-center gap-3 mb-1 flex-wrap">
             <span className="font-bold" style={{ fontSize: '24px', color: 'var(--text-primary)' }}>{form.name || 'Your Name'}</span>
             <span className="text-xs px-2 py-1 rounded-full font-medium" style={{ background: 'var(--color-primary)', color: 'white' }}>AECO Pro</span>

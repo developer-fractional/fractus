@@ -6,9 +6,10 @@ const supabaseServer = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 )
 
-export async function generateMetadata({ params }: { params: { id: string } }) {
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params
   const { data } = await supabaseServer
-    .from('profiles').select('name, discipline, location').eq('id', params.id).single()
+    .from('profiles').select('name, discipline, location').eq('id', id).single()
   return {
     title: data ? `${data.name} — ${data.discipline} | Fractus` : 'Talent Profile | Fractus',
     description: data
@@ -17,6 +18,7 @@ export async function generateMetadata({ params }: { params: { id: string } }) {
   }
 }
 
-export default function TalentPage({ params }: { params: { id: string } }) {
-  return <TalentProfileClient id={params.id} />
+export default async function TalentPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params
+  return <TalentProfileClient id={id} />
 }
