@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getSupabaseAdmin } from '../../lib/supabase-admin'
-import { resend, FROM_EMAIL } from '../../lib/resend'
+import { getResend, FROM_EMAIL } from '../../lib/resend'
 import { brandedEmail } from '../../lib/email-template'
 
 export async function POST(req: NextRequest) {
@@ -48,6 +48,7 @@ export async function POST(req: NextRequest) {
 
     try {
       if (applicant_email) {
+        const resend = getResend()
         await resend.emails.send({
           from: FROM_EMAIL,
           to: applicant_email,
