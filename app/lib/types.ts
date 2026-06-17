@@ -19,6 +19,8 @@ export interface Profile {
   is_verified: boolean | null
   is_admin: boolean | null
   bio?: string | null
+  avatar_url?: string | null
+  cover_url?: string | null
   created_at?: string | null
   updated_at?: string | null
 }

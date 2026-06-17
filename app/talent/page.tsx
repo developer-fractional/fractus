@@ -203,8 +203,12 @@ export default function TalentPage() {
                 const cardContent = (
                   <>
                     <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '16px' }}>
-                      <div style={{ width: '52px', height: '52px', borderRadius: '12px', background: '#F6981F', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: 800, fontSize: '20px', fontFamily: "'Nunito', sans-serif" }}>
-                        {p.name?.charAt(0)}
+                      <div style={{ width: '52px', height: '52px', borderRadius: '12px', overflow: 'hidden', background: p.avatar_url ? 'var(--bg-primary)' : '#F6981F', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: 800, fontSize: '20px', fontFamily: "'Nunito', sans-serif", flexShrink: 0 }}>
+                        {p.avatar_url ? (
+                          <img src={p.avatar_url} alt={p.name ?? 'Avatar'} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+                        ) : (
+                          p.name?.charAt(0)
+                        )}
                       </div>
                       {isDemo && (
                         <span style={{ fontSize: '12px', padding: '4px 10px', borderRadius: '100px', background: 'rgba(246,152,32,0.15)', color: '#F6981F', border: '1px solid rgba(246,152,32,0.3)', fontWeight: 700 }}>Demo</span>
