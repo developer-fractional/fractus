@@ -41,7 +41,11 @@ export async function POST(req: NextRequest) {
       .eq('id', application.applicant_id)
       .single()
 
-    const applicant_email = applicant?.email ?? null
+    let applicant_email = applicant?.email ?? null
+    if (!applicant_email && application?.applicant_id) {
+      const { data: authUser } = await supabaseAdmin.auth.admin.getUserById(application.applicant_id)
+      applicant_email = authUser?.user?.email ?? null
+    }
     const listing_title   = listing?.title ?? 'Unknown listing'
     const listing_company = listing?.company ?? ''
     const verb            = status === 'accepted' ? 'accepted' : 'declined'
@@ -62,6 +66,8 @@ export async function POST(req: NextRequest) {
             buttonUrl: 'https://fractus.fractionalaeco.com/dashboard/applications',
           }),
         })
+      } else {
+        console.warn('[notify-application-status] no applicant email on file, skipping send', { applicant_id: application?.applicant_id })
       }
     } catch (emailErr) {
       console.error('[notify-application-status] email send failed:', emailErr)

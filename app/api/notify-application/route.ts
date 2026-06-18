@@ -34,7 +34,11 @@ export async function POST(req: NextRequest) {
       .eq('id', listing?.posted_by)
       .single()
 
-    const employer_email = employer?.email ?? null
+    let employer_email = employer?.email ?? null
+    if (!employer_email && listing?.posted_by) {
+      const { data: authUser } = await supabaseAdmin.auth.admin.getUserById(listing.posted_by)
+      employer_email = authUser?.user?.email ?? null
+    }
     const listing_title  = listing?.title ?? 'Unknown listing'
     const applicant_name = applicant?.name ?? 'Someone'
 
@@ -58,6 +62,8 @@ export async function POST(req: NextRequest) {
             buttonUrl: 'https://fractus.fractionalaeco.com/dashboard/applications',
           }),
         })
+      } else {
+        console.warn('[notify-application] no employer email on file, skipping send', { posted_by: listing?.posted_by })
       }
     } catch (emailErr) {
       console.error('[notify-application] email send failed:', emailErr)
