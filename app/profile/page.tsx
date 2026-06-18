@@ -4,9 +4,11 @@ import Link from 'next/link'
 import type { User } from '@supabase/supabase-js'
 import { supabase } from '../lib/supabase'
 import Navbar from '../components/Navbar'
+import EducationSection from './EducationSection'
+import WorkExperienceSection from './WorkExperienceSection'
+import CredentialsSection from './CredentialsSection'
 
 const DISCIPLINES = ['Architecture', 'Structural Engineering', 'MEP Engineering', 'Civil Engineering', 'Construction Management', 'BIM/VDC', 'Sustainability', 'Owner/Operator', 'Project Controls', 'Cost Management']
-const CERTIFICATIONS = ['LEED AP', 'AIA', 'PE', 'PMP', 'RIBA', 'WELL AP', 'ISO 19650', 'CCM', 'DBIA', 'Revit Certified']
 const AVAILABILITY = ['Available Now', 'Open to Work', 'Not Available']
 
 const IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp']
@@ -52,7 +54,6 @@ export default function ProfilePage() {
     years_experience: '',
     hourly_rate: '',
     availability: '',
-    certifications: [] as string[],
     skills: '',
     linkedin_url: '',
     portfolio_url: '',
@@ -79,7 +80,8 @@ export default function ProfilePage() {
       // Load existing profile
       supabase.from('profiles').select('*').eq('id', data.user.id).single().then(({ data: profile }) => {
         if (profile) {
-          setForm(f => ({ ...f, ...profile }))
+          const { certifications: _certifications, ...rest } = profile
+          setForm(f => ({ ...f, ...rest }))
           setAvatarUrl(profile.avatar_url ?? null)
           setCoverUrl(profile.cover_url ?? null)
         }
@@ -91,15 +93,6 @@ export default function ProfilePage() {
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
-
-  function toggleCert(cert: string) {
-    setForm(f => ({
-      ...f,
-      certifications: f.certifications.includes(cert)
-        ? f.certifications.filter(c => c !== cert)
-        : [...f.certifications, cert]
-    }))
-  }
 
   async function handleSave() {
     if (!user) return
@@ -376,23 +369,16 @@ export default function ProfilePage() {
                 <input type="text" placeholder="Revit, BIM, Mass Timber, Healthcare" value={form.skills} onChange={e => setForm({ ...form, skills: e.target.value })} className={inputClass} style={inputStyle} />
               </div>
             </div>
-            <div>
-              <label className={labelClass} style={labelStyle}>Certifications</label>
-              <div className="flex flex-wrap gap-3 mt-1">
-                {CERTIFICATIONS.map(cert => (
-                  <button key={cert} onClick={() => toggleCert(cert)}
-                    className="px-4 py-2 rounded-full text-sm font-medium transition-all cursor-pointer"
-                    style={{
-                      background: form.certifications.includes(cert) ? 'var(--color-primary)' : 'var(--color-bg)',
-                      color: form.certifications.includes(cert) ? 'white' : 'var(--color-accent)',
-                      border: `1.5px solid ${form.certifications.includes(cert) ? 'var(--color-primary)' : 'var(--color-border)'}`,
-                    }}>
-                    {form.certifications.includes(cert) ? '✓ ' : ''}{cert}
-                  </button>
-                ))}
-              </div>
-            </div>
           </div>
+
+          {/* Work experience, education, licenses & certifications */}
+          {user && (
+            <>
+              <WorkExperienceSection userId={user.id} />
+              <EducationSection userId={user.id} />
+              <CredentialsSection userId={user.id} />
+            </>
+          )}
 
           {/* Links */}
           <div className="rounded-2xl border p-8" style={{ background: 'var(--color-bg-card)', borderColor: 'var(--color-border)' }}>

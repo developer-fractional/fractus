@@ -2,19 +2,44 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { supabase } from '../../lib/supabase'
-import type { Profile } from '../../lib/types'
+import type { Profile, Education, WorkExperience, Credential } from '../../lib/types'
 import Navbar from '../../components/Navbar'
+
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+
+function formatMonthYear(month: number | null, year: number | null) {
+  if (!year) return ''
+  return month ? `${MONTHS[month - 1]} ${year}` : `${year}`
+}
 
 export default function TalentProfileClient({ id }: { id: string }) {
   const [profile, setProfile] = useState<Profile | null>(null)
+  const [workExperience, setWorkExperience] = useState<WorkExperience[]>([])
+  const [education, setEducation] = useState<Education[]>([])
+  const [credentials, setCredentials] = useState<Credential[]>([])
   const [loading, setLoading] = useState(true)
   const [notFound, setNotFound] = useState(false)
 
   useEffect(() => {
     if (!id) return
-    supabase.from('profiles').select('*').eq('id', id).single().then(({ data, error }) => {
-      if (error || !data) setNotFound(true)
-      else setProfile(data)
+    Promise.all([
+      supabase.from('profiles').select('*').eq('id', id).single(),
+      supabase.from('work_experience').select('*').eq('user_id', id)
+        .order('start_year', { ascending: false, nullsFirst: false })
+        .order('start_month', { ascending: false, nullsFirst: false }),
+      supabase.from('education').select('*').eq('user_id', id)
+        .order('start_year', { ascending: false, nullsFirst: false }),
+      supabase.from('credentials').select('*').eq('user_id', id)
+        .order('issue_year', { ascending: false, nullsFirst: false }),
+    ]).then(([profileRes, workRes, eduRes, credRes]) => {
+      if (profileRes.error || !profileRes.data) {
+        setNotFound(true)
+      } else {
+        setProfile(profileRes.data)
+        setWorkExperience((workRes.data as WorkExperience[]) ?? [])
+        setEducation((eduRes.data as Education[]) ?? [])
+        setCredentials((credRes.data as Credential[]) ?? [])
+      }
       setLoading(false)
     })
   }, [id])
@@ -46,7 +71,6 @@ export default function TalentProfileClient({ id }: { id: string }) {
     </div>
   )
 
-  const certifications = Array.isArray(profile.certifications) ? profile.certifications : []
   const skills = profile.skills ? profile.skills.split(',').map((s: string) => s.trim()).filter(Boolean) : []
 
   const availColor =
@@ -168,16 +192,77 @@ export default function TalentProfileClient({ id }: { id: string }) {
           </div>
         )}
 
-        {/* Certifications */}
-        {certifications.length > 0 && (
+        {/* Work Experience */}
+        {workExperience.length > 0 && (
           <div className="rounded-2xl border p-8 mb-6" style={{ background: 'var(--bg-card)', borderColor: 'var(--border-color)' }}>
-            <h2 className="font-bold mb-4" style={{ color: 'var(--text-primary)', fontSize: '20px', fontFamily: "'Nunito', sans-serif" }}>Certifications</h2>
-            <div className="flex flex-wrap gap-3">
-              {certifications.map((c: string, i: number) => (
-                <span key={i} className="text-sm px-4 py-2 rounded-full font-medium"
-                  style={{ background: 'var(--bg-primary)', color: '#05809B', border: '1px solid var(--border-color)' }}>
-                  {c}
-                </span>
+            <h2 className="font-bold mb-4" style={{ color: 'var(--text-primary)', fontSize: '20px', fontFamily: "'Nunito', sans-serif" }}>Work Experience</h2>
+            <div className="space-y-5">
+              {workExperience.map(w => (
+                <div key={w.id} style={{ paddingBottom: '16px', borderBottom: '1px solid var(--border-color)' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                    <span style={{ color: 'var(--text-primary)', fontWeight: 700, fontSize: '16px' }}>{w.title}</span>
+                    {w.is_current && (
+                      <span style={{ fontSize: '11px', fontWeight: 700, padding: '2px 10px', borderRadius: '100px', background: 'rgba(34,197,94,0.15)', color: '#22c55e' }}>Current</span>
+                    )}
+                  </div>
+                  <p style={{ color: 'var(--text-secondary)', fontSize: '14px', marginTop: '2px' }}>
+                    {w.company}{w.location ? ` · ${w.location}` : ''}
+                  </p>
+                  <p style={{ color: 'var(--text-muted)', fontSize: '13px', marginTop: '2px' }}>
+                    {formatMonthYear(w.start_month, w.start_year)} – {w.is_current ? 'Present' : (formatMonthYear(w.end_month, w.end_year) || 'Present')}
+                  </p>
+                  {w.description && (
+                    <p style={{ color: 'var(--text-secondary)', fontSize: '14px', marginTop: '8px', lineHeight: '1.7' }}>{w.description}</p>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Education */}
+        {education.length > 0 && (
+          <div className="rounded-2xl border p-8 mb-6" style={{ background: 'var(--bg-card)', borderColor: 'var(--border-color)' }}>
+            <h2 className="font-bold mb-4" style={{ color: 'var(--text-primary)', fontSize: '20px', fontFamily: "'Nunito', sans-serif" }}>Education</h2>
+            <div className="space-y-5">
+              {education.map(e => (
+                <div key={e.id} style={{ paddingBottom: '16px', borderBottom: '1px solid var(--border-color)' }}>
+                  <span style={{ color: 'var(--text-primary)', fontWeight: 700, fontSize: '16px' }}>{e.school}</span>
+                  <p style={{ color: 'var(--text-secondary)', fontSize: '14px', marginTop: '2px' }}>
+                    {[e.degree, e.field_of_study].filter(Boolean).join(', ')}
+                  </p>
+                  <p style={{ color: 'var(--text-muted)', fontSize: '13px', marginTop: '2px' }}>
+                    {e.start_year ?? ''}{(e.start_year || e.end_year) ? ' – ' : ''}{e.end_year ?? (e.start_year ? 'Present' : '')}
+                  </p>
+                  {e.description && (
+                    <p style={{ color: 'var(--text-secondary)', fontSize: '14px', marginTop: '8px', lineHeight: '1.7' }}>{e.description}</p>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Licenses & Certifications */}
+        {credentials.length > 0 && (
+          <div className="rounded-2xl border p-8 mb-6" style={{ background: 'var(--bg-card)', borderColor: 'var(--border-color)' }}>
+            <h2 className="font-bold mb-4" style={{ color: 'var(--text-primary)', fontSize: '20px', fontFamily: "'Nunito', sans-serif" }}>Licenses & Certifications</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {credentials.map(c => (
+                <div key={c.id} className="rounded-xl p-5" style={{ background: 'var(--bg-primary)', border: '1px solid var(--border-color)' }}>
+                  <span style={{ color: 'var(--text-primary)', fontWeight: 700, fontSize: '15px' }}>{c.name}</span>
+                  <p style={{ color: 'var(--text-secondary)', fontSize: '13px', marginTop: '4px' }}>
+                    {[c.issuing_organization, c.license_number, c.state].filter(Boolean).join(' · ')}
+                  </p>
+                  <p style={{ color: 'var(--text-muted)', fontSize: '12px', marginTop: '4px' }}>
+                    {c.issue_year ? `Issued ${c.issue_year}` : ''}{c.expiration_year ? `${c.issue_year ? ' · ' : ''}Expires ${c.expiration_year}` : ''}
+                  </p>
+                  {c.credential_url && (
+                    <a href={c.credential_url} target="_blank" rel="noopener noreferrer" style={{ color: '#05809B', fontSize: '12px', fontWeight: 700, marginTop: '6px', display: 'inline-block' }}>
+                      View credential →
+                    </a>
+                  )}
+                </div>
               ))}
             </div>
           </div>

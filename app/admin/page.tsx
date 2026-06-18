@@ -5,6 +5,12 @@ import type { User } from '@supabase/supabase-js'
 import { supabase } from '../lib/supabase'
 import type { Profile, Listing } from '../lib/types'
 
+const SUPERADMIN = 'development@fractionalaeco.com'
+const ROLES = ['Fractional Professional', 'Contractor', 'Architect', 'Engineer', 'Owner / Operator', 'Employer / Hiring']
+const DISCIPLINES = ['Architecture', 'Structural Engineering', 'MEP Engineering', 'Civil Engineering', 'Construction Management', 'BIM/VDC', 'Sustainability', 'Owner/Operator', 'Project Controls', 'Cost Management', 'Interior Design', 'Urban Planning']
+
+type AddUserForm = { name: string; email: string; role: string; discipline: string; is_admin: boolean }
+
 export default function AdminPage() {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
@@ -13,6 +19,18 @@ export default function AdminPage() {
   const [listings, setListings] = useState<Listing[]>([])
   const [stats, setStats] = useState({ users: 0, listings: 0, verified: 0, applications: 0 })
   const [userSearch, setUserSearch] = useState('')
+
+  // Add user modal
+  const [showAddUser, setShowAddUser] = useState(false)
+  const [addForm, setAddForm] = useState<AddUserForm>({ name: '', email: '', role: '', discipline: '', is_admin: false })
+  const [addLoading, setAddLoading] = useState(false)
+  const [addMsg, setAddMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
+
+  // Role inline edit
+  const [roleEditId, setRoleEditId] = useState<string | null>(null)
+
+  // Admin toggle error
+  const [adminError, setAdminError] = useState<string | null>(null)
 
   useEffect(() => {
     supabase.auth.getUser().then(async ({ data }) => {
@@ -43,7 +61,6 @@ export default function AdminPage() {
   }
 
   async function toggleVerified(userId: string, current: boolean) {
-    // Optimistic update
     const newVal = !current
     setUsers(prev => prev.map(u => u.id === userId ? { ...u, is_verified: newVal } : u))
     setStats(prev => ({ ...prev, verified: prev.verified + (newVal ? 1 : -1) }))
@@ -68,6 +85,63 @@ export default function AdminPage() {
     await supabase.from('listings').delete().eq('id', id)
   }
 
+  async function handleAddUser() {
+    if (!addForm.name.trim() || !addForm.email.trim()) {
+      setAddMsg({ type: 'error', text: 'Name and email are required.' })
+      return
+    }
+    setAddLoading(true)
+    setAddMsg(null)
+    const newId = crypto.randomUUID()
+    const now = new Date().toISOString()
+    const newProfile: any = {
+      id: newId,
+      name: addForm.name.trim(),
+      email: addForm.email.trim(),
+      role: addForm.role || null,
+      discipline: addForm.discipline || null,
+      is_admin: addForm.is_admin,
+      is_verified: false,
+      created_at: now,
+      updated_at: now,
+    }
+    const { error } = await supabase.from('profiles').insert(newProfile)
+    setAddLoading(false)
+    if (error) {
+      setAddMsg({ type: 'error', text: error.message })
+    } else {
+      setUsers(prev => [newProfile, ...prev])
+      setStats(prev => ({ ...prev, users: prev.users + 1 }))
+      setAddMsg({ type: 'success', text: `${addForm.name} added successfully.` })
+      setAddForm({ name: '', email: '', role: '', discipline: '', is_admin: false })
+    }
+  }
+
+  async function changeRole(userId: string, newRole: string) {
+    setUsers(prev => prev.map(u => u.id === userId ? { ...u, role: newRole } : u))
+    setRoleEditId(null)
+    await supabase.from('profiles').update({ role: newRole }).eq('id', userId)
+  }
+
+  async function toggleAdmin(userId: string, email: string, currentIsAdmin: boolean) {
+    setAdminError(null)
+    if (email === SUPERADMIN && currentIsAdmin) {
+      setAdminError('Cannot remove superadmin permissions.')
+      setTimeout(() => setAdminError(null), 4000)
+      return
+    }
+    const newVal = !currentIsAdmin
+    setUsers(prev => prev.map(u => u.id === userId ? { ...u, is_admin: newVal } : u))
+    await supabase.from('profiles').update({ is_admin: newVal }).eq('id', userId)
+  }
+
+  const isFrAECO = (email?: string | null) => !!email?.endsWith('@fractionalaeco.com')
+
+  function fmtDate(iso?: string | null) {
+    if (!iso) return '—'
+    return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+  }
+
   if (loading) return (
     <div style={{ background: '#0F1117', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       <p style={{ color: '#F6981F', fontSize: '20px', fontFamily: "'Nunito Sans', sans-serif" }}>Loading admin panel...</p>
@@ -75,19 +149,99 @@ export default function AdminPage() {
   )
 
   const tabStyle = (tab: string) => ({
-    padding: '10px 20px',
-    borderRadius: '8px',
-    fontSize: '14px',
-    fontWeight: 700,
-    cursor: 'pointer',
-    border: 'none',
+    padding: '10px 20px', borderRadius: '8px', fontSize: '14px', fontWeight: 700,
+    cursor: 'pointer', border: 'none',
     background: activeTab === tab ? '#F6981F' : '#1B2130',
     color: activeTab === tab ? 'white' : '#8892A4',
     fontFamily: "'Nunito Sans', sans-serif",
   })
 
+  const inputSt: React.CSSProperties = {
+    width: '100%', background: '#0F1117', border: '1px solid #2A3145', borderRadius: '8px',
+    padding: '10px 14px', color: 'white', fontSize: '14px', outline: 'none', boxSizing: 'border-box',
+    fontFamily: "'Nunito Sans', sans-serif",
+  }
+  const labelSt: React.CSSProperties = { color: '#8892A4', fontSize: '12px', fontWeight: 700, marginBottom: '6px', display: 'block', letterSpacing: '0.05em' }
+
+  const filteredUsers = users.filter(u =>
+    !userSearch ||
+    u.name?.toLowerCase().includes(userSearch.toLowerCase()) ||
+    u.email?.toLowerCase().includes(userSearch.toLowerCase())
+  )
+
   return (
     <div style={{ minHeight: '100vh', background: '#0F1117', fontFamily: "'Nunito Sans', sans-serif" }}>
+
+      {/* Add User Modal */}
+      {showAddUser && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px' }}
+          onClick={e => { if (e.target === e.currentTarget) setShowAddUser(false) }}>
+          <div style={{ background: '#1B2130', border: '1px solid #2A3145', borderRadius: '20px', padding: '36px', width: '100%', maxWidth: '480px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '28px' }}>
+              <h2 style={{ color: 'white', fontSize: '22px', fontWeight: 800, fontFamily: "'Nunito', sans-serif" }}>Add User</h2>
+              <button onClick={() => { setShowAddUser(false); setAddMsg(null) }}
+                style={{ background: 'transparent', border: 'none', color: '#4A5568', fontSize: '22px', cursor: 'pointer', lineHeight: 1 }}>×</button>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <div>
+                <label style={labelSt}>FULL NAME *</label>
+                <input style={inputSt} placeholder="Jane Smith" value={addForm.name}
+                  onChange={e => setAddForm(f => ({ ...f, name: e.target.value }))} />
+              </div>
+              <div>
+                <label style={labelSt}>EMAIL *</label>
+                <input style={inputSt} type="email" placeholder="jane@firm.com" value={addForm.email}
+                  onChange={e => setAddForm(f => ({ ...f, email: e.target.value, is_admin: f.is_admin && isFrAECO(e.target.value) }))} />
+              </div>
+              <div>
+                <label style={labelSt}>ROLE</label>
+                <select style={inputSt} value={addForm.role} onChange={e => setAddForm(f => ({ ...f, role: e.target.value }))}>
+                  <option value="">Select role...</option>
+                  {ROLES.map(r => <option key={r} value={r}>{r}</option>)}
+                </select>
+              </div>
+              <div>
+                <label style={labelSt}>DISCIPLINE</label>
+                <select style={inputSt} value={addForm.discipline} onChange={e => setAddForm(f => ({ ...f, discipline: e.target.value }))}>
+                  <option value="">Select discipline...</option>
+                  {DISCIPLINES.map(d => <option key={d} value={d}>{d}</option>)}
+                </select>
+              </div>
+              {isFrAECO(addForm.email) && (
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '14px', background: 'rgba(246,152,32,0.08)', borderRadius: '10px', border: '1px solid rgba(246,152,32,0.2)' }}>
+                  <input type="checkbox" id="is_admin_toggle" checked={addForm.is_admin}
+                    onChange={e => setAddForm(f => ({ ...f, is_admin: e.target.checked }))}
+                    style={{ width: '18px', height: '18px', cursor: 'pointer', accentColor: '#F6981F' }} />
+                  <label htmlFor="is_admin_toggle" style={{ color: '#F6981F', fontSize: '14px', fontWeight: 700, cursor: 'pointer' }}>
+                    Grant admin access
+                  </label>
+                </div>
+              )}
+
+              {addMsg && (
+                <div style={{ padding: '12px 16px', borderRadius: '8px', fontSize: '14px', fontWeight: 600,
+                  background: addMsg.type === 'success' ? 'rgba(34,197,94,0.1)' : 'rgba(255,107,107,0.1)',
+                  border: `1px solid ${addMsg.type === 'success' ? 'rgba(34,197,94,0.3)' : 'rgba(255,107,107,0.3)'}`,
+                  color: addMsg.type === 'success' ? '#22c55e' : '#FF8888' }}>
+                  {addMsg.text}
+                </div>
+              )}
+
+              <div style={{ display: 'flex', gap: '10px', marginTop: '4px' }}>
+                <button onClick={() => { setShowAddUser(false); setAddMsg(null) }}
+                  style={{ flex: 1, background: 'transparent', border: '1px solid #2A3145', borderRadius: '100px', padding: '13px', color: '#8892A4', fontSize: '14px', fontWeight: 700, cursor: 'pointer' }}>
+                  Cancel
+                </button>
+                <button onClick={handleAddUser} disabled={addLoading}
+                  style={{ flex: 2, background: '#F6981F', border: 'none', borderRadius: '100px', padding: '13px', color: 'white', fontSize: '14px', fontWeight: 700, cursor: addLoading ? 'not-allowed' : 'pointer', opacity: addLoading ? 0.7 : 1 }}>
+                  {addLoading ? 'Adding...' : 'Add User'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Top bar */}
       <div style={{ background: '#F6981F', color: 'white', textAlign: 'center', padding: '9px 16px', fontSize: '13px', fontWeight: 700 }}>
@@ -108,7 +262,7 @@ export default function AdminPage() {
         </div>
       </nav>
 
-      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '40px 48px' }}>
+      <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '40px 48px' }}>
 
         {/* Stats */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginBottom: '36px' }}>
@@ -158,7 +312,7 @@ export default function AdminPage() {
                       </td>
                       <td style={{ padding: '14px 20px' }}>
                         <button onClick={() => toggleVerified(u.id, u.is_verified ?? false)}
-                          style={{ background: 'transparent', border: '1px solid #2A3145', borderRadius: '6px', padding: '6px 12px', color: '#F6981F', fontSize: '12px', fontWeight: 700, cursor: 'pointer', marginRight: '8px' }}>
+                          style={{ background: 'transparent', border: '1px solid #2A3145', borderRadius: '6px', padding: '6px 12px', color: '#F6981F', fontSize: '12px', fontWeight: 700, cursor: 'pointer' }}>
                           {u.is_verified ? 'Unverify' : 'Verify'}
                         </button>
                       </td>
@@ -175,44 +329,116 @@ export default function AdminPage() {
           <div>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px', marginBottom: '20px', flexWrap: 'wrap' }}>
               <h2 style={{ color: 'white', fontSize: '24px', fontWeight: 800, fontFamily: "'Nunito', sans-serif" }}>All Users</h2>
-              <input
-                type="text"
-                value={userSearch}
-                onChange={e => setUserSearch(e.target.value)}
-                placeholder="Search by name or email..."
-                style={{ background: '#1B2130', border: '1px solid #2A3145', borderRadius: '10px', padding: '10px 16px', color: 'white', fontSize: '14px', outline: 'none', minWidth: '260px' }}
-              />
+              <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
+                <input
+                  type="text" value={userSearch} onChange={e => setUserSearch(e.target.value)}
+                  placeholder="Search by name or email..."
+                  style={{ background: '#1B2130', border: '1px solid #2A3145', borderRadius: '10px', padding: '10px 16px', color: 'white', fontSize: '14px', outline: 'none', minWidth: '240px' }}
+                />
+                <button onClick={() => { setShowAddUser(true); setAddMsg(null) }}
+                  style={{ background: '#F6981F', border: 'none', borderRadius: '10px', padding: '10px 20px', color: 'white', fontSize: '14px', fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap', fontFamily: "'Nunito Sans', sans-serif" }}>
+                  + Add User
+                </button>
+              </div>
             </div>
-            <div style={{ background: '#1B2130', border: '1px solid #2A3145', borderRadius: '12px', overflow: 'hidden' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+
+            {adminError && (
+              <div style={{ marginBottom: '16px', padding: '12px 16px', background: 'rgba(255,107,107,0.08)', border: '1px solid rgba(255,107,107,0.25)', borderRadius: '10px', color: '#FF8888', fontSize: '14px', fontWeight: 600 }}>
+                ⚠ {adminError}
+              </div>
+            )}
+
+            <div style={{ background: '#1B2130', border: '1px solid #2A3145', borderRadius: '12px', overflowX: 'auto' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '900px' }}>
                 <thead>
                   <tr style={{ borderBottom: '1px solid #2A3145' }}>
-                    {['Name', 'Email', 'Role', 'Discipline', 'Rate', 'Verified', 'Actions'].map(h => (
-                      <th key={h} style={{ padding: '14px 16px', textAlign: 'left', color: '#4A5568', fontSize: '12px', fontWeight: 700, letterSpacing: '0.05em' }}>{h}</th>
+                    {['Name', 'Email', 'Role', 'Discipline', 'Joined', 'Verified', 'Actions'].map(h => (
+                      <th key={h} style={{ padding: '14px 14px', textAlign: 'left', color: '#4A5568', fontSize: '12px', fontWeight: 700, letterSpacing: '0.05em', whiteSpace: 'nowrap' }}>{h}</th>
                     ))}
                   </tr>
                 </thead>
                 <tbody>
-                  {users.filter(u => !userSearch || u.name?.toLowerCase().includes(userSearch.toLowerCase()) || u.email?.toLowerCase().includes(userSearch.toLowerCase())).map((u, i) => (
-                    <tr key={u.id} style={{ borderBottom: i < users.length - 1 ? '1px solid #161C28' : 'none' }}>
-                      <td style={{ padding: '14px 16px', color: 'white', fontSize: '14px', fontWeight: 600 }}>{u.name || '—'}</td>
-                      <td style={{ padding: '14px 16px', color: '#8892A4', fontSize: '13px' }}>{u.email}</td>
-                      <td style={{ padding: '14px 16px', color: '#8892A4', fontSize: '13px' }}>{u.role || '—'}</td>
-                      <td style={{ padding: '14px 16px', color: '#8892A4', fontSize: '13px' }}>{u.discipline || '—'}</td>
-                      <td style={{ padding: '14px 16px', color: '#05809B', fontSize: '13px', fontWeight: 700 }}>{u.hourly_rate ? `$${u.hourly_rate}/h` : '—'}</td>
-                      <td style={{ padding: '14px 16px' }}>
-                        <span style={{ background: u.is_verified ? 'rgba(5,128,155,0.15)' : 'rgba(74,85,104,0.15)', color: u.is_verified ? '#05809B' : '#4A5568', fontSize: '12px', fontWeight: 700, padding: '4px 10px', borderRadius: '100px' }}>
+                  {filteredUsers.map((u, i) => (
+                    <tr key={u.id} style={{ borderBottom: i < filteredUsers.length - 1 ? '1px solid #161C28' : 'none' }}>
+
+                      {/* Name */}
+                      <td style={{ padding: '13px 14px', color: 'white', fontSize: '13px', fontWeight: 600, whiteSpace: 'nowrap' }}>
+                        {u.name || '—'}
+                        {(u as any).is_admin && (
+                          <span style={{ marginLeft: '6px', fontSize: '10px', fontWeight: 700, color: '#F6981F', background: 'rgba(246,152,32,0.12)', padding: '2px 7px', borderRadius: '100px', border: '1px solid rgba(246,152,32,0.25)' }}>ADMIN</span>
+                        )}
+                      </td>
+
+                      {/* Email */}
+                      <td style={{ padding: '13px 14px', color: '#8892A4', fontSize: '12px', maxWidth: '200px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{u.email}</td>
+
+                      {/* Role (inline edit) */}
+                      <td style={{ padding: '13px 14px' }}>
+                        {roleEditId === u.id ? (
+                          <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+                            <select
+                              autoFocus
+                              defaultValue={u.role || ''}
+                              onChange={e => changeRole(u.id, e.target.value)}
+                              onBlur={() => setRoleEditId(null)}
+                              style={{ background: '#0F1117', border: '1px solid #05809B', borderRadius: '6px', color: 'white', fontSize: '12px', padding: '4px 8px', outline: 'none', cursor: 'pointer' }}>
+                              <option value="">No role</option>
+                              {ROLES.map(r => <option key={r} value={r}>{r}</option>)}
+                            </select>
+                          </div>
+                        ) : (
+                          <button onClick={() => setRoleEditId(u.id)}
+                            style={{ background: 'transparent', border: 'none', padding: '2px 0', cursor: 'pointer', textAlign: 'left' }}>
+                            <span style={{ color: u.role ? '#C0C8D8' : '#4A5568', fontSize: '12px' }}>{u.role || 'No role'}</span>
+                            <span style={{ color: '#2A3145', fontSize: '11px', marginLeft: '4px' }}>✎</span>
+                          </button>
+                        )}
+                      </td>
+
+                      {/* Discipline */}
+                      <td style={{ padding: '13px 14px', color: '#8892A4', fontSize: '12px', whiteSpace: 'nowrap' }}>{u.discipline || '—'}</td>
+
+                      {/* Joined */}
+                      <td style={{ padding: '13px 14px', color: '#4A5568', fontSize: '12px', whiteSpace: 'nowrap' }}>{fmtDate((u as any).created_at)}</td>
+
+                      {/* Verified */}
+                      <td style={{ padding: '13px 14px' }}>
+                        <span style={{ background: u.is_verified ? 'rgba(5,128,155,0.15)' : 'rgba(74,85,104,0.15)', color: u.is_verified ? '#05809B' : '#4A5568', fontSize: '11px', fontWeight: 700, padding: '3px 9px', borderRadius: '100px', whiteSpace: 'nowrap' }}>
                           {u.is_verified ? '✓ Verified' : 'Unverified'}
                         </span>
                       </td>
-                      <td style={{ padding: '14px 16px' }}>
-                        <div style={{ display: 'flex', gap: '6px' }}>
+
+                      {/* Actions */}
+                      <td style={{ padding: '13px 14px' }}>
+                        <div style={{ display: 'flex', gap: '5px', flexWrap: 'wrap' }}>
+                          {/* Verify */}
                           <button onClick={() => toggleVerified(u.id, u.is_verified ?? false)}
-                            style={{ background: 'transparent', border: `1px solid ${u.is_verified ? '#2A3145' : '#05809B'}`, borderRadius: '6px', padding: '5px 10px', color: u.is_verified ? '#4A5568' : '#05809B', fontSize: '11px', fontWeight: 700, cursor: 'pointer' }}>
+                            style={{ background: 'transparent', border: `1px solid ${u.is_verified ? '#2A3145' : '#05809B'}`, borderRadius: '6px', padding: '4px 9px', color: u.is_verified ? '#4A5568' : '#05809B', fontSize: '11px', fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap' }}>
                             {u.is_verified ? 'Unverify' : '✓ Verify'}
                           </button>
+
+                          {/* Admin toggle — only for @fractionalaeco.com */}
+                          {isFrAECO(u.email) && u.email !== SUPERADMIN && (
+                            <button onClick={() => toggleAdmin(u.id, u.email ?? '', !!(u as any).is_admin)}
+                              style={{ background: 'transparent', border: `1px solid ${(u as any).is_admin ? '#3D2A00' : 'rgba(246,152,32,0.3)'}`, borderRadius: '6px', padding: '4px 9px', color: (u as any).is_admin ? '#8892A4' : '#F6981F', fontSize: '11px', fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap' }}>
+                              {(u as any).is_admin ? 'Remove Admin' : 'Make Admin'}
+                            </button>
+                          )}
+                          {isFrAECO(u.email) && u.email === SUPERADMIN && (
+                            <span style={{ fontSize: '11px', color: '#F6981F', fontWeight: 700, padding: '4px 9px', background: 'rgba(246,152,32,0.08)', borderRadius: '6px', whiteSpace: 'nowrap' }}>
+                              Superadmin
+                            </span>
+                          )}
+
+                          {/* View Profile */}
+                          <Link href={`/talent/${u.id}`}
+                            style={{ background: 'transparent', border: '1px solid #2A3145', borderRadius: '6px', padding: '4px 9px', color: '#8892A4', fontSize: '11px', fontWeight: 700, textDecoration: 'none', whiteSpace: 'nowrap' }}>
+                            Profile →
+                          </Link>
+
+                          {/* Delete */}
                           <button onClick={() => deleteUser(u.id)}
-                            style={{ background: 'transparent', border: '1px solid #3D1515', borderRadius: '6px', padding: '5px 10px', color: '#FF6B6B', fontSize: '11px', fontWeight: 700, cursor: 'pointer' }}>
+                            style={{ background: 'transparent', border: '1px solid #3D1515', borderRadius: '6px', padding: '4px 9px', color: '#FF6B6B', fontSize: '11px', fontWeight: 700, cursor: 'pointer' }}>
                             Delete
                           </button>
                         </div>
@@ -221,8 +447,10 @@ export default function AdminPage() {
                   ))}
                 </tbody>
               </table>
-              {users.length === 0 && (
-                <div style={{ textAlign: 'center', padding: '48px', color: '#4A5568', fontSize: '16px' }}>No users yet</div>
+              {filteredUsers.length === 0 && (
+                <div style={{ textAlign: 'center', padding: '48px', color: '#4A5568', fontSize: '16px' }}>
+                  {userSearch ? 'No users match your search.' : 'No users yet.'}
+                </div>
               )}
             </div>
           </div>
