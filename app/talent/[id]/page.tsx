@@ -10,10 +10,11 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   const { id } = await params
   const { data } = await supabaseServer
     .from('profiles').select('name, discipline, location').eq('id', id).single()
+  const discipline = data?.discipline || 'AECO Professional'
   return {
-    title: data ? `${data.name} — ${data.discipline} | Fractus` : 'Talent Profile | Fractus',
+    title: data ? `${data.name} — ${discipline} | Fractus` : 'Talent Profile | Fractus',
     description: data
-      ? `${data.name} is a fractional ${data.discipline} professional on Fractus, the AECO talent network.`
+      ? `${data.name} is a fractional ${discipline} professional on Fractus, the AECO talent network.`
       : 'AECO fractional talent on Fractus',
   }
 }
