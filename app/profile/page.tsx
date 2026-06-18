@@ -12,10 +12,13 @@ const DISCIPLINES = ['Architecture', 'Structural Engineering', 'MEP Engineering'
 const AVAILABILITY = ['Available Now', 'Open to Work', 'Not Available']
 
 const IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp']
-const MAX_IMAGE_BYTES = 5 * 1024 * 1024
+const MAX_AVATAR_BYTES = 5 * 1024 * 1024
+const MAX_COVER_BYTES = 10 * 1024 * 1024
+const AVATAR_ERROR = 'Please upload a JPG, PNG, or WebP image under 5MB'
+const COVER_ERROR = 'Please upload a JPG, PNG, or WebP image under 10MB'
 const RESUME_TYPES = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document']
-const RESUME_EXT = /\.(pdf|doc|docx)$/i
 const MAX_RESUME_BYTES = 10 * 1024 * 1024
+const RESUME_ERROR = 'Please upload a PDF, DOC, or DOCX file under 10MB'
 const MAX_RESUMES = 5
 
 interface ResumeRow {
@@ -40,6 +43,34 @@ function formatDate(iso: string) {
 function extFromFile(file: File) {
   const parts = file.name.split('.')
   return parts.length > 1 ? (parts.pop() as string).toLowerCase() : 'jpg'
+}
+
+// Some browser/OS combos report an empty file.type for .doc/.docx — fall back
+// to the extension so client + server validation stay in sync.
+function inferFileType(file: File) {
+  if (file.type) return file.type
+  const ext = file.name.split('.').pop()?.toLowerCase()
+  if (ext === 'pdf') return 'application/pdf'
+  if (ext === 'doc') return 'application/msword'
+  if (ext === 'docx') return 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+  if (ext === 'jpg' || ext === 'jpeg') return 'image/jpeg'
+  if (ext === 'png') return 'image/png'
+  if (ext === 'webp') return 'image/webp'
+  return file.type
+}
+
+// Server-side validation gate — mirrors the client check but can't be bypassed.
+async function checkServerValid(bucket: string, fileType: string, fileSize: number): Promise<{ valid: boolean; error?: string }> {
+  try {
+    const res = await fetch('/api/validate-upload', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ bucket, fileType, fileSize }),
+    })
+    return await res.json()
+  } catch {
+    return { valid: false, error: 'Could not validate file. Please try again.' }
+  }
 }
 
 export default function ProfilePage() {
@@ -72,6 +103,7 @@ export default function ProfilePage() {
   const [resumes, setResumes] = useState<ResumeRow[]>([])
   const [uploadingResume, setUploadingResume] = useState(false)
   const [resumeError, setResumeError] = useState<string | null>(null)
+  const [generatingPdf, setGeneratingPdf] = useState(false)
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
@@ -114,10 +146,18 @@ export default function ProfilePage() {
     e.target.value = ''
     if (!file || !user) return
     setAvatarError(null)
-    if (!IMAGE_TYPES.includes(file.type)) { setAvatarError('Please upload a JPEG, PNG, or WEBP image.'); return }
-    if (file.size > MAX_IMAGE_BYTES) { setAvatarError('Image must be 5MB or smaller.'); return }
+    const fileType = inferFileType(file)
+    if (!IMAGE_TYPES.includes(fileType)) { setAvatarError(AVATAR_ERROR); return }
+    if (file.size > MAX_AVATAR_BYTES) { setAvatarError(AVATAR_ERROR); return }
 
     setUploadingAvatar(true)
+    const serverCheck = await checkServerValid('avatars', fileType, file.size)
+    if (!serverCheck.valid) {
+      setAvatarError(serverCheck.error || AVATAR_ERROR)
+      setUploadingAvatar(false)
+      return
+    }
+
     const path = `${user.id}/avatar.${extFromFile(file)}`
     const { error: upErr } = await supabase.storage.from('avatars').upload(path, file, { upsert: true })
     if (upErr) {
@@ -137,10 +177,18 @@ export default function ProfilePage() {
     e.target.value = ''
     if (!file || !user) return
     setCoverError(null)
-    if (!IMAGE_TYPES.includes(file.type)) { setCoverError('Please upload a JPEG, PNG, or WEBP image.'); return }
-    if (file.size > MAX_IMAGE_BYTES) { setCoverError('Image must be 5MB or smaller.'); return }
+    const fileType = inferFileType(file)
+    if (!IMAGE_TYPES.includes(fileType)) { setCoverError(COVER_ERROR); return }
+    if (file.size > MAX_COVER_BYTES) { setCoverError(COVER_ERROR); return }
 
     setUploadingCover(true)
+    const serverCheck = await checkServerValid('covers', fileType, file.size)
+    if (!serverCheck.valid) {
+      setCoverError(serverCheck.error || COVER_ERROR)
+      setUploadingCover(false)
+      return
+    }
+
     const path = `${user.id}/cover.${extFromFile(file)}`
     const { error: upErr } = await supabase.storage.from('covers').upload(path, file, { upsert: true })
     if (upErr) {
@@ -163,10 +211,18 @@ export default function ProfilePage() {
     if (!file || !user) return
     setResumeError(null)
     if (resumes.length >= MAX_RESUMES) { setResumeError('Maximum 5 resumes — delete one to upload another.'); return }
-    if (!RESUME_TYPES.includes(file.type) && !RESUME_EXT.test(file.name)) { setResumeError('Please upload a PDF, DOC, or DOCX file.'); return }
-    if (file.size > MAX_RESUME_BYTES) { setResumeError('File must be 10MB or smaller.'); return }
+    const fileType = inferFileType(file)
+    if (!RESUME_TYPES.includes(fileType)) { setResumeError(RESUME_ERROR); return }
+    if (file.size > MAX_RESUME_BYTES) { setResumeError(RESUME_ERROR); return }
 
     setUploadingResume(true)
+    const serverCheck = await checkServerValid('resumes', fileType, file.size)
+    if (!serverCheck.valid) {
+      setResumeError(serverCheck.error || RESUME_ERROR)
+      setUploadingResume(false)
+      return
+    }
+
     const path = `${user.id}/${Date.now()}-${file.name}`
     const { error: upErr } = await supabase.storage.from('resumes').upload(path, file)
     if (upErr) {
@@ -215,6 +271,34 @@ export default function ProfilePage() {
     setResumes(prev => prev.filter(r => r.id !== id))
   }
 
+  async function handleDownloadResumePdf() {
+    setResumeError(null)
+    setGeneratingPdf(true)
+    try {
+      const res = await fetch('/api/generate-resume')
+      if (!res.ok) {
+        setResumeError('Could not generate resume PDF. Please try again.')
+        return
+      }
+      const blob = await res.blob()
+      const disposition = res.headers.get('Content-Disposition') || ''
+      const match = disposition.match(/filename="([^"]+)"/)
+      const fileName = match?.[1] || 'resume.pdf'
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = fileName
+      document.body.appendChild(a)
+      a.click()
+      a.remove()
+      URL.revokeObjectURL(url)
+    } catch {
+      setResumeError('Could not generate resume PDF. Please try again.')
+    } finally {
+      setGeneratingPdf(false)
+    }
+  }
+
   const inputClass = "w-full rounded-xl px-5 py-4 outline-none transition-all"
   const inputStyle = { background: 'var(--color-bg-card)', border: '1.5px solid var(--color-border)', fontSize: '16px', color: 'var(--text-primary)' }
   const labelClass = "block font-semibold mb-2"
@@ -248,8 +332,9 @@ export default function ProfilePage() {
               // eslint-disable-next-line @next/next/no-img-element
               <img src={coverUrl} alt="Cover" className="w-full h-full object-cover" style={{ display: 'block' }} />
             )}
-            <label className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer" style={{ background: 'rgba(15,17,23,0.45)' }}>
+            <label className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer" style={{ background: 'rgba(15,17,23,0.45)', ...(uploadingCover ? { opacity: 1, cursor: 'not-allowed' } : {}) }}>
               <span className="flex items-center gap-2 font-semibold text-sm" style={{ background: '#05809B', color: 'white', borderRadius: '100px', padding: '10px 20px' }}>
+                {uploadingCover && <span className="inline-block animate-spin rounded-full h-4 w-4 border-2" style={{ borderColor: 'rgba(255,255,255,0.35)', borderTopColor: 'white' }} />}
                 {uploadingCover ? 'Uploading...' : '📷 Change cover'}
               </span>
               <input type="file" accept="image/jpeg,image/png,image/webp" className="hidden" onChange={handleCoverChange} disabled={uploadingCover} />
@@ -267,8 +352,10 @@ export default function ProfilePage() {
                   <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
                 : <span className="font-bold text-white" style={{ fontSize: '42px' }}>{initial}</span>}
             </div>
-            <label className="absolute inset-0 rounded-full flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer" style={{ background: 'rgba(15,17,23,0.45)', gap: '2px' }}>
-              <span style={{ fontSize: '20px' }}>{uploadingAvatar ? '⏳' : '📷'}</span>
+            <label className="absolute inset-0 rounded-full flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer" style={{ background: 'rgba(15,17,23,0.45)', gap: '2px', ...(uploadingAvatar ? { opacity: 1, cursor: 'not-allowed' } : {}) }}>
+              {uploadingAvatar
+                ? <span className="inline-block animate-spin rounded-full h-5 w-5 border-2" style={{ borderColor: 'rgba(255,255,255,0.35)', borderTopColor: 'white' }} />
+                : <span style={{ fontSize: '20px' }}>📷</span>}
               {!uploadingAvatar && <span style={{ fontSize: '10px', fontWeight: 700, color: 'white' }}>Change photo</span>}
               <input type="file" accept="image/jpeg,image/png,image/webp" className="hidden" onChange={handleAvatarChange} disabled={uploadingAvatar} />
             </label>
@@ -403,15 +490,29 @@ export default function ProfilePage() {
           <div className="rounded-2xl border p-8" style={{ background: 'var(--color-bg-card)', borderColor: 'var(--color-border)' }}>
             <div className="flex items-center justify-between gap-3 flex-wrap mb-2">
               <h2 className="font-bold" style={{ fontSize: '22px', color: 'var(--text-primary)' }}>Resumes & Documents</h2>
-              <label className="font-bold text-sm" style={{
-                background: resumeUploadDisabled ? 'var(--color-border)' : '#05809B',
-                color: resumeUploadDisabled ? 'var(--text-muted)' : 'white',
-                borderRadius: '100px', padding: '10px 20px',
-                cursor: resumeUploadDisabled ? 'not-allowed' : 'pointer',
-              }}>
-                {uploadingResume ? 'Uploading...' : '+ Upload Resume'}
-                <input type="file" accept=".pdf,.doc,.docx" className="hidden" onChange={handleResumeUpload} disabled={resumeUploadDisabled} />
-              </label>
+              <div className="flex items-center gap-2 flex-wrap">
+                <button onClick={handleDownloadResumePdf} disabled={generatingPdf}
+                  className="font-bold text-sm flex items-center gap-2" style={{
+                    background: 'none',
+                    color: generatingPdf ? 'var(--text-muted)' : '#05809B',
+                    borderRadius: '100px', padding: '10px 20px',
+                    border: '1px solid ' + (generatingPdf ? 'var(--color-border)' : 'rgba(5,128,155,0.3)'),
+                    cursor: generatingPdf ? 'not-allowed' : 'pointer',
+                  }}>
+                  {generatingPdf && <span className="inline-block animate-spin rounded-full h-4 w-4 border-2" style={{ borderColor: 'rgba(5,128,155,0.25)', borderTopColor: '#05809B' }} />}
+                  {generatingPdf ? 'Generating...' : 'Download Resume PDF'}
+                </button>
+                <label className="font-bold text-sm flex items-center gap-2" style={{
+                  background: resumeUploadDisabled ? 'var(--color-border)' : '#05809B',
+                  color: resumeUploadDisabled ? 'var(--text-muted)' : 'white',
+                  borderRadius: '100px', padding: '10px 20px',
+                  cursor: resumeUploadDisabled ? 'not-allowed' : 'pointer',
+                }}>
+                  {uploadingResume && <span className="inline-block animate-spin rounded-full h-4 w-4 border-2" style={{ borderColor: 'rgba(255,255,255,0.35)', borderTopColor: 'white' }} />}
+                  {uploadingResume ? 'Uploading...' : '+ Upload Resume'}
+                  <input type="file" accept=".pdf,.doc,.docx" className="hidden" onChange={handleResumeUpload} disabled={resumeUploadDisabled} />
+                </label>
+              </div>
             </div>
             <p className="mb-6" style={{ fontSize: '14px', color: 'var(--text-muted)' }}>PDF, DOC, or DOCX — max 10MB, up to 5 files.</p>
 
