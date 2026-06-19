@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import type { User } from '@supabase/supabase-js'
 import { supabase } from '../lib/supabase'
-import type { Profile, Listing } from '../lib/types'
+import type { Profile, Listing, AdminApplication } from '../lib/types'
 
 const SUPERADMIN = 'development@fractionalaeco.com'
 const ROLES = ['Fractional Professional', 'Contractor', 'Architect', 'Engineer', 'Owner / Operator', 'Employer / Hiring']
@@ -17,8 +17,10 @@ export default function AdminPage() {
   const [activeTab, setActiveTab] = useState('overview')
   const [users, setUsers] = useState<Profile[]>([])
   const [listings, setListings] = useState<Listing[]>([])
+  const [applications, setApplications] = useState<AdminApplication[]>([])
   const [stats, setStats] = useState({ users: 0, listings: 0, verified: 0, applications: 0 })
   const [userSearch, setUserSearch] = useState('')
+  const [appStatusFilter, setAppStatusFilter] = useState('all')
 
   // Add user modal
   const [showAddUser, setShowAddUser] = useState(false)
@@ -45,18 +47,21 @@ export default function AdminPage() {
   }, [])
 
   async function loadAll() {
-    const [{ data: u }, { data: l }, { count: appCount }] = await Promise.all([
+    const [{ data: u }, { data: l }, { data: a }] = await Promise.all([
       supabase.from('profiles').select('*').order('created_at', { ascending: false }),
       supabase.from('listings').select('*').order('created_at', { ascending: false }),
-      supabase.from('applications').select('*', { count: 'exact', head: true }),
+      supabase.from('applications')
+        .select('id, status, created_at, listings(title, company), profiles(name, email)')
+        .order('created_at', { ascending: false }),
     ])
     setUsers(u || [])
     setListings(l || [])
+    setApplications((a as unknown as AdminApplication[]) ?? [])
     setStats({
       users:        u?.length || 0,
       listings:     l?.length || 0,
       verified:     u?.filter(x => x.is_verified).length || 0,
-      applications: appCount ?? 0,
+      applications: a?.length ?? 0,
     })
   }
 
@@ -140,6 +145,69 @@ export default function AdminPage() {
   function fmtDate(iso?: string | null) {
     if (!iso) return '—'
     return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+  }
+
+  function csvEscape(value: unknown): string {
+    const str = value === null || value === undefined ? '' : String(value)
+    if (/[",\n]/.test(str)) return `"${str.replace(/"/g, '""')}"`
+    return str
+  }
+
+  function downloadCsv(filename: string, headers: string[], rows: unknown[][]) {
+    const lines = [headers, ...rows].map(row => row.map(csvEscape).join(','))
+    const csv = lines.join('\r\n')
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = filename
+    document.body.appendChild(a)
+    a.click()
+    a.remove()
+    URL.revokeObjectURL(url)
+  }
+
+  function exportUsersCsv() {
+    const headers = ['Name', 'Email', 'Role', 'Discipline', 'Joined', 'Verified', 'Admin']
+    const rows = filteredUsers.map(u => [
+      u.name ?? '',
+      u.email ?? '',
+      u.role ?? '',
+      u.discipline ?? '',
+      fmtDate((u as any).created_at),
+      u.is_verified ? 'Yes' : 'No',
+      (u as any).is_admin ? 'Yes' : 'No',
+    ])
+    downloadCsv(`fractus-users-${new Date().toISOString().slice(0, 10)}.csv`, headers, rows)
+  }
+
+  function exportListingsCsv() {
+    const headers = ['Title', 'Company', 'Discipline', 'Type', 'Rate', 'Location', 'Remote', 'Status', 'Posted']
+    const rows = listings.map(l => [
+      l.title ?? '',
+      l.company ?? '',
+      l.discipline ?? '',
+      l.engagement_type ?? '',
+      l.rate ?? '',
+      l.location ?? '',
+      l.remote ? 'Yes' : 'No',
+      l.status ?? '',
+      fmtDate(l.created_at),
+    ])
+    downloadCsv(`fractus-listings-${new Date().toISOString().slice(0, 10)}.csv`, headers, rows)
+  }
+
+  function exportApplicationsCsv() {
+    const headers = ['Applicant', 'Applicant Email', 'Listing', 'Company', 'Status', 'Applied']
+    const rows = applications.map(a => [
+      a.profiles?.name ?? '',
+      a.profiles?.email ?? '',
+      a.listings?.title ?? '',
+      a.listings?.company ?? '',
+      a.status ?? '',
+      fmtDate(a.created_at),
+    ])
+    downloadCsv(`fractus-applications-${new Date().toISOString().slice(0, 10)}.csv`, headers, rows)
   }
 
   if (loading) return (
@@ -284,6 +352,7 @@ export default function AdminPage() {
           <button style={tabStyle('overview')} onClick={() => setActiveTab('overview')}>Overview</button>
           <button style={tabStyle('users')} onClick={() => setActiveTab('users')}>Users ({stats.users})</button>
           <button style={tabStyle('listings')} onClick={() => setActiveTab('listings')}>Listings ({stats.listings})</button>
+          <button style={tabStyle('applications')} onClick={() => setActiveTab('applications')}>Applications ({stats.applications})</button>
         </div>
 
         {/* Overview tab */}
@@ -335,6 +404,10 @@ export default function AdminPage() {
                   placeholder="Search by name or email..."
                   style={{ background: '#1B2130', border: '1px solid #2A3145', borderRadius: '10px', padding: '10px 16px', color: 'white', fontSize: '14px', outline: 'none', minWidth: '240px' }}
                 />
+                <button onClick={exportUsersCsv}
+                  style={{ background: 'transparent', border: '1px solid #2A3145', borderRadius: '10px', padding: '10px 18px', color: '#8892A4', fontSize: '14px', fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap', fontFamily: "'Nunito Sans', sans-serif" }}>
+                  ⤓ Export CSV
+                </button>
                 <button onClick={() => { setShowAddUser(true); setAddMsg(null) }}
                   style={{ background: '#F6981F', border: 'none', borderRadius: '10px', padding: '10px 20px', color: 'white', fontSize: '14px', fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap', fontFamily: "'Nunito Sans', sans-serif" }}>
                   + Add User
@@ -459,7 +532,13 @@ export default function AdminPage() {
         {/* Listings tab */}
         {activeTab === 'listings' && (
           <div>
-            <h2 style={{ color: 'white', fontSize: '24px', fontWeight: 800, fontFamily: "'Nunito', sans-serif", marginBottom: '20px' }}>All Listings</h2>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px', marginBottom: '20px', flexWrap: 'wrap' }}>
+              <h2 style={{ color: 'white', fontSize: '24px', fontWeight: 800, fontFamily: "'Nunito', sans-serif" }}>All Listings</h2>
+              <button onClick={exportListingsCsv}
+                style={{ background: 'transparent', border: '1px solid #2A3145', borderRadius: '10px', padding: '10px 18px', color: '#8892A4', fontSize: '14px', fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap', fontFamily: "'Nunito Sans', sans-serif" }}>
+                ⤓ Export CSV
+              </button>
+            </div>
             <div style={{ background: '#1B2130', border: '1px solid #2A3145', borderRadius: '12px', overflow: 'hidden' }}>
               <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                 <thead>
@@ -500,6 +579,64 @@ export default function AdminPage() {
               </table>
               {listings.length === 0 && (
                 <div style={{ textAlign: 'center', padding: '48px', color: '#4A5568', fontSize: '16px' }}>No listings yet</div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Applications tab */}
+        {activeTab === 'applications' && (
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px', marginBottom: '20px', flexWrap: 'wrap' }}>
+              <h2 style={{ color: 'white', fontSize: '24px', fontWeight: 800, fontFamily: "'Nunito', sans-serif" }}>All Applications</h2>
+              <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
+                <select value={appStatusFilter} onChange={e => setAppStatusFilter(e.target.value)}
+                  style={{ background: '#1B2130', border: '1px solid #2A3145', borderRadius: '10px', padding: '10px 14px', color: 'white', fontSize: '14px', outline: 'none', cursor: 'pointer' }}>
+                  <option value="all">All statuses</option>
+                  <option value="pending">Pending</option>
+                  <option value="accepted">Accepted</option>
+                  <option value="rejected">Declined</option>
+                </select>
+                <button onClick={exportApplicationsCsv}
+                  style={{ background: 'transparent', border: '1px solid #2A3145', borderRadius: '10px', padding: '10px 18px', color: '#8892A4', fontSize: '14px', fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap', fontFamily: "'Nunito Sans', sans-serif" }}>
+                  ⤓ Export CSV
+                </button>
+              </div>
+            </div>
+            <div style={{ background: '#1B2130', border: '1px solid #2A3145', borderRadius: '12px', overflow: 'hidden' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                <thead>
+                  <tr style={{ borderBottom: '1px solid #2A3145' }}>
+                    {['Applicant', 'Email', 'Listing', 'Company', 'Status', 'Applied'].map(h => (
+                      <th key={h} style={{ padding: '14px 16px', textAlign: 'left', color: '#4A5568', fontSize: '12px', fontWeight: 700, letterSpacing: '0.05em' }}>{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {applications
+                    .filter(a => appStatusFilter === 'all' || a.status === appStatusFilter)
+                    .map((a, i, arr) => (
+                    <tr key={a.id} style={{ borderBottom: i < arr.length - 1 ? '1px solid #161C28' : 'none' }}>
+                      <td style={{ padding: '14px 16px', color: 'white', fontSize: '14px', fontWeight: 600 }}>{a.profiles?.name || '—'}</td>
+                      <td style={{ padding: '14px 16px', color: '#8892A4', fontSize: '13px' }}>{a.profiles?.email || '—'}</td>
+                      <td style={{ padding: '14px 16px', color: '#8892A4', fontSize: '13px' }}>{a.listings?.title || '—'}</td>
+                      <td style={{ padding: '14px 16px', color: '#8892A4', fontSize: '13px' }}>{a.listings?.company || '—'}</td>
+                      <td style={{ padding: '14px 16px' }}>
+                        <span style={{
+                          background: a.status === 'accepted' ? 'rgba(34,197,94,0.12)' : a.status === 'rejected' ? 'rgba(239,68,68,0.12)' : 'rgba(246,152,32,0.12)',
+                          color: a.status === 'accepted' ? '#22c55e' : a.status === 'rejected' ? '#f87171' : '#F6981F',
+                          fontSize: '12px', fontWeight: 700, padding: '4px 10px', borderRadius: '100px', textTransform: 'capitalize'
+                        }}>
+                          {a.status === 'rejected' ? 'Declined' : a.status}
+                        </span>
+                      </td>
+                      <td style={{ padding: '14px 16px', color: '#4A5568', fontSize: '12px', whiteSpace: 'nowrap' }}>{fmtDate(a.created_at)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              {applications.length === 0 && (
+                <div style={{ textAlign: 'center', padding: '48px', color: '#4A5568', fontSize: '16px' }}>No applications yet</div>
               )}
             </div>
           </div>

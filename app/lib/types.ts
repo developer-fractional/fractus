@@ -97,3 +97,30 @@ export interface PortfolioProject {
   display_order: number | null
   created_at?: string | null
 }
+
+export interface SoftwareSkill {
+  id: string
+  user_id: string
+  tool_name: string
+  proficiency: string
+  years_used: number | null
+  display_order: number | null
+  created_at?: string | null
+}
+
+export interface AdminApplication {
+  id: string
+  status: string
+  created_at: string
+  listings: { title: string; company: string | null } | null
+  profiles: { name: string | null; email: string | null } | null
+}
+
+export interface CustomField {
+  id: string
+  user_id: string
+  field_label: string
+  field_value: string
+  display_order: number | null
+  created_at?: string | null
+}
