@@ -2,8 +2,15 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { supabase } from '../../lib/supabase'
-import type { Profile, Education, WorkExperience, Credential } from '../../lib/types'
+import type { Profile, Education, WorkExperience, Credential, PortfolioProject, SoftwareSkill, CustomField } from '../../lib/types'
 import Navbar from '../../components/Navbar'
+
+const PROFICIENCY_STYLES: Record<string, { bg: string; color: string; border: string }> = {
+  Beginner: { bg: 'rgba(156,163,175,0.15)', color: '#6B7280', border: '1px solid rgba(156,163,175,0.35)' },
+  Intermediate: { bg: 'rgba(5,128,155,0.12)', color: '#05809B', border: '1px solid rgba(5,128,155,0.3)' },
+  Advanced: { bg: 'rgba(246,152,32,0.12)', color: '#F6981F', border: '1px solid rgba(246,152,32,0.3)' },
+  Expert: { bg: 'rgba(194,65,12,0.14)', color: '#C2410C', border: '1px solid rgba(194,65,12,0.35)' },
+}
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 
@@ -17,6 +24,9 @@ export default function TalentProfileClient({ id }: { id: string }) {
   const [workExperience, setWorkExperience] = useState<WorkExperience[]>([])
   const [education, setEducation] = useState<Education[]>([])
   const [credentials, setCredentials] = useState<Credential[]>([])
+  const [portfolio, setPortfolio] = useState<PortfolioProject[]>([])
+  const [softwareSkills, setSoftwareSkills] = useState<SoftwareSkill[]>([])
+  const [customFields, setCustomFields] = useState<CustomField[]>([])
   const [loading, setLoading] = useState(true)
   const [notFound, setNotFound] = useState(false)
 
@@ -31,7 +41,13 @@ export default function TalentProfileClient({ id }: { id: string }) {
         .order('start_year', { ascending: false, nullsFirst: false }),
       supabase.from('credentials').select('*').eq('user_id', id)
         .order('issue_year', { ascending: false, nullsFirst: false }),
-    ]).then(([profileRes, workRes, eduRes, credRes]) => {
+      supabase.from('portfolio_projects').select('*').eq('user_id', id)
+        .order('display_order', { ascending: true }),
+      supabase.from('software_skills').select('*').eq('user_id', id)
+        .order('display_order', { ascending: true }),
+      supabase.from('custom_fields').select('*').eq('user_id', id)
+        .order('display_order', { ascending: true }),
+    ]).then(([profileRes, workRes, eduRes, credRes, portfolioRes, softwareRes, customRes]) => {
       if (profileRes.error || !profileRes.data) {
         setNotFound(true)
       } else {
@@ -39,6 +55,9 @@ export default function TalentProfileClient({ id }: { id: string }) {
         setWorkExperience((workRes.data as WorkExperience[]) ?? [])
         setEducation((eduRes.data as Education[]) ?? [])
         setCredentials((credRes.data as Credential[]) ?? [])
+        setPortfolio((portfolioRes.data as PortfolioProject[]) ?? [])
+        setSoftwareSkills((softwareRes.data as SoftwareSkill[]) ?? [])
+        setCustomFields((customRes.data as CustomField[]) ?? [])
       }
       setLoading(false)
     })
@@ -268,7 +287,20 @@ export default function TalentProfileClient({ id }: { id: string }) {
           </div>
         )}
 
-      </div>
-    </div>
-  )
-}
+        {/* Project Portfolio */}
+        {portfolio.length > 0 && (
+          <div className="rounded-2xl border p-8 mb-6" style={{ background: 'var(--bg-card)', borderColor: 'var(--border-color)' }}>
+            <h2 className="font-bold mb-4" style={{ color: 'var(--text-primary)', fontSize: '20px', fontFamily: "'Nunito', sans-serif" }}>Project Portfolio</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {portfolio.map(p => (
+                <div key={p.id} className="rounded-xl overflow-hidden" style={{ background: 'var(--bg-primary)', border: '1px solid var(--border-color)' }}>
+                  {p.image_url ? (
+                    <img src={p.image_url} alt={p.project_name} style={{ width: '100%', height: '140px', objectFit: 'cover', display: 'block' }} />
+                  ) : (
+                    <div style={{ width: '100%', height: '140px', background: 'linear-gradient(135deg, #05809B, #0a4a5c)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <span style={{ color: 'rgba(255,255,255,0.85)', fontWeight: 700, fontSize: '14px' }}>{p.project_type || 'Project'}</span>
+                    </div>
+                  )}
+                  <div style={{ padding: '16px' }}>
+                    <div className="flex items-start justify-between gap-2 flex-wrap">
+                      <span style={{ color: 'var(--text-primary)', fontWe

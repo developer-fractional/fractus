@@ -81,3 +81,19 @@ export interface Credential {
   credential_url: string | null
   created_at?: string | null
 }
+
+export interface PortfolioProject {
+  id: string
+  user_id: string
+  project_name: string
+  project_type: string | null
+  role: string | null
+  client_or_firm: string | null
+  location: string | null
+  project_value: string | null
+  completion_year: number | null
+  description: string | null
+  image_url: string | null
+  display_order: number | null
+  created_at?: string | null
+}

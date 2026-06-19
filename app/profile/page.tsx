@@ -7,6 +7,9 @@ import Navbar from '../components/Navbar'
 import EducationSection from './EducationSection'
 import WorkExperienceSection from './WorkExperienceSection'
 import CredentialsSection from './CredentialsSection'
+import PortfolioSection from './PortfolioSection'
+import SoftwareSkillsSection from './SoftwareSkillsSection'
+import CustomFieldsSection from './CustomFieldsSection'
 
 const DISCIPLINES = ['Architecture', 'Structural Engineering', 'MEP Engineering', 'Civil Engineering', 'Construction Management', 'BIM/VDC', 'Sustainability', 'Owner/Operator', 'Project Controls', 'Cost Management']
 const AVAILABILITY = ['Available Now', 'Open to Work', 'Not Available']
@@ -105,6 +108,15 @@ export default function ProfilePage() {
   const [resumeError, setResumeError] = useState<string | null>(null)
   const [generatingPdf, setGeneratingPdf] = useState(false)
 
+  // Section completion tracking (feeds the completeness checklist below)
+  const [sectionCounts, setSectionCounts] = useState({
+    education: 0,
+    workExperience: 0,
+    credentials: 0,
+    portfolio: 0,
+    softwareSkills: 0,
+  })
+
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
       if (!data.user) { window.location.href = '/login'; return }
@@ -121,6 +133,22 @@ export default function ProfilePage() {
       // Load resumes
       supabase.from('resumes').select('*').eq('user_id', data.user.id).order('uploaded_at', { ascending: false }).then(({ data: rows }) => {
         setResumes((rows as ResumeRow[]) ?? [])
+      })
+      // Load section counts for the completeness checklist
+      Promise.all([
+        supabase.from('education').select('id', { count: 'exact', head: true }).eq('user_id', data.user.id),
+        supabase.from('work_experience').select('id', { count: 'exact', head: true }).eq('user_id', data.user.id),
+        supabase.from('credentials').select('id', { count: 'exact', head: true }).eq('user_id', data.user.id),
+        supabase.from('portfolio_projects').select('id', { count: 'exact', head: true }).eq('user_id', data.user.id),
+        supabase.from('software_skills').select('id', { count: 'exact', head: true }).eq('user_id', data.user.id),
+      ]).then(([eduRes, weRes, credRes, portRes, swRes]) => {
+        setSectionCounts({
+          education: eduRes.count ?? 0,
+          workExperience: weRes.count ?? 0,
+          credentials: credRes.count ?? 0,
+          portfolio: portRes.count ?? 0,
+          softwareSkills: swRes.count ?? 0,
+        })
       })
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -381,9 +409,22 @@ export default function ProfilePage() {
 
         {/* Completeness bar */}
         {(() => {
-          const fields = [form.name, form.discipline, form.bio, form.years_experience, form.hourly_rate, form.availability, form.linkedin_url]
-          const filled = fields.filter(Boolean).length
-          const pct   = Math.round((filled / fields.length) * 100)
+          const checklist = [
+            { label: 'Add a profile photo', done: !!avatarUrl },
+            { label: 'Write your About section', done: !!form.bio },
+            { label: 'Set your discipline', done: !!form.discipline },
+            { label: 'Set your availability', done: !!form.availability },
+            { label: 'Set your hourly rate', done: !!form.hourly_rate },
+            { label: 'Add your LinkedIn URL', done: !!form.linkedin_url },
+            { label: 'Add your work experience', done: sectionCounts.workExperience > 0 },
+            { label: 'Add your education', done: sectionCounts.education > 0 },
+            { label: 'Add licenses & certifications', done: sectionCounts.credentials > 0 },
+            { label: 'Add a portfolio project', done: sectionCounts.portfolio > 0 },
+            { label: 'Add your software skills', done: sectionCounts.softwareSkills > 0 },
+          ]
+          const filled = checklist.filter(c => c.done).length
+          const pct = Math.round((filled / checklist.length) * 100)
+          const missing = checklist.filter(c => !c.done)
           return (
             <div style={{ marginBottom: '32px', padding: '20px 24px', background: 'var(--bg-card)', borderRadius: '16px', border: '1px solid var(--border-color)' }}>
               <p style={{ color: pct === 100 ? '#22c55e' : '#05809B', fontSize: '14px', fontWeight: 700, marginBottom: '10px' }}>
@@ -392,6 +433,15 @@ export default function ProfilePage() {
               <div style={{ background: 'var(--border-color)', borderRadius: '100px', height: '8px', overflow: 'hidden' }}>
                 <div style={{ background: pct === 100 ? '#22c55e' : '#05809B', width: `${pct}%`, height: '100%', borderRadius: '100px', transition: 'width 0.3s' }} />
               </div>
+              {missing.length > 0 && (
+                <div style={{ marginTop: '16px', display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                  {missing.map(item => (
+                    <span key={item.label} style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text-secondary)', background: 'var(--color-bg)', border: '1px solid var(--border-color)', borderRadius: '100px', padding: '5px 12px' }}>
+                      ○ {item.label}
+                    </span>
+                  ))}
+                </div>
+              )}
             </div>
           )
         })()}
@@ -421,8 +471,14 @@ export default function ProfilePage() {
               </div>
             </div>
             <div className="mt-5">
-              <label className={labelClass} style={labelStyle}>Bio — describe yourself in 2–3 sentences</label>
-              <textarea placeholder="Senior architect with 15 years in healthcare and commercial projects. I specialize in design leadership and BIM coordination..." value={form.bio} onChange={e => setForm({ ...form, bio: e.target.value })} rows={4} className={inputClass} style={{ ...inputStyle, resize: 'none' }} />
+              <div className="flex items-center justify-between mb-2">
+                <label className={labelClass} style={{ ...labelStyle, marginBottom: 0 }}>About</label>
+                <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{form.bio.length}/600</span>
+              </div>
+              <p style={{ fontSize: '13px', color: 'var(--text-muted)', marginBottom: '10px' }}>
+                Tell employers what you do, what you&apos;re known for, and what kind of work you&apos;re looking for next — like the About section on LinkedIn.
+              </p>
+              <textarea placeholder="Senior architect with 15 years in healthcare and commercial projects. I specialize in design leadership and BIM coordination..." value={form.bio} onChange={e => setForm({ ...form, bio: e.target.value.slice(0, 600) })} rows={6} className={inputClass} style={{ ...inputStyle, resize: 'none' }} />
             </div>
           </div>
 
@@ -464,6 +520,9 @@ export default function ProfilePage() {
               <WorkExperienceSection userId={user.id} />
               <EducationSection userId={user.id} />
               <CredentialsSection userId={user.id} />
+              <PortfolioSection userId={user.id} />
+              <SoftwareSkillsSection userId={user.id} />
+              <CustomFieldsSection userId={user.id} />
             </>
           )}
 
@@ -529,60 +588,4 @@ export default function ProfilePage() {
             ) : (
               <div className="space-y-3">
                 {resumes.map(r => (
-                  <div key={r.id} className="flex items-center justify-between gap-3 flex-wrap" style={{ padding: '14px 18px', borderRadius: '12px', border: '1px solid var(--color-border)', background: 'var(--color-bg)' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', minWidth: 0 }}>
-                      <span style={{ fontSize: '22px' }}>📄</span>
-                      <div style={{ minWidth: 0 }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-                          <span style={{ color: 'var(--text-primary)', fontWeight: 700, fontSize: '14px' }}>{r.file_name}</span>
-                          {r.is_primary && (
-                            <span style={{ fontSize: '11px', fontWeight: 700, padding: '2px 10px', borderRadius: '100px', background: 'rgba(5,128,155,0.15)', color: '#05809B' }}>Primary</span>
-                          )}
-                        </div>
-                        <p style={{ color: 'var(--text-muted)', fontSize: '12px' }}>{formatSize(r.file_size)} · Uploaded {formatDate(r.uploaded_at)}</p>
-                      </div>
-                    </div>
-                    <div style={{ display: 'flex', gap: '8px', flexShrink: 0 }}>
-                      {!r.is_primary && (
-                        <button onClick={() => setPrimary(r.id)}
-                          style={{ fontSize: '12px', fontWeight: 700, padding: '6px 14px', borderRadius: '100px', background: 'none', border: '1px solid var(--color-border)', color: 'var(--text-secondary)', cursor: 'pointer' }}>
-                          Set as Primary
-                        </button>
-                      )}
-                      <button onClick={() => downloadResume(r.file_path, r.file_name)}
-                        style={{ fontSize: '12px', fontWeight: 700, padding: '6px 14px', borderRadius: '100px', background: 'rgba(5,128,155,0.12)', border: '1px solid rgba(5,128,155,0.3)', color: '#05809B', cursor: 'pointer' }}>
-                        Download
-                      </button>
-                      <button onClick={() => deleteResume(r.id, r.file_path)}
-                        style={{ fontSize: '12px', fontWeight: 700, padding: '6px 14px', borderRadius: '100px', background: 'rgba(239,68,68,0.12)', border: '1px solid rgba(239,68,68,0.3)', color: '#f87171', cursor: 'pointer' }}>
-                        Delete
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* Save button */}
-          <button onClick={handleSave} disabled={saving}
-            className="w-full text-white rounded-2xl font-bold cursor-pointer transition-all"
-            style={{ background: saved ? '#16a34a' : 'var(--color-primary)', fontSize: '20px', padding: '20px', opacity: saving ? 0.7 : 1 }}>
-            {saving ? 'Saving...' : saved ? '✓ Profile Saved!' : 'Save Profile'}
-          </button>
-
-          {/* View public profile link */}
-          {user && (
-            <p className="text-center" style={{ fontSize: '15px', color: 'var(--text-muted)' }}>
-              Your public profile →{' '}
-              <Link href={`/talent/${user.id}`} className="font-medium hover:opacity-80" style={{ color: 'var(--color-accent-light)' }}>
-                View how others see you
-              </Link>
-            </p>
-          )}
-
-        </div>
-      </div>
-    </div>
-  )
-}
+                  <div key={r.id} className="flex items-center justify-between gap-3 flex-wrap" style={{ padding: '14px 18px', borderRadius: '12px', border: '1px solid var(--color-border)', background: 
