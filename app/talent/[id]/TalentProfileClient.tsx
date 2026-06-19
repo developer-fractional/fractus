@@ -29,6 +29,8 @@ export default function TalentProfileClient({ id }: { id: string }) {
   const [customFields, setCustomFields] = useState<CustomField[]>([])
   const [loading, setLoading] = useState(true)
   const [notFound, setNotFound] = useState(false)
+  const [copied, setCopied] = useState(false)
+  const [generatingPdf, setGeneratingPdf] = useState(false)
 
   useEffect(() => {
     if (!id) return
@@ -62,6 +64,44 @@ export default function TalentProfileClient({ id }: { id: string }) {
       setLoading(false)
     })
   }, [id])
+
+  async function handleCopyLink() {
+    const url = `${window.location.origin}/talent/${id}`
+    try {
+      await navigator.clipboard.writeText(url)
+    } catch {
+      const el = document.createElement('textarea')
+      el.value = url
+      document.body.appendChild(el)
+      el.select()
+      document.execCommand('copy')
+      el.remove()
+    }
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
+
+  async function handleDownloadResume() {
+    setGeneratingPdf(true)
+    try {
+      const res = await fetch(`/api/generate-resume/${id}`)
+      if (!res.ok) return
+      const blob = await res.blob()
+      const disposition = res.headers.get('Content-Disposition') || ''
+      const match = disposition.match(/filename="([^"]+)"/)
+      const fileName = match?.[1] || 'resume.pdf'
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = fileName
+      document.body.appendChild(a)
+      a.click()
+      a.remove()
+      URL.revokeObjectURL(url)
+    } finally {
+      setGeneratingPdf(false)
+    }
+  }
 
   const navBar = <Navbar activeLink="talent" />
 
@@ -193,6 +233,14 @@ export default function TalentProfileClient({ id }: { id: string }) {
               style={{ background: '#F6981F', color: 'white', borderRadius: '100px', padding: '10px 22px', fontSize: '14px', fontWeight: 700, textDecoration: 'none' }}>
               Contact via Fractional AECO
             </a>
+            <button onClick={handleDownloadResume} disabled={generatingPdf}
+              style={{ background: 'none', color: generatingPdf ? 'var(--text-muted)' : '#05809B', border: '1px solid ' + (generatingPdf ? 'var(--border-color)' : 'rgba(5,128,155,0.3)'), borderRadius: '100px', padding: '10px 20px', fontSize: '14px', fontWeight: 700, cursor: generatingPdf ? 'not-allowed' : 'pointer' }}>
+              {generatingPdf ? 'Generating...' : '📄 Download Resume PDF'}
+            </button>
+            <button onClick={handleCopyLink}
+              style={{ background: 'none', color: copied ? '#22c55e' : 'var(--text-secondary)', border: '1px solid ' + (copied ? 'rgba(34,197,94,0.4)' : 'var(--border-color)'), borderRadius: '100px', padding: '10px 20px', fontSize: '14px', fontWeight: 700, cursor: 'pointer' }}>
+              {copied ? '✓ Link copied!' : '🔗 Copy profile link'}
+            </button>
           </div>
         </div>
 
@@ -273,34 +321,4 @@ export default function TalentProfileClient({ id }: { id: string }) {
                   <p style={{ color: 'var(--text-secondary)', fontSize: '13px', marginTop: '4px' }}>
                     {[c.issuing_organization, c.license_number, c.state].filter(Boolean).join(' · ')}
                   </p>
-                  <p style={{ color: 'var(--text-muted)', fontSize: '12px', marginTop: '4px' }}>
-                    {c.issue_year ? `Issued ${c.issue_year}` : ''}{c.expiration_year ? `${c.issue_year ? ' · ' : ''}Expires ${c.expiration_year}` : ''}
-                  </p>
-                  {c.credential_url && (
-                    <a href={c.credential_url} target="_blank" rel="noopener noreferrer" style={{ color: '#05809B', fontSize: '12px', fontWeight: 700, marginTop: '6px', display: 'inline-block' }}>
-                      View credential →
-                    </a>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Project Portfolio */}
-        {portfolio.length > 0 && (
-          <div className="rounded-2xl border p-8 mb-6" style={{ background: 'var(--bg-card)', borderColor: 'var(--border-color)' }}>
-            <h2 className="font-bold mb-4" style={{ color: 'var(--text-primary)', fontSize: '20px', fontFamily: "'Nunito', sans-serif" }}>Project Portfolio</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {portfolio.map(p => (
-                <div key={p.id} className="rounded-xl overflow-hidden" style={{ background: 'var(--bg-primary)', border: '1px solid var(--border-color)' }}>
-                  {p.image_url ? (
-                    <img src={p.image_url} alt={p.project_name} style={{ width: '100%', height: '140px', objectFit: 'cover', display: 'block' }} />
-                  ) : (
-                    <div style={{ width: '100%', height: '140px', background: 'linear-gradient(135deg, #05809B, #0a4a5c)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      <span style={{ color: 'rgba(255,255,255,0.85)', fontWeight: 700, fontSize: '14px' }}>{p.project_type || 'Project'}</span>
-                    </div>
-                  )}
-                  <div style={{ padding: '16px' }}>
-                    <div className="flex items-start justify-between gap-2 flex-wrap">
-                      <span style={{ color: 'var(--text-primary)', fontWe
+  
