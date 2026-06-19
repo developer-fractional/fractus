@@ -321,4 +321,94 @@ export default function TalentProfileClient({ id }: { id: string }) {
                   <p style={{ color: 'var(--text-secondary)', fontSize: '13px', marginTop: '4px' }}>
                     {[c.issuing_organization, c.license_number, c.state].filter(Boolean).join(' · ')}
                   </p>
-  
+                  <p style={{ color: 'var(--text-muted)', fontSize: '12px', marginTop: '4px' }}>
+                    {c.issue_year ? `Issued ${c.issue_year}` : ''}{c.expiration_year ? `${c.issue_year ? ' · ' : ''}Expires ${c.expiration_year}` : ''}
+                  </p>
+                  {c.credential_url && (
+                    <a href={c.credential_url} target="_blank" rel="noopener noreferrer" style={{ color: '#05809B', fontSize: '12px', fontWeight: 700, marginTop: '6px', display: 'inline-block' }}>
+                      View credential →
+                    </a>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Project Portfolio */}
+        {portfolio.length > 0 && (
+          <div className="rounded-2xl border p-8 mb-6" style={{ background: 'var(--bg-card)', borderColor: 'var(--border-color)' }}>
+            <h2 className="font-bold mb-4" style={{ color: 'var(--text-primary)', fontSize: '20px', fontFamily: "'Nunito', sans-serif" }}>Project Portfolio</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {portfolio.map(p => (
+                <div key={p.id} className="rounded-xl overflow-hidden" style={{ background: 'var(--bg-primary)', border: '1px solid var(--border-color)' }}>
+                  {p.image_url ? (
+                    <img src={p.image_url} alt={p.project_name} style={{ width: '100%', height: '140px', objectFit: 'cover', display: 'block' }} />
+                  ) : (
+                    <div style={{ width: '100%', height: '140px', background: 'linear-gradient(135deg, #05809B, #0a4a5c)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <span style={{ color: 'rgba(255,255,255,0.85)', fontWeight: 700, fontSize: '14px' }}>{p.project_type || 'Project'}</span>
+                    </div>
+                  )}
+                  <div style={{ padding: '16px' }}>
+                    <div className="flex items-start justify-between gap-2 flex-wrap">
+                      <span style={{ color: 'var(--text-primary)', fontWeight: 700, fontSize: '15px' }}>{p.project_name}</span>
+                      {p.project_value && (
+                        <span style={{ fontSize: '11px', fontWeight: 700, padding: '2px 10px', borderRadius: '100px', background: 'rgba(5,128,155,0.15)', color: '#05809B', whiteSpace: 'nowrap' }}>{p.project_value}</span>
+                      )}
+                    </div>
+                    <p style={{ color: 'var(--text-secondary)', fontSize: '13px', marginTop: '4px' }}>
+                      {[p.role, p.completion_year].filter(Boolean).join(' · ')}
+                    </p>
+                    {p.description && (
+                      <p style={{
+                        color: 'var(--text-secondary)', fontSize: '13px', marginTop: '8px', lineHeight: '1.6',
+                        display: '-webkit-box', WebkitBoxOrient: 'vertical', WebkitLineClamp: 3, overflow: 'hidden',
+                      }}>{p.description}</p>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Software & Tools */}
+        {softwareSkills.length > 0 && (
+          <div className="rounded-2xl border p-8 mb-6" style={{ background: 'var(--bg-card)', borderColor: 'var(--border-color)' }}>
+            <h2 className="font-bold mb-4" style={{ color: 'var(--text-primary)', fontSize: '20px', fontFamily: "'Nunito', sans-serif" }}>Software &amp; Tools</h2>
+            <div className="flex flex-wrap gap-3">
+              {softwareSkills.map(s => {
+                const style = PROFICIENCY_STYLES[s.proficiency] ?? PROFICIENCY_STYLES.Intermediate
+                return (
+                  <div key={s.id} className="flex items-center gap-2"
+                    style={{ padding: '8px 16px', borderRadius: '100px', background: style.bg, border: style.border }}>
+                    <span style={{ fontWeight: 700, fontSize: '13px', color: 'var(--text-primary)' }}>{s.tool_name}</span>
+                    <span style={{ fontWeight: 700, fontSize: '12px', color: style.color }}>
+                      {s.proficiency}{s.years_used ? ` · ${s.years_used}yr` : ''}
+                    </span>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* Additional Info */}
+        {customFields.length > 0 && (
+          <div className="rounded-2xl border p-8 mb-6" style={{ background: 'var(--bg-card)', borderColor: 'var(--border-color)' }}>
+            <h2 className="font-bold mb-4" style={{ color: 'var(--text-primary)', fontSize: '20px', fontFamily: "'Nunito', sans-serif" }}>Additional Info</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {customFields.map(f => (
+                <div key={f.id}>
+                  <span style={{ color: 'var(--text-muted)', fontSize: '12px', fontWeight: 700, letterSpacing: '0.04em', textTransform: 'uppercase' }}>{f.field_label}</span>
+                  <p style={{ color: 'var(--text-primary)', fontWeight: 700, fontSize: '15px', marginTop: '2px' }}>{f.field_value}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+      </div>
+    </div>
+  )
+}

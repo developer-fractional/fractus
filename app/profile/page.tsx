@@ -588,4 +588,60 @@ export default function ProfilePage() {
             ) : (
               <div className="space-y-3">
                 {resumes.map(r => (
-                  <div key={r.id} className="flex items-center justify-between gap-3 flex-wrap" style={{ padding: '14px 18px', borderRadius: '12px', border: '1px solid var(--color-border)', background: 
+                  <div key={r.id} className="flex items-center justify-between gap-3 flex-wrap" style={{ padding: '14px 18px', borderRadius: '12px', border: '1px solid var(--color-border)', background: 'var(--color-bg)' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', minWidth: 0 }}>
+                      <span style={{ fontSize: '22px' }}>📄</span>
+                      <div style={{ minWidth: 0 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                          <span style={{ color: 'var(--text-primary)', fontWeight: 700, fontSize: '14px' }}>{r.file_name}</span>
+                          {r.is_primary && (
+                            <span style={{ fontSize: '11px', fontWeight: 700, padding: '2px 10px', borderRadius: '100px', background: 'rgba(5,128,155,0.15)', color: '#05809B' }}>Primary</span>
+                          )}
+                        </div>
+                        <p style={{ color: 'var(--text-muted)', fontSize: '12px' }}>{formatSize(r.file_size)} · Uploaded {formatDate(r.uploaded_at)}</p>
+                      </div>
+                    </div>
+                    <div style={{ display: 'flex', gap: '8px', flexShrink: 0 }}>
+                      {!r.is_primary && (
+                        <button onClick={() => setPrimary(r.id)}
+                          style={{ fontSize: '12px', fontWeight: 700, padding: '6px 14px', borderRadius: '100px', background: 'none', border: '1px solid var(--color-border)', color: 'var(--text-secondary)', cursor: 'pointer' }}>
+                          Set as Primary
+                        </button>
+                      )}
+                      <button onClick={() => downloadResume(r.file_path, r.file_name)}
+                        style={{ fontSize: '12px', fontWeight: 700, padding: '6px 14px', borderRadius: '100px', background: 'rgba(5,128,155,0.12)', border: '1px solid rgba(5,128,155,0.3)', color: '#05809B', cursor: 'pointer' }}>
+                        Download
+                      </button>
+                      <button onClick={() => deleteResume(r.id, r.file_path)}
+                        style={{ fontSize: '12px', fontWeight: 700, padding: '6px 14px', borderRadius: '100px', background: 'rgba(239,68,68,0.12)', border: '1px solid rgba(239,68,68,0.3)', color: '#f87171', cursor: 'pointer' }}>
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Save button */}
+          <button onClick={handleSave} disabled={saving}
+            className="w-full text-white rounded-2xl font-bold cursor-pointer transition-all"
+            style={{ background: saved ? '#16a34a' : 'var(--color-primary)', fontSize: '20px', padding: '20px', opacity: saving ? 0.7 : 1 }}>
+            {saving ? 'Saving...' : saved ? '✓ Profile Saved!' : 'Save Profile'}
+          </button>
+
+          {/* View public profile link */}
+          {user && (
+            <p className="text-center" style={{ fontSize: '15px', color: 'var(--text-muted)' }}>
+              Your public profile →{' '}
+              <Link href={`/talent/${user.id}`} className="font-medium hover:opacity-80" style={{ color: 'var(--color-accent-light)' }}>
+                View how others see you
+              </Link>
+            </p>
+          )}
+
+        </div>
+      </div>
+    </div>
+  )
+}
