@@ -66,17 +66,17 @@ export default function ResetPassword() {
   }
 
   const inputStyle = {
-    width: '100%', background: '#1B2130', border: '1px solid #2A3145',
-    borderRadius: '12px', padding: '16px 18px', color: 'white',
+    width: '100%', background: 'var(--input-bg)', border: '1px solid var(--border-color)',
+    borderRadius: '12px', padding: '16px 18px', color: 'var(--text-primary)',
     fontSize: '16px', outline: 'none', boxSizing: 'border-box' as const,
   }
   const labelStyle = {
-    display: 'block', color: '#8892A4', fontSize: '13px',
+    display: 'block', color: 'var(--text-muted)', fontSize: '13px',
     fontWeight: 600, marginBottom: '8px', letterSpacing: '0.03em',
   } as const
 
   return (
-    <div style={{ minHeight: '100vh', background: '#0F1117', display: 'flex', flexDirection: 'column', fontFamily: "'Nunito Sans', sans-serif" }}>
+    <div style={{ minHeight: '100vh', background: 'var(--bg-primary)', display: 'flex', flexDirection: 'column', fontFamily: "'Nunito Sans', sans-serif" }}>
 
       {/* Top bar */}
       <div style={{ background: '#F6981F', color: 'white', textAlign: 'center', padding: '9px 16px', fontSize: '13px', fontWeight: 700 }}>
@@ -84,12 +84,12 @@ export default function ResetPassword() {
       </div>
 
       {/* Nav */}
-      <nav style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px 48px', borderBottom: '1px solid #2A3145' }}>
+      <nav style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px 48px', borderBottom: '1px solid var(--border-color)' }}>
         <Link href="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'baseline', gap: '8px' }}>
           <span style={{ fontSize: '22px', fontWeight: 800, color: '#F6981F', fontFamily: "'Nunito', sans-serif" }}>Fractus</span>
-          <span style={{ fontSize: '11px', color: '#4A5568', letterSpacing: '0.05em', fontWeight: 600 }}>BY FRACTIONAL AECO</span>
+          <span style={{ fontSize: '11px', color: 'var(--text-secondary)', letterSpacing: '0.05em', fontWeight: 600 }}>BY FRACTIONAL AECO</span>
         </Link>
-        <Link href="/login" style={{ color: '#8892A4', textDecoration: 'none', fontSize: '14px' }}>
+        <Link href="/login" style={{ color: 'var(--text-muted)', textDecoration: 'none', fontSize: '14px' }}>
           <span style={{ color: '#05809B', fontWeight: 700 }}>← Back to sign in</span>
         </Link>
       </nav>
@@ -97,8 +97,8 @@ export default function ResetPassword() {
       {/* Content */}
       <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '60px 24px' }}>
         <div style={{ width: '100%', maxWidth: '440px' }}>
-          <h1 style={{ fontFamily: "'Nunito', sans-serif", fontSize: '40px', fontWeight: 800, color: 'white', marginBottom: '8px', letterSpacing: '-1px' }}>Set a new password</h1>
-          <p style={{ color: '#8892A4', fontSize: '17px', marginBottom: '32px' }}>Choose a strong new password for your Fractus account.</p>
+          <h1 style={{ fontFamily: "'Nunito', sans-serif", fontSize: '40px', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '8px', letterSpacing: '-1px' }}>Set a new password</h1>
+          <p style={{ color: 'var(--text-muted)', fontSize: '17px', marginBottom: '32px' }}>Choose a strong new password for your Fractus account.</p>
 
           {pageState === 'loading' && (
             <div style={{ padding: '20px 22px', background: 'rgba(5,128,155,0.08)', border: '1px solid rgba(5,128,155,0.2)', borderRadius: '12px', color: '#05809B', fontSize: '15px', textAlign: 'center' }}>
@@ -141,8 +141,8 @@ export default function ResetPassword() {
         </div>
       </div>
 
-      <div style={{ textAlign: 'center', padding: '20px', color: '#4A5568', fontSize: '13px', borderTop: '1px solid #2A3145' }}>
-        © 2026 Fractional-AECO LLC · <a href="https://www.fractionalaeco.com" target="_blank" rel="noopener noreferrer" style={{ color: '#4A5568', textDecoration: 'none' }}>fractionalaeco.com</a>
+      <div style={{ textAlign: 'center', padding: '20px', color: 'var(--text-secondary)', fontSize: '13px', borderTop: '1px solid var(--border-color)' }}>
+        © 2026 Fractional-AECO LLC · <a href="https://www.fractionalaeco.com" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--text-secondary)', textDecoration: 'none' }}>fractionalaeco.com</a>
       </div>
     </div>
   )

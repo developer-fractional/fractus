@@ -73,38 +73,38 @@ export default function CompanyProfilePage() {
   }
 
   const inputStyle: React.CSSProperties = {
-    width: '100%', background: '#0F1117', border: '1.5px solid #2A3145',
-    borderRadius: '12px', padding: '14px 18px', color: 'white',
+    width: '100%', background: 'var(--input-bg)', border: '1.5px solid var(--border-color)',
+    borderRadius: '12px', padding: '14px 18px', color: 'var(--text-primary)',
     fontSize: '15px', outline: 'none', boxSizing: 'border-box',
     fontFamily: "'Nunito Sans', sans-serif",
   }
   const labelStyle: React.CSSProperties = {
-    display: 'block', color: '#8892A4', fontSize: '12px',
+    display: 'block', color: 'var(--text-muted)', fontSize: '12px',
     fontWeight: 700, marginBottom: '8px', letterSpacing: '0.06em',
     textTransform: 'uppercase',
   }
   const fieldWrap = { marginBottom: '22px' }
 
   if (loading) return (
-    <div style={{ minHeight: '100vh', background: '#0F1117', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+    <div style={{ minHeight: '100vh', background: 'var(--bg-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       <p style={{ color: '#F6981F', fontFamily: "'Nunito Sans', sans-serif" }}>Loading...</p>
     </div>
   )
 
   return (
-    <div style={{ minHeight: '100vh', background: '#0F1117', fontFamily: "'Nunito Sans', sans-serif" }}>
+    <div style={{ minHeight: '100vh', background: 'var(--bg-primary)', fontFamily: "'Nunito Sans', sans-serif" }}>
       <Navbar activeLink="dashboard" />
 
       {/* Header */}
-      <div style={{ borderBottom: '1px solid #2A3145', background: '#1B2130', padding: 'clamp(32px,5vw,52px) 20px' }}>
+      <div style={{ borderBottom: '1px solid var(--border-color)', background: 'var(--bg-card)', padding: 'clamp(32px,5vw,52px) 20px' }}>
         <div style={{ maxWidth: '720px', margin: '0 auto' }}>
-          <Link href="/dashboard" style={{ color: '#8892A4', textDecoration: 'none', fontSize: '14px', fontWeight: 600, display: 'inline-block', marginBottom: '20px' }}>
+          <Link href="/dashboard" style={{ color: 'var(--text-muted)', textDecoration: 'none', fontSize: '14px', fontWeight: 600, display: 'inline-block', marginBottom: '20px' }}>
             ← Back to Dashboard
           </Link>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '16px' }}>
             <div>
               <p style={{ color: '#F6981F', fontWeight: 700, fontSize: '13px', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '8px' }}>Employer</p>
-              <h1 style={{ fontFamily: "'Nunito', sans-serif", fontSize: 'clamp(26px,5vw,38px)', fontWeight: 800, color: 'white' }}>Company Profile</h1>
+              <h1 style={{ fontFamily: "'Nunito', sans-serif", fontSize: 'clamp(26px,5vw,38px)', fontWeight: 800, color: 'var(--text-primary)' }}>Company Profile</h1>
             </div>
             {company && (
               <Link href={`/company/${company.id}`}
@@ -118,7 +118,7 @@ export default function CompanyProfilePage() {
 
       {/* Form */}
       <div style={{ maxWidth: '720px', margin: '0 auto', padding: 'clamp(32px,4vw,48px) 20px' }}>
-        <div style={{ background: '#1B2130', borderRadius: '16px', border: '1px solid #2A3145', padding: '36px' }}>
+        <div style={{ background: 'var(--bg-card)', borderRadius: '16px', border: '1px solid var(--border-color)', padding: '36px' }}>
 
           {!company && (
             <div style={{ marginBottom: '28px', padding: '16px 20px', background: 'rgba(246,152,32,0.07)', border: '1px solid rgba(246,152,32,0.2)', borderRadius: '12px' }}>

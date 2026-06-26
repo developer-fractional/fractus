@@ -81,24 +81,24 @@ export default function ListingDetailClient({ id }: { id: string }) {
   }
 
   if (loading) return (
-    <div style={{ minHeight: '100vh', background: '#0F1117', fontFamily: "'Nunito Sans', sans-serif" }}>
+    <div style={{ minHeight: '100vh', background: 'var(--bg-primary)', fontFamily: "'Nunito Sans', sans-serif" }}>
       <Navbar activeLink="listings" />
-      <div style={{ textAlign: 'center', padding: '80px', color: '#8892A4' }}>Loading...</div>
+      <div style={{ textAlign: 'center', padding: '80px', color: 'var(--text-muted)' }}>Loading...</div>
     </div>
   )
 
   if (!listing) return (
-    <div style={{ minHeight: '100vh', background: '#0F1117', fontFamily: "'Nunito Sans', sans-serif" }}>
+    <div style={{ minHeight: '100vh', background: 'var(--bg-primary)', fontFamily: "'Nunito Sans', sans-serif" }}>
       <Navbar activeLink="listings" />
       <div style={{ textAlign: 'center', padding: '80px' }}>
-        <p style={{ color: '#8892A4', marginBottom: '24px' }}>Listing not found.</p>
+        <p style={{ color: 'var(--text-muted)', marginBottom: '24px' }}>Listing not found.</p>
         <Link href="/listings" style={{ color: '#F6981F', textDecoration: 'none', fontWeight: 700 }}>← Back to listings</Link>
       </div>
     </div>
   )
 
   return (
-    <div style={{ minHeight: '100vh', background: '#0F1117', fontFamily: "'Nunito Sans', sans-serif" }}>
+    <div style={{ minHeight: '100vh', background: 'var(--bg-primary)', fontFamily: "'Nunito Sans', sans-serif" }}>
       <Navbar activeLink="listings" />
 
       <div style={{ maxWidth: '800px', margin: '0 auto', padding: '40px 24px' }}>
@@ -106,11 +106,11 @@ export default function ListingDetailClient({ id }: { id: string }) {
           ← Back to listings
         </Link>
 
-        <div style={{ background: '#1B2130', borderRadius: '16px', border: '1px solid #2A3145', padding: '36px', marginTop: '24px' }}>
+        <div style={{ background: 'var(--bg-card)', borderRadius: '16px', border: '1px solid var(--border-color)', padding: '36px', marginTop: '24px' }}>
 
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '16px', marginBottom: '24px' }}>
             <div>
-              <h1 style={{ fontFamily: "'Nunito', sans-serif", fontSize: '28px', fontWeight: 800, color: 'white', marginBottom: '8px', letterSpacing: '-0.5px' }}>
+              <h1 style={{ fontFamily: "'Nunito', sans-serif", fontSize: '28px', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '8px', letterSpacing: '-0.5px' }}>
                 {listing.title}
               </h1>
               {companyProfile ? (
@@ -136,21 +136,21 @@ export default function ListingDetailClient({ id }: { id: string }) {
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '16px', marginBottom: '32px' }}>
             {listing.rate && (
-              <div style={{ background: '#0F1117', borderRadius: '12px', padding: '16px' }}>
-                <p style={{ color: '#8892A4', fontSize: '12px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '6px' }}>Rate</p>
-                <p style={{ color: 'white', fontSize: '16px', fontWeight: 700 }}>{listing.rate}</p>
+              <div style={{ background: 'var(--bg-primary)', borderRadius: '12px', padding: '16px' }}>
+                <p style={{ color: 'var(--text-muted)', fontSize: '12px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '6px' }}>Rate</p>
+                <p style={{ color: 'var(--text-primary)', fontSize: '16px', fontWeight: 700 }}>{listing.rate}</p>
               </div>
             )}
             {listing.hours_per_week && (
-              <div style={{ background: '#0F1117', borderRadius: '12px', padding: '16px' }}>
-                <p style={{ color: '#8892A4', fontSize: '12px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '6px' }}>Hours/week</p>
-                <p style={{ color: 'white', fontSize: '16px', fontWeight: 700 }}>{listing.hours_per_week} hrs</p>
+              <div style={{ background: 'var(--bg-primary)', borderRadius: '12px', padding: '16px' }}>
+                <p style={{ color: 'var(--text-muted)', fontSize: '12px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '6px' }}>Hours/week</p>
+                <p style={{ color: 'var(--text-primary)', fontSize: '16px', fontWeight: 700 }}>{listing.hours_per_week} hrs</p>
               </div>
             )}
             {listing.created_at && (
-              <div style={{ background: '#0F1117', borderRadius: '12px', padding: '16px' }}>
-                <p style={{ color: '#8892A4', fontSize: '12px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '6px' }}>Posted</p>
-                <p style={{ color: 'white', fontSize: '16px', fontWeight: 700 }}>
+              <div style={{ background: 'var(--bg-primary)', borderRadius: '12px', padding: '16px' }}>
+                <p style={{ color: 'var(--text-muted)', fontSize: '12px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '6px' }}>Posted</p>
+                <p style={{ color: 'var(--text-primary)', fontSize: '16px', fontWeight: 700 }}>
                   {new Date(listing.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                 </p>
               </div>
@@ -159,18 +159,18 @@ export default function ListingDetailClient({ id }: { id: string }) {
 
           {listing.description && (
             <div style={{ marginBottom: '32px' }}>
-              <h2 style={{ color: 'white', fontSize: '18px', fontWeight: 700, marginBottom: '16px', fontFamily: "'Nunito', sans-serif" }}>About this role</h2>
-              <p style={{ color: '#C0C8D8', fontSize: '16px', lineHeight: '1.8', whiteSpace: 'pre-wrap' }}>{listing.description}</p>
+              <h2 style={{ color: 'var(--text-primary)', fontSize: '18px', fontWeight: 700, marginBottom: '16px', fontFamily: "'Nunito', sans-serif" }}>About this role</h2>
+              <p style={{ color: 'var(--text-secondary)', fontSize: '16px', lineHeight: '1.8', whiteSpace: 'pre-wrap' }}>{listing.description}</p>
             </div>
           )}
 
-          <div style={{ height: '1px', background: '#2A3145', margin: '32px 0' }} />
+          <div style={{ height: '1px', background: 'var(--border-color)', margin: '32px 0' }} />
 
           {applied ? (
             <div style={{ textAlign: 'center', padding: '24px', background: 'rgba(5,128,155,0.08)', borderRadius: '12px', border: '1px solid rgba(5,128,155,0.2)' }}>
               <div style={{ fontSize: '32px', marginBottom: '12px' }}>✅</div>
-              <h3 style={{ color: 'white', fontSize: '18px', fontWeight: 700, marginBottom: '8px', fontFamily: "'Nunito', sans-serif" }}>Application submitted!</h3>
-              <p style={{ color: '#8892A4', fontSize: '15px' }}>The employer will be in touch if your profile is a match.</p>
+              <h3 style={{ color: 'var(--text-primary)', fontSize: '18px', fontWeight: 700, marginBottom: '8px', fontFamily: "'Nunito', sans-serif" }}>Application submitted!</h3>
+              <p style={{ color: 'var(--text-muted)', fontSize: '15px' }}>The employer will be in touch if your profile is a match.</p>
             </div>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
@@ -190,8 +190,8 @@ export default function ListingDetailClient({ id }: { id: string }) {
                 </button>
                 <button onClick={handleSave} disabled={saving} style={{
                   background: saved ? 'rgba(5,128,155,0.12)' : 'transparent',
-                  color: saved ? '#05809B' : '#8892A4',
-                  border: saved ? '1px solid rgba(5,128,155,0.3)' : '1px solid #2A3145',
+                  color: saved ? '#05809B' : 'var(--text-muted)',
+                  border: saved ? '1px solid rgba(5,128,155,0.3)' : '1px solid var(--border-color)',
                   borderRadius: '100px', padding: '18px 22px', fontSize: '20px',
                   cursor: saving ? 'not-allowed' : 'pointer', opacity: saving ? 0.6 : 1,
                   transition: 'all 0.15s',
@@ -200,7 +200,7 @@ export default function ListingDetailClient({ id }: { id: string }) {
                 </button>
               </div>
               {!user && (
-                <p style={{ textAlign: 'center', color: '#8892A4', fontSize: '14px' }}>
+                <p style={{ textAlign: 'center', color: 'var(--text-muted)', fontSize: '14px' }}>
                   <Link href="/login" style={{ color: '#05809B', textDecoration: 'none', fontWeight: 700 }}>Sign in</Link> or <Link href="/signup" style={{ color: '#05809B', textDecoration: 'none', fontWeight: 700 }}>create an account</Link> to apply
                 </p>
               )}

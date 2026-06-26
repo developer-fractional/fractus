@@ -137,7 +137,7 @@ export default function ApplicationsPage() {
 
   // ── Loading ────────────────────────────────────────────────────────────────
   if (loading) return (
-    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#0F1117' }}>
+    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg-primary)' }}>
       <p style={{ color: '#F6981F', fontSize: '20px', fontFamily: "'Nunito Sans', sans-serif" }}>Loading...</p>
     </div>
   )
@@ -150,13 +150,13 @@ export default function ApplicationsPage() {
 
   // ── Shared card/section styles ─────────────────────────────────────────────
   const card: React.CSSProperties = {
-    background: '#1B2130', border: '1px solid #2A3145', borderRadius: '16px',
+    background: 'var(--bg-card)', border: '1px solid var(--border-color)', borderRadius: '16px',
     padding: '24px 28px', display: 'flex', flexDirection: 'column', gap: '16px'
   }
-  const metaText: React.CSSProperties = { color: '#8892A4', fontSize: '13px' }
+  const metaText: React.CSSProperties = { color: 'var(--text-muted)', fontSize: '13px' }
 
   return (
-    <div style={{ minHeight: '100vh', background: '#0F1117', fontFamily: "'Nunito Sans', sans-serif" }}>
+    <div style={{ minHeight: '100vh', background: 'var(--bg-primary)', fontFamily: "'Nunito Sans', sans-serif" }}>
 
       <Navbar activeLink="dashboard" />
 
@@ -168,21 +168,21 @@ export default function ApplicationsPage() {
         </Link>
         <h1 style={{
           fontFamily: "'Nunito', sans-serif", fontSize: 'clamp(26px, 5vw, 36px)',
-          fontWeight: 800, color: 'white', margin: '16px 0 6px', letterSpacing: '-0.5px'
+          fontWeight: 800, color: 'var(--text-primary)', margin: '16px 0 6px', letterSpacing: '-0.5px'
         }}>
           {title}
         </h1>
-        <p style={{ color: '#8892A4', fontSize: '16px', marginBottom: '36px' }}>{subtitle}</p>
+        <p style={{ color: 'var(--text-muted)', fontSize: '16px', marginBottom: '36px' }}>{subtitle}</p>
 
         {/* ── TALENT VIEW ─────────────────────────────────────────────────── */}
         {!showEmployerView && (
           talentApps.length === 0 ? (
             <div style={{ textAlign: 'center', padding: '80px 20px' }}>
               <div style={{ fontSize: '48px', marginBottom: '16px' }}>📭</div>
-              <h3 style={{ fontFamily: "'Nunito', sans-serif", fontSize: '22px', fontWeight: 800, color: 'white', marginBottom: '10px' }}>
+              <h3 style={{ fontFamily: "'Nunito', sans-serif", fontSize: '22px', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '10px' }}>
                 No applications yet
               </h3>
-              <p style={{ color: '#8892A4', fontSize: '15px', marginBottom: '28px' }}>
+              <p style={{ color: 'var(--text-muted)', fontSize: '15px', marginBottom: '28px' }}>
                 You haven&apos;t applied to any listings yet.
               </p>
               <Link href="/listings" style={{
@@ -198,7 +198,7 @@ export default function ApplicationsPage() {
                 <div key={app.id} style={card}>
                   <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '12px', flexWrap: 'wrap' }}>
                     <div>
-                      <h3 style={{ fontFamily: "'Nunito', sans-serif", fontSize: '18px', fontWeight: 800, color: 'white', marginBottom: '4px' }}>
+                      <h3 style={{ fontFamily: "'Nunito', sans-serif", fontSize: '18px', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '4px' }}>
                         {app.listings?.title ?? 'Untitled listing'}
                       </h3>
                       <p style={{ color: '#05809B', fontSize: '15px', fontWeight: 600 }}>
@@ -223,10 +223,10 @@ export default function ApplicationsPage() {
           employerApps.length === 0 ? (
             <div style={{ textAlign: 'center', padding: '80px 20px' }}>
               <div style={{ fontSize: '48px', marginBottom: '16px' }}>📭</div>
-              <h3 style={{ fontFamily: "'Nunito', sans-serif", fontSize: '22px', fontWeight: 800, color: 'white', marginBottom: '10px' }}>
+              <h3 style={{ fontFamily: "'Nunito', sans-serif", fontSize: '22px', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '10px' }}>
                 No applications yet
               </h3>
-              <p style={{ color: '#8892A4', fontSize: '15px', marginBottom: '28px' }}>
+              <p style={{ color: 'var(--text-muted)', fontSize: '15px', marginBottom: '28px' }}>
                 Once professionals apply to your listings, they&apos;ll appear here.
               </p>
               <Link href="/listings/new" style={{
@@ -242,11 +242,11 @@ export default function ApplicationsPage() {
                 <div key={app.id} style={card}>
                   <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '12px', flexWrap: 'wrap' }}>
                     <div>
-                      <h3 style={{ fontFamily: "'Nunito', sans-serif", fontSize: '18px', fontWeight: 800, color: 'white', marginBottom: '4px' }}>
+                      <h3 style={{ fontFamily: "'Nunito', sans-serif", fontSize: '18px', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '4px' }}>
                         {app.listings?.title ?? 'Untitled listing'}
                       </h3>
-                      <p style={{ color: '#8892A4', fontSize: '15px' }}>
-                        Applicant: <span style={{ color: 'white', fontWeight: 600 }}>{app.profiles?.name ?? 'Unknown'}</span>
+                      <p style={{ color: 'var(--text-muted)', fontSize: '15px' }}>
+                        Applicant: <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>{app.profiles?.name ?? 'Unknown'}</span>
                       </p>
                     </div>
                     <StatusBadge status={app.status} />

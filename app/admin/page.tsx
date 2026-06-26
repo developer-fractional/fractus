@@ -211,7 +211,7 @@ export default function AdminPage() {
   }
 
   if (loading) return (
-    <div style={{ background: '#0F1117', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+    <div style={{ background: 'var(--bg-primary)', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       <p style={{ color: '#F6981F', fontSize: '20px', fontFamily: "'Nunito Sans', sans-serif" }}>Loading admin panel...</p>
     </div>
   )
@@ -219,17 +219,17 @@ export default function AdminPage() {
   const tabStyle = (tab: string) => ({
     padding: '10px 20px', borderRadius: '8px', fontSize: '14px', fontWeight: 700,
     cursor: 'pointer', border: 'none',
-    background: activeTab === tab ? '#F6981F' : '#1B2130',
-    color: activeTab === tab ? 'white' : '#8892A4',
+    background: activeTab === tab ? '#F6981F' : 'var(--bg-card)',
+    color: activeTab === tab ? 'white' : 'var(--text-muted)',
     fontFamily: "'Nunito Sans', sans-serif",
   })
 
   const inputSt: React.CSSProperties = {
-    width: '100%', background: '#0F1117', border: '1px solid #2A3145', borderRadius: '8px',
-    padding: '10px 14px', color: 'white', fontSize: '14px', outline: 'none', boxSizing: 'border-box',
+    width: '100%', background: 'var(--input-bg)', border: '1px solid var(--border-color)', borderRadius: '8px',
+    padding: '10px 14px', color: 'var(--text-primary)', fontSize: '14px', outline: 'none', boxSizing: 'border-box',
     fontFamily: "'Nunito Sans', sans-serif",
   }
-  const labelSt: React.CSSProperties = { color: '#8892A4', fontSize: '12px', fontWeight: 700, marginBottom: '6px', display: 'block', letterSpacing: '0.05em' }
+  const labelSt: React.CSSProperties = { color: 'var(--text-muted)', fontSize: '12px', fontWeight: 700, marginBottom: '6px', display: 'block', letterSpacing: '0.05em' }
 
   const filteredUsers = users.filter(u =>
     !userSearch ||
@@ -238,17 +238,17 @@ export default function AdminPage() {
   )
 
   return (
-    <div style={{ minHeight: '100vh', background: '#0F1117', fontFamily: "'Nunito Sans', sans-serif" }}>
+    <div style={{ minHeight: '100vh', background: 'var(--bg-primary)', fontFamily: "'Nunito Sans', sans-serif" }}>
 
       {/* Add User Modal */}
       {showAddUser && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px' }}
           onClick={e => { if (e.target === e.currentTarget) setShowAddUser(false) }}>
-          <div style={{ background: '#1B2130', border: '1px solid #2A3145', borderRadius: '20px', padding: '36px', width: '100%', maxWidth: '480px' }}>
+          <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border-color)', borderRadius: '20px', padding: '36px', width: '100%', maxWidth: '480px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '28px' }}>
-              <h2 style={{ color: 'white', fontSize: '22px', fontWeight: 800, fontFamily: "'Nunito', sans-serif" }}>Add User</h2>
+              <h2 style={{ color: 'var(--text-primary)', fontSize: '22px', fontWeight: 800, fontFamily: "'Nunito', sans-serif" }}>Add User</h2>
               <button onClick={() => { setShowAddUser(false); setAddMsg(null) }}
-                style={{ background: 'transparent', border: 'none', color: '#4A5568', fontSize: '22px', cursor: 'pointer', lineHeight: 1 }}>×</button>
+                style={{ background: 'transparent', border: 'none', color: 'var(--text-secondary)', fontSize: '22px', cursor: 'pointer', lineHeight: 1 }}>×</button>
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
@@ -298,7 +298,7 @@ export default function AdminPage() {
 
               <div style={{ display: 'flex', gap: '10px', marginTop: '4px' }}>
                 <button onClick={() => { setShowAddUser(false); setAddMsg(null) }}
-                  style={{ flex: 1, background: 'transparent', border: '1px solid #2A3145', borderRadius: '100px', padding: '13px', color: '#8892A4', fontSize: '14px', fontWeight: 700, cursor: 'pointer' }}>
+                  style={{ flex: 1, background: 'transparent', border: '1px solid var(--border-color)', borderRadius: '100px', padding: '13px', color: 'var(--text-muted)', fontSize: '14px', fontWeight: 700, cursor: 'pointer' }}>
                   Cancel
                 </button>
                 <button onClick={handleAddUser} disabled={addLoading}
@@ -317,7 +317,7 @@ export default function AdminPage() {
       </div>
 
       {/* Nav */}
-      <nav style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '18px 48px', borderBottom: '1px solid #2A3145', background: '#0F1117' }}>
+      <nav style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '18px 48px', borderBottom: '1px solid var(--border-color)', background: 'var(--bg-primary)' }}>
         <div style={{ display: 'flex', alignItems: 'baseline', gap: '10px' }}>
           <Link href="/" style={{ textDecoration: 'none' }}>
             <span style={{ fontSize: '24px', fontWeight: 800, color: '#F6981F', fontFamily: "'Nunito', sans-serif" }}>Fractus</span>
@@ -325,8 +325,8 @@ export default function AdminPage() {
           <span style={{ fontSize: '12px', color: '#F6981F', fontWeight: 700, background: 'rgba(246,152,31,0.15)', padding: '3px 10px', borderRadius: '100px', border: '1px solid rgba(246,152,31,0.3)' }}>ADMIN</span>
         </div>
         <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-          <Link href="/dashboard" style={{ color: '#8892A4', textDecoration: 'none', fontSize: '14px', fontWeight: 600 }}>← Back to Dashboard</Link>
-          <span style={{ color: '#4A5568', fontSize: '14px' }}>{user?.email}</span>
+          <Link href="/dashboard" style={{ color: 'var(--text-muted)', textDecoration: 'none', fontSize: '14px', fontWeight: 600 }}>← Back to Dashboard</Link>
+          <span style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>{user?.email}</span>
         </div>
       </nav>
 
@@ -340,9 +340,9 @@ export default function AdminPage() {
             { label: 'Total Applications', value: stats.applications, color: '#F6981F' },
             { label: 'Verified Talent',    value: stats.verified,     color: '#05809B' },
           ].map((s, i) => (
-            <div key={i} style={{ background: '#1B2130', border: '1px solid #2A3145', borderRadius: '12px', padding: '24px' }}>
+            <div key={i} style={{ background: 'var(--bg-card)', border: '1px solid var(--border-color)', borderRadius: '12px', padding: '24px' }}>
               <div style={{ color: s.color, fontSize: '36px', fontWeight: 800, fontFamily: "'Nunito', sans-serif" }}>{s.value}</div>
-              <div style={{ color: '#8892A4', fontSize: '14px', fontWeight: 600, marginTop: '4px' }}>{s.label}</div>
+              <div style={{ color: 'var(--text-muted)', fontSize: '14px', fontWeight: 600, marginTop: '4px' }}>{s.label}</div>
             </div>
           ))}
         </div>
@@ -358,30 +358,30 @@ export default function AdminPage() {
         {/* Overview tab */}
         {activeTab === 'overview' && (
           <div>
-            <h2 style={{ color: 'white', fontSize: '24px', fontWeight: 800, fontFamily: "'Nunito', sans-serif", marginBottom: '20px' }}>Recent Users</h2>
-            <div style={{ background: '#1B2130', border: '1px solid #2A3145', borderRadius: '12px', overflow: 'hidden', marginBottom: '32px' }}>
+            <h2 style={{ color: 'var(--text-primary)', fontSize: '24px', fontWeight: 800, fontFamily: "'Nunito', sans-serif", marginBottom: '20px' }}>Recent Users</h2>
+            <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border-color)', borderRadius: '12px', overflow: 'hidden', marginBottom: '32px' }}>
               <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                 <thead>
-                  <tr style={{ borderBottom: '1px solid #2A3145' }}>
+                  <tr style={{ borderBottom: '1px solid var(--border-color)' }}>
                     {['Name', 'Email', 'Discipline', 'Verified', 'Actions'].map(h => (
-                      <th key={h} style={{ padding: '14px 20px', textAlign: 'left', color: '#4A5568', fontSize: '12px', fontWeight: 700, letterSpacing: '0.05em' }}>{h}</th>
+                      <th key={h} style={{ padding: '14px 20px', textAlign: 'left', color: 'var(--text-secondary)', fontSize: '12px', fontWeight: 700, letterSpacing: '0.05em' }}>{h}</th>
                     ))}
                   </tr>
                 </thead>
                 <tbody>
                   {users.slice(0, 5).map((u, i) => (
-                    <tr key={u.id} style={{ borderBottom: i < 4 ? '1px solid #161C28' : 'none' }}>
-                      <td style={{ padding: '14px 20px', color: 'white', fontSize: '14px', fontWeight: 600 }}>{u.name || '—'}</td>
-                      <td style={{ padding: '14px 20px', color: '#8892A4', fontSize: '14px' }}>{u.email}</td>
-                      <td style={{ padding: '14px 20px', color: '#8892A4', fontSize: '14px' }}>{u.discipline || '—'}</td>
+                    <tr key={u.id} style={{ borderBottom: i < 4 ? '1px solid var(--border-color)' : 'none' }}>
+                      <td style={{ padding: '14px 20px', color: 'var(--text-primary)', fontSize: '14px', fontWeight: 600 }}>{u.name || '—'}</td>
+                      <td style={{ padding: '14px 20px', color: 'var(--text-muted)', fontSize: '14px' }}>{u.email}</td>
+                      <td style={{ padding: '14px 20px', color: 'var(--text-muted)', fontSize: '14px' }}>{u.discipline || '—'}</td>
                       <td style={{ padding: '14px 20px' }}>
-                        <span style={{ background: u.is_verified ? 'rgba(5,128,155,0.15)' : 'rgba(74,85,104,0.15)', color: u.is_verified ? '#05809B' : '#4A5568', fontSize: '12px', fontWeight: 700, padding: '4px 10px', borderRadius: '100px' }}>
+                        <span style={{ background: u.is_verified ? 'rgba(5,128,155,0.15)' : 'rgba(74,85,104,0.15)', color: u.is_verified ? '#05809B' : 'var(--text-secondary)', fontSize: '12px', fontWeight: 700, padding: '4px 10px', borderRadius: '100px' }}>
                           {u.is_verified ? '✓ Verified' : 'Unverified'}
                         </span>
                       </td>
                       <td style={{ padding: '14px 20px' }}>
                         <button onClick={() => toggleVerified(u.id, u.is_verified ?? false)}
-                          style={{ background: 'transparent', border: '1px solid #2A3145', borderRadius: '6px', padding: '6px 12px', color: '#F6981F', fontSize: '12px', fontWeight: 700, cursor: 'pointer' }}>
+                          style={{ background: 'transparent', border: '1px solid var(--border-color)', borderRadius: '6px', padding: '6px 12px', color: '#F6981F', fontSize: '12px', fontWeight: 700, cursor: 'pointer' }}>
                           {u.is_verified ? 'Unverify' : 'Verify'}
                         </button>
                       </td>
@@ -397,15 +397,15 @@ export default function AdminPage() {
         {activeTab === 'users' && (
           <div>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px', marginBottom: '20px', flexWrap: 'wrap' }}>
-              <h2 style={{ color: 'white', fontSize: '24px', fontWeight: 800, fontFamily: "'Nunito', sans-serif" }}>All Users</h2>
+              <h2 style={{ color: 'var(--text-primary)', fontSize: '24px', fontWeight: 800, fontFamily: "'Nunito', sans-serif" }}>All Users</h2>
               <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
                 <input
                   type="text" value={userSearch} onChange={e => setUserSearch(e.target.value)}
                   placeholder="Search by name or email..."
-                  style={{ background: '#1B2130', border: '1px solid #2A3145', borderRadius: '10px', padding: '10px 16px', color: 'white', fontSize: '14px', outline: 'none', minWidth: '240px' }}
+                  style={{ background: 'var(--input-bg)', border: '1px solid var(--border-color)', borderRadius: '10px', padding: '10px 16px', color: 'var(--text-primary)', fontSize: '14px', outline: 'none', minWidth: '240px' }}
                 />
                 <button onClick={exportUsersCsv}
-                  style={{ background: 'transparent', border: '1px solid #2A3145', borderRadius: '10px', padding: '10px 18px', color: '#8892A4', fontSize: '14px', fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap', fontFamily: "'Nunito Sans', sans-serif" }}>
+                  style={{ background: 'transparent', border: '1px solid var(--border-color)', borderRadius: '10px', padding: '10px 18px', color: 'var(--text-muted)', fontSize: '14px', fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap', fontFamily: "'Nunito Sans', sans-serif" }}>
                   ⤓ Export CSV
                 </button>
                 <button onClick={() => { setShowAddUser(true); setAddMsg(null) }}
@@ -421,21 +421,21 @@ export default function AdminPage() {
               </div>
             )}
 
-            <div style={{ background: '#1B2130', border: '1px solid #2A3145', borderRadius: '12px', overflowX: 'auto' }}>
+            <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border-color)', borderRadius: '12px', overflowX: 'auto' }}>
               <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '900px' }}>
                 <thead>
-                  <tr style={{ borderBottom: '1px solid #2A3145' }}>
+                  <tr style={{ borderBottom: '1px solid var(--border-color)' }}>
                     {['Name', 'Email', 'Role', 'Discipline', 'Joined', 'Verified', 'Actions'].map(h => (
-                      <th key={h} style={{ padding: '14px 14px', textAlign: 'left', color: '#4A5568', fontSize: '12px', fontWeight: 700, letterSpacing: '0.05em', whiteSpace: 'nowrap' }}>{h}</th>
+                      <th key={h} style={{ padding: '14px 14px', textAlign: 'left', color: 'var(--text-secondary)', fontSize: '12px', fontWeight: 700, letterSpacing: '0.05em', whiteSpace: 'nowrap' }}>{h}</th>
                     ))}
                   </tr>
                 </thead>
                 <tbody>
                   {filteredUsers.map((u, i) => (
-                    <tr key={u.id} style={{ borderBottom: i < filteredUsers.length - 1 ? '1px solid #161C28' : 'none' }}>
+                    <tr key={u.id} style={{ borderBottom: i < filteredUsers.length - 1 ? '1px solid var(--border-color)' : 'none' }}>
 
                       {/* Name */}
-                      <td style={{ padding: '13px 14px', color: 'white', fontSize: '13px', fontWeight: 600, whiteSpace: 'nowrap' }}>
+                      <td style={{ padding: '13px 14px', color: 'var(--text-primary)', fontSize: '13px', fontWeight: 600, whiteSpace: 'nowrap' }}>
                         {u.name || '—'}
                         {(u as any).is_admin && (
                           <span style={{ marginLeft: '6px', fontSize: '10px', fontWeight: 700, color: '#F6981F', background: 'rgba(246,152,32,0.12)', padding: '2px 7px', borderRadius: '100px', border: '1px solid rgba(246,152,32,0.25)' }}>ADMIN</span>
@@ -443,7 +443,7 @@ export default function AdminPage() {
                       </td>
 
                       {/* Email */}
-                      <td style={{ padding: '13px 14px', color: '#8892A4', fontSize: '12px', maxWidth: '200px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{u.email}</td>
+                      <td style={{ padding: '13px 14px', color: 'var(--text-muted)', fontSize: '12px', maxWidth: '200px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{u.email}</td>
 
                       {/* Role (inline edit) */}
                       <td style={{ padding: '13px 14px' }}>
@@ -454,7 +454,7 @@ export default function AdminPage() {
                               defaultValue={u.role || ''}
                               onChange={e => changeRole(u.id, e.target.value)}
                               onBlur={() => setRoleEditId(null)}
-                              style={{ background: '#0F1117', border: '1px solid #05809B', borderRadius: '6px', color: 'white', fontSize: '12px', padding: '4px 8px', outline: 'none', cursor: 'pointer' }}>
+                              style={{ background: 'var(--input-bg)', border: '1px solid #05809B', borderRadius: '6px', color: 'var(--text-primary)', fontSize: '12px', padding: '4px 8px', outline: 'none', cursor: 'pointer' }}>
                               <option value="">No role</option>
                               {ROLES.map(r => <option key={r} value={r}>{r}</option>)}
                             </select>
@@ -462,21 +462,21 @@ export default function AdminPage() {
                         ) : (
                           <button onClick={() => setRoleEditId(u.id)}
                             style={{ background: 'transparent', border: 'none', padding: '2px 0', cursor: 'pointer', textAlign: 'left' }}>
-                            <span style={{ color: u.role ? '#C0C8D8' : '#4A5568', fontSize: '12px' }}>{u.role || 'No role'}</span>
-                            <span style={{ color: '#2A3145', fontSize: '11px', marginLeft: '4px' }}>✎</span>
+                            <span style={{ color: u.role ? 'var(--text-secondary)' : 'var(--text-secondary)', fontSize: '12px' }}>{u.role || 'No role'}</span>
+                            <span style={{ color: 'var(--border-color)', fontSize: '11px', marginLeft: '4px' }}>✎</span>
                           </button>
                         )}
                       </td>
 
                       {/* Discipline */}
-                      <td style={{ padding: '13px 14px', color: '#8892A4', fontSize: '12px', whiteSpace: 'nowrap' }}>{u.discipline || '—'}</td>
+                      <td style={{ padding: '13px 14px', color: 'var(--text-muted)', fontSize: '12px', whiteSpace: 'nowrap' }}>{u.discipline || '—'}</td>
 
                       {/* Joined */}
-                      <td style={{ padding: '13px 14px', color: '#4A5568', fontSize: '12px', whiteSpace: 'nowrap' }}>{fmtDate((u as any).created_at)}</td>
+                      <td style={{ padding: '13px 14px', color: 'var(--text-secondary)', fontSize: '12px', whiteSpace: 'nowrap' }}>{fmtDate((u as any).created_at)}</td>
 
                       {/* Verified */}
                       <td style={{ padding: '13px 14px' }}>
-                        <span style={{ background: u.is_verified ? 'rgba(5,128,155,0.15)' : 'rgba(74,85,104,0.15)', color: u.is_verified ? '#05809B' : '#4A5568', fontSize: '11px', fontWeight: 700, padding: '3px 9px', borderRadius: '100px', whiteSpace: 'nowrap' }}>
+                        <span style={{ background: u.is_verified ? 'rgba(5,128,155,0.15)' : 'rgba(74,85,104,0.15)', color: u.is_verified ? '#05809B' : 'var(--text-secondary)', fontSize: '11px', fontWeight: 700, padding: '3px 9px', borderRadius: '100px', whiteSpace: 'nowrap' }}>
                           {u.is_verified ? '✓ Verified' : 'Unverified'}
                         </span>
                       </td>
@@ -486,14 +486,14 @@ export default function AdminPage() {
                         <div style={{ display: 'flex', gap: '5px', flexWrap: 'wrap' }}>
                           {/* Verify */}
                           <button onClick={() => toggleVerified(u.id, u.is_verified ?? false)}
-                            style={{ background: 'transparent', border: `1px solid ${u.is_verified ? '#2A3145' : '#05809B'}`, borderRadius: '6px', padding: '4px 9px', color: u.is_verified ? '#4A5568' : '#05809B', fontSize: '11px', fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap' }}>
+                            style={{ background: 'transparent', border: `1px solid ${u.is_verified ? 'var(--border-color)' : '#05809B'}`, borderRadius: '6px', padding: '4px 9px', color: u.is_verified ? 'var(--text-secondary)' : '#05809B', fontSize: '11px', fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap' }}>
                             {u.is_verified ? 'Unverify' : '✓ Verify'}
                           </button>
 
                           {/* Admin toggle — only for @fractionalaeco.com */}
                           {isFrAECO(u.email) && u.email !== SUPERADMIN && (
                             <button onClick={() => toggleAdmin(u.id, u.email ?? '', !!(u as any).is_admin)}
-                              style={{ background: 'transparent', border: `1px solid ${(u as any).is_admin ? '#3D2A00' : 'rgba(246,152,32,0.3)'}`, borderRadius: '6px', padding: '4px 9px', color: (u as any).is_admin ? '#8892A4' : '#F6981F', fontSize: '11px', fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap' }}>
+                              style={{ background: 'transparent', border: `1px solid ${(u as any).is_admin ? '#3D2A00' : 'rgba(246,152,32,0.3)'}`, borderRadius: '6px', padding: '4px 9px', color: (u as any).is_admin ? 'var(--text-muted)' : '#F6981F', fontSize: '11px', fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap' }}>
                               {(u as any).is_admin ? 'Remove Admin' : 'Make Admin'}
                             </button>
                           )}
@@ -505,7 +505,7 @@ export default function AdminPage() {
 
                           {/* View Profile */}
                           <Link href={`/talent/${u.id}`}
-                            style={{ background: 'transparent', border: '1px solid #2A3145', borderRadius: '6px', padding: '4px 9px', color: '#8892A4', fontSize: '11px', fontWeight: 700, textDecoration: 'none', whiteSpace: 'nowrap' }}>
+                            style={{ background: 'transparent', border: '1px solid var(--border-color)', borderRadius: '6px', padding: '4px 9px', color: 'var(--text-muted)', fontSize: '11px', fontWeight: 700, textDecoration: 'none', whiteSpace: 'nowrap' }}>
                             Profile →
                           </Link>
 
@@ -521,7 +521,7 @@ export default function AdminPage() {
                 </tbody>
               </table>
               {filteredUsers.length === 0 && (
-                <div style={{ textAlign: 'center', padding: '48px', color: '#4A5568', fontSize: '16px' }}>
+                <div style={{ textAlign: 'center', padding: '48px', color: 'var(--text-secondary)', fontSize: '16px' }}>
                   {userSearch ? 'No users match your search.' : 'No users yet.'}
                 </div>
               )}
@@ -533,38 +533,38 @@ export default function AdminPage() {
         {activeTab === 'listings' && (
           <div>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px', marginBottom: '20px', flexWrap: 'wrap' }}>
-              <h2 style={{ color: 'white', fontSize: '24px', fontWeight: 800, fontFamily: "'Nunito', sans-serif" }}>All Listings</h2>
+              <h2 style={{ color: 'var(--text-primary)', fontSize: '24px', fontWeight: 800, fontFamily: "'Nunito', sans-serif" }}>All Listings</h2>
               <button onClick={exportListingsCsv}
-                style={{ background: 'transparent', border: '1px solid #2A3145', borderRadius: '10px', padding: '10px 18px', color: '#8892A4', fontSize: '14px', fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap', fontFamily: "'Nunito Sans', sans-serif" }}>
+                style={{ background: 'transparent', border: '1px solid var(--border-color)', borderRadius: '10px', padding: '10px 18px', color: 'var(--text-muted)', fontSize: '14px', fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap', fontFamily: "'Nunito Sans', sans-serif" }}>
                 ⤓ Export CSV
               </button>
             </div>
-            <div style={{ background: '#1B2130', border: '1px solid #2A3145', borderRadius: '12px', overflow: 'hidden' }}>
+            <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border-color)', borderRadius: '12px', overflow: 'hidden' }}>
               <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                 <thead>
-                  <tr style={{ borderBottom: '1px solid #2A3145' }}>
+                  <tr style={{ borderBottom: '1px solid var(--border-color)' }}>
                     {['Title', 'Company', 'Discipline', 'Type', 'Rate', 'Status', 'Actions'].map(h => (
-                      <th key={h} style={{ padding: '14px 16px', textAlign: 'left', color: '#4A5568', fontSize: '12px', fontWeight: 700, letterSpacing: '0.05em' }}>{h}</th>
+                      <th key={h} style={{ padding: '14px 16px', textAlign: 'left', color: 'var(--text-secondary)', fontSize: '12px', fontWeight: 700, letterSpacing: '0.05em' }}>{h}</th>
                     ))}
                   </tr>
                 </thead>
                 <tbody>
                   {listings.map((l, i) => (
-                    <tr key={l.id} style={{ borderBottom: i < listings.length - 1 ? '1px solid #161C28' : 'none' }}>
-                      <td style={{ padding: '14px 16px', color: 'white', fontSize: '14px', fontWeight: 600 }}>{l.title}</td>
-                      <td style={{ padding: '14px 16px', color: '#8892A4', fontSize: '13px' }}>{l.company}</td>
-                      <td style={{ padding: '14px 16px', color: '#8892A4', fontSize: '13px' }}>{l.discipline || '—'}</td>
-                      <td style={{ padding: '14px 16px', color: '#8892A4', fontSize: '13px' }}>{l.engagement_type || '—'}</td>
+                    <tr key={l.id} style={{ borderBottom: i < listings.length - 1 ? '1px solid var(--border-color)' : 'none' }}>
+                      <td style={{ padding: '14px 16px', color: 'var(--text-primary)', fontSize: '14px', fontWeight: 600 }}>{l.title}</td>
+                      <td style={{ padding: '14px 16px', color: 'var(--text-muted)', fontSize: '13px' }}>{l.company}</td>
+                      <td style={{ padding: '14px 16px', color: 'var(--text-muted)', fontSize: '13px' }}>{l.discipline || '—'}</td>
+                      <td style={{ padding: '14px 16px', color: 'var(--text-muted)', fontSize: '13px' }}>{l.engagement_type || '—'}</td>
                       <td style={{ padding: '14px 16px', color: '#05809B', fontSize: '13px', fontWeight: 700 }}>{l.rate ? `$${l.rate}/h` : '—'}</td>
                       <td style={{ padding: '14px 16px' }}>
-                        <span style={{ background: l.status === 'active' ? 'rgba(5,128,155,0.15)' : 'rgba(74,85,104,0.15)', color: l.status === 'active' ? '#05809B' : '#4A5568', fontSize: '12px', fontWeight: 700, padding: '4px 10px', borderRadius: '100px' }}>
+                        <span style={{ background: l.status === 'active' ? 'rgba(5,128,155,0.15)' : 'rgba(74,85,104,0.15)', color: l.status === 'active' ? '#05809B' : 'var(--text-secondary)', fontSize: '12px', fontWeight: 700, padding: '4px 10px', borderRadius: '100px' }}>
                           {l.status}
                         </span>
                       </td>
                       <td style={{ padding: '14px 16px' }}>
                         <div style={{ display: 'flex', gap: '6px' }}>
                           <button onClick={() => toggleListing(l.id, l.status)}
-                            style={{ background: 'transparent', border: '1px solid #2A3145', borderRadius: '6px', padding: '5px 10px', color: '#F6981F', fontSize: '11px', fontWeight: 700, cursor: 'pointer' }}>
+                            style={{ background: 'transparent', border: '1px solid var(--border-color)', borderRadius: '6px', padding: '5px 10px', color: '#F6981F', fontSize: '11px', fontWeight: 700, cursor: 'pointer' }}>
                             {l.status === 'active' ? 'Close' : 'Reopen'}
                           </button>
                           <button onClick={() => deleteListing(l.id)}
@@ -578,7 +578,7 @@ export default function AdminPage() {
                 </tbody>
               </table>
               {listings.length === 0 && (
-                <div style={{ textAlign: 'center', padding: '48px', color: '#4A5568', fontSize: '16px' }}>No listings yet</div>
+                <div style={{ textAlign: 'center', padding: '48px', color: 'var(--text-secondary)', fontSize: '16px' }}>No listings yet</div>
               )}
             </div>
           </div>
@@ -588,27 +588,27 @@ export default function AdminPage() {
         {activeTab === 'applications' && (
           <div>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px', marginBottom: '20px', flexWrap: 'wrap' }}>
-              <h2 style={{ color: 'white', fontSize: '24px', fontWeight: 800, fontFamily: "'Nunito', sans-serif" }}>All Applications</h2>
+              <h2 style={{ color: 'var(--text-primary)', fontSize: '24px', fontWeight: 800, fontFamily: "'Nunito', sans-serif" }}>All Applications</h2>
               <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
                 <select value={appStatusFilter} onChange={e => setAppStatusFilter(e.target.value)}
-                  style={{ background: '#1B2130', border: '1px solid #2A3145', borderRadius: '10px', padding: '10px 14px', color: 'white', fontSize: '14px', outline: 'none', cursor: 'pointer' }}>
+                  style={{ background: 'var(--input-bg)', border: '1px solid var(--border-color)', borderRadius: '10px', padding: '10px 14px', color: 'var(--text-primary)', fontSize: '14px', outline: 'none', cursor: 'pointer' }}>
                   <option value="all">All statuses</option>
                   <option value="pending">Pending</option>
                   <option value="accepted">Accepted</option>
                   <option value="rejected">Declined</option>
                 </select>
                 <button onClick={exportApplicationsCsv}
-                  style={{ background: 'transparent', border: '1px solid #2A3145', borderRadius: '10px', padding: '10px 18px', color: '#8892A4', fontSize: '14px', fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap', fontFamily: "'Nunito Sans', sans-serif" }}>
+                  style={{ background: 'transparent', border: '1px solid var(--border-color)', borderRadius: '10px', padding: '10px 18px', color: 'var(--text-muted)', fontSize: '14px', fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap', fontFamily: "'Nunito Sans', sans-serif" }}>
                   ⤓ Export CSV
                 </button>
               </div>
             </div>
-            <div style={{ background: '#1B2130', border: '1px solid #2A3145', borderRadius: '12px', overflow: 'hidden' }}>
+            <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border-color)', borderRadius: '12px', overflow: 'hidden' }}>
               <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                 <thead>
-                  <tr style={{ borderBottom: '1px solid #2A3145' }}>
+                  <tr style={{ borderBottom: '1px solid var(--border-color)' }}>
                     {['Applicant', 'Email', 'Listing', 'Company', 'Status', 'Applied'].map(h => (
-                      <th key={h} style={{ padding: '14px 16px', textAlign: 'left', color: '#4A5568', fontSize: '12px', fontWeight: 700, letterSpacing: '0.05em' }}>{h}</th>
+                      <th key={h} style={{ padding: '14px 16px', textAlign: 'left', color: 'var(--text-secondary)', fontSize: '12px', fontWeight: 700, letterSpacing: '0.05em' }}>{h}</th>
                     ))}
                   </tr>
                 </thead>
@@ -616,11 +616,11 @@ export default function AdminPage() {
                   {applications
                     .filter(a => appStatusFilter === 'all' || a.status === appStatusFilter)
                     .map((a, i, arr) => (
-                    <tr key={a.id} style={{ borderBottom: i < arr.length - 1 ? '1px solid #161C28' : 'none' }}>
-                      <td style={{ padding: '14px 16px', color: 'white', fontSize: '14px', fontWeight: 600 }}>{a.profiles?.name || '—'}</td>
-                      <td style={{ padding: '14px 16px', color: '#8892A4', fontSize: '13px' }}>{a.profiles?.email || '—'}</td>
-                      <td style={{ padding: '14px 16px', color: '#8892A4', fontSize: '13px' }}>{a.listings?.title || '—'}</td>
-                      <td style={{ padding: '14px 16px', color: '#8892A4', fontSize: '13px' }}>{a.listings?.company || '—'}</td>
+                    <tr key={a.id} style={{ borderBottom: i < arr.length - 1 ? '1px solid var(--border-color)' : 'none' }}>
+                      <td style={{ padding: '14px 16px', color: 'var(--text-primary)', fontSize: '14px', fontWeight: 600 }}>{a.profiles?.name || '—'}</td>
+                      <td style={{ padding: '14px 16px', color: 'var(--text-muted)', fontSize: '13px' }}>{a.profiles?.email || '—'}</td>
+                      <td style={{ padding: '14px 16px', color: 'var(--text-muted)', fontSize: '13px' }}>{a.listings?.title || '—'}</td>
+                      <td style={{ padding: '14px 16px', color: 'var(--text-muted)', fontSize: '13px' }}>{a.listings?.company || '—'}</td>
                       <td style={{ padding: '14px 16px' }}>
                         <span style={{
                           background: a.status === 'accepted' ? 'rgba(34,197,94,0.12)' : a.status === 'rejected' ? 'rgba(239,68,68,0.12)' : 'rgba(246,152,32,0.12)',
@@ -630,13 +630,13 @@ export default function AdminPage() {
                           {a.status === 'rejected' ? 'Declined' : a.status}
                         </span>
                       </td>
-                      <td style={{ padding: '14px 16px', color: '#4A5568', fontSize: '12px', whiteSpace: 'nowrap' }}>{fmtDate(a.created_at)}</td>
+                      <td style={{ padding: '14px 16px', color: 'var(--text-secondary)', fontSize: '12px', whiteSpace: 'nowrap' }}>{fmtDate(a.created_at)}</td>
                     </tr>
                   ))}
                 </tbody>
               </table>
               {applications.length === 0 && (
-                <div style={{ textAlign: 'center', padding: '48px', color: '#4A5568', fontSize: '16px' }}>No applications yet</div>
+                <div style={{ textAlign: 'center', padding: '48px', color: 'var(--text-secondary)', fontSize: '16px' }}>No applications yet</div>
               )}
             </div>
           </div>

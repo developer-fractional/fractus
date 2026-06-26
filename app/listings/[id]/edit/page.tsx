@@ -95,38 +95,38 @@ export default function EditListingPage() {
   }
 
   const inputStyle = {
-    width: '100%', background: '#1B2130', border: '1.5px solid #2A3145',
-    borderRadius: '12px', padding: '14px 18px', color: 'white',
+    width: '100%', background: 'var(--input-bg)', border: '1.5px solid var(--border-color)',
+    borderRadius: '12px', padding: '14px 18px', color: 'var(--text-primary)',
     fontSize: '15px', outline: 'none', boxSizing: 'border-box' as const,
     fontFamily: "'Nunito Sans', sans-serif"
   }
   const labelStyle = {
-    display: 'block', color: '#8892A4', fontSize: '12px',
+    display: 'block', color: 'var(--text-muted)', fontSize: '12px',
     fontWeight: 700, marginBottom: '8px', letterSpacing: '0.06em',
     textTransform: 'uppercase' as const
   }
   const fieldWrap = { marginBottom: '22px' }
 
   if (loadingPage) return (
-    <div style={{ minHeight: '100vh', background: '#0F1117', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+    <div style={{ minHeight: '100vh', background: 'var(--bg-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       <p style={{ color: '#F6981F', fontFamily: "'Nunito Sans', sans-serif", fontSize: '18px' }}>Loading...</p>
     </div>
   )
 
   return (
-    <div style={{ minHeight: '100vh', background: '#0F1117', fontFamily: "'Nunito Sans', sans-serif" }}>
+    <div style={{ minHeight: '100vh', background: 'var(--bg-primary)', fontFamily: "'Nunito Sans', sans-serif" }}>
       <Navbar activeLink="listings" />
 
       {/* Header */}
-      <div style={{ background: '#1B2130', borderBottom: '1px solid #2A3145', padding: '40px 24px' }}>
+      <div style={{ background: 'var(--bg-card)', borderBottom: '1px solid var(--border-color)', padding: '40px 24px' }}>
         <div style={{ maxWidth: '720px', margin: '0 auto' }}>
           <Link href={`/listings/${id}`} style={{ color: '#05809B', textDecoration: 'none', fontSize: '14px', fontWeight: 600 }}>
             ← Back to listing
           </Link>
-          <h1 style={{ fontFamily: "'Nunito', sans-serif", fontSize: '36px', fontWeight: 800, color: 'white', marginTop: '16px', marginBottom: '8px', letterSpacing: '-0.5px' }}>
+          <h1 style={{ fontFamily: "'Nunito', sans-serif", fontSize: '36px', fontWeight: 800, color: 'var(--text-primary)', marginTop: '16px', marginBottom: '8px', letterSpacing: '-0.5px' }}>
             Edit listing
           </h1>
-          <p style={{ color: '#8892A4', fontSize: '16px' }}>
+          <p style={{ color: 'var(--text-muted)', fontSize: '16px' }}>
             Update the details for this role.
           </p>
         </div>
@@ -134,10 +134,10 @@ export default function EditListingPage() {
 
       {/* Form */}
       <div style={{ maxWidth: '720px', margin: '0 auto', padding: '40px 24px' }}>
-        <div style={{ background: '#1B2130', borderRadius: '16px', border: '1px solid #2A3145', padding: '36px' }}>
+        <div style={{ background: 'var(--bg-card)', borderRadius: '16px', border: '1px solid var(--border-color)', padding: '36px' }}>
 
           {/* Role details */}
-          <h2 style={{ color: 'white', fontSize: '18px', fontWeight: 700, marginBottom: '24px', fontFamily: "'Nunito', sans-serif" }}>
+          <h2 style={{ color: 'var(--text-primary)', fontSize: '18px', fontWeight: 700, marginBottom: '24px', fontFamily: "'Nunito', sans-serif" }}>
             Role details
           </h2>
 
@@ -181,7 +181,7 @@ export default function EditListingPage() {
           </div>
 
           {/* Compensation */}
-          <h2 style={{ color: 'white', fontSize: '18px', fontWeight: 700, margin: '32px 0 24px', fontFamily: "'Nunito', sans-serif" }}>
+          <h2 style={{ color: 'var(--text-primary)', fontSize: '18px', fontWeight: 700, margin: '32px 0 24px', fontFamily: "'Nunito', sans-serif" }}>
             Compensation &amp; schedule
           </h2>
 
@@ -200,7 +200,7 @@ export default function EditListingPage() {
           </div>
 
           {/* Location */}
-          <h2 style={{ color: 'white', fontSize: '18px', fontWeight: 700, margin: '32px 0 24px', fontFamily: "'Nunito', sans-serif" }}>
+          <h2 style={{ color: 'var(--text-primary)', fontSize: '18px', fontWeight: 700, margin: '32px 0 24px', fontFamily: "'Nunito', sans-serif" }}>
             Location
           </h2>
 
@@ -213,14 +213,14 @@ export default function EditListingPage() {
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '32px' }}>
             <div style={{
               width: '48px', height: '26px', borderRadius: '13px', cursor: 'pointer', position: 'relative',
-              background: form.remote ? '#05809B' : '#2A3145', transition: 'background 0.2s'
+              background: form.remote ? '#05809B' : 'var(--border-color)', transition: 'background 0.2s'
             }} onClick={() => setForm(prev => ({ ...prev, remote: !prev.remote }))}>
               <div style={{
                 position: 'absolute', top: '3px', left: form.remote ? '25px' : '3px',
                 width: '20px', height: '20px', borderRadius: '50%', background: 'white', transition: 'left 0.2s'
               }} />
             </div>
-            <span style={{ color: '#8892A4', fontSize: '15px' }}>Remote / open to remote candidates</span>
+            <span style={{ color: 'var(--text-muted)', fontSize: '15px' }}>Remote / open to remote candidates</span>
           </div>
 
           {message && (
@@ -232,7 +232,7 @@ export default function EditListingPage() {
           <div style={{ display: 'flex', gap: '12px' }}>
             <Link href={`/listings/${id}`} style={{
               flex: 1, textAlign: 'center', padding: '16px', borderRadius: '100px',
-              border: '1.5px solid #2A3145', color: '#8892A4', textDecoration: 'none',
+              border: '1.5px solid var(--border-color)', color: 'var(--text-muted)', textDecoration: 'none',
               fontSize: '16px', fontWeight: 700
             }}>
               Cancel

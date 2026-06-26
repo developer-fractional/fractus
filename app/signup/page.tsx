@@ -73,11 +73,11 @@ export default function Signup() {
     }
   }
 
-  const inputStyle = { width: '100%', background: '#1B2130', border: '1px solid #2A3145', borderRadius: '12px', padding: '16px 18px', color: 'white', fontSize: '16px', outline: 'none', boxSizing: 'border-box' as const }
-  const labelStyle = { display: 'block', color: '#8892A4', fontSize: '13px', fontWeight: 600, marginBottom: '8px', letterSpacing: '0.03em' } as const
+  const inputStyle = { width: '100%', background: 'var(--input-bg)', border: '1px solid var(--border-color)', borderRadius: '12px', padding: '16px 18px', color: 'var(--text-primary)', fontSize: '16px', outline: 'none', boxSizing: 'border-box' as const }
+  const labelStyle = { display: 'block', color: 'var(--text-muted)', fontSize: '13px', fontWeight: 600, marginBottom: '8px', letterSpacing: '0.03em' } as const
 
   return (
-    <div style={{ minHeight: '100vh', background: '#0F1117', display: 'flex', flexDirection: 'column', fontFamily: "'Nunito Sans', sans-serif" }}>
+    <div style={{ minHeight: '100vh', background: 'var(--bg-primary)', display: 'flex', flexDirection: 'column', fontFamily: "'Nunito Sans', sans-serif" }}>
       <Script
         src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit"
         onLoad={() => setScriptLoaded(true)}
@@ -89,12 +89,12 @@ export default function Signup() {
       </div>
 
       {/* Nav */}
-      <nav style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px 48px', borderBottom: '1px solid #2A3145' }}>
+      <nav style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px 48px', borderBottom: '1px solid var(--border-color)' }}>
         <Link href="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'baseline', gap: '8px' }}>
           <span style={{ fontSize: '22px', fontWeight: 800, color: '#F6981F', fontFamily: "'Nunito', sans-serif" }}>Fractus</span>
-          <span style={{ fontSize: '11px', color: '#4A5568', letterSpacing: '0.05em', fontWeight: 600 }}>BY FRACTIONAL AECO</span>
+          <span style={{ fontSize: '11px', color: 'var(--text-secondary)', letterSpacing: '0.05em', fontWeight: 600 }}>BY FRACTIONAL AECO</span>
         </Link>
-        <Link href="/login" style={{ color: '#8892A4', textDecoration: 'none', fontSize: '14px' }}>
+        <Link href="/login" style={{ color: 'var(--text-muted)', textDecoration: 'none', fontSize: '14px' }}>
           Already have an account? <span style={{ color: '#05809B', fontWeight: 700 }}>Sign in →</span>
         </Link>
       </nav>
@@ -102,8 +102,8 @@ export default function Signup() {
       {/* Form */}
       <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 'clamp(32px, 6vw, 60px) clamp(16px, 5vw, 24px)' }}>
         <div style={{ width: '100%', maxWidth: '440px' }}>
-          <h1 style={{ fontFamily: "'Nunito', sans-serif", fontSize: '40px', fontWeight: 800, color: 'white', marginBottom: '8px', letterSpacing: '-1px' }}>Join Fractus</h1>
-          <p style={{ color: '#8892A4', fontSize: '17px', marginBottom: '32px' }}>Connect with top AECO fractional talent</p>
+          <h1 style={{ fontFamily: "'Nunito', sans-serif", fontSize: '40px', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '8px', letterSpacing: '-1px' }}>Join Fractus</h1>
+          <p style={{ color: 'var(--text-muted)', fontSize: '17px', marginBottom: '32px' }}>Connect with top AECO fractional talent</p>
 
           {/* OAuth buttons */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '28px' }}>
@@ -111,8 +111,8 @@ export default function Signup() {
               <button key={p.provider} onClick={() => handleOAuth(p.provider)} disabled={oauthLoading !== null}
                 style={{
                   width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px',
-                  background: '#1B2130', border: '1px solid #2A3145', borderRadius: '12px', padding: '14px',
-                  color: 'white', fontSize: '15px', fontWeight: 700, cursor: oauthLoading ? 'not-allowed' : 'pointer',
+                  background: 'var(--bg-card)', border: '1px solid var(--border-color)', borderRadius: '12px', padding: '14px',
+                  color: 'var(--text-primary)', fontSize: '15px', fontWeight: 700, cursor: oauthLoading ? 'not-allowed' : 'pointer',
                   opacity: oauthLoading && oauthLoading !== p.provider ? 0.5 : 1, fontFamily: "'Nunito Sans', sans-serif",
                 }}>
                 <span style={{ fontSize: '16px' }}>{p.icon}</span>
@@ -122,9 +122,9 @@ export default function Signup() {
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '14px', margin: '8px 0 28px' }}>
-            <div style={{ flex: 1, height: '1px', background: '#2A3145' }} />
-            <span style={{ color: '#4A5568', fontSize: '13px', fontWeight: 600 }}>OR SIGN UP WITH EMAIL</span>
-            <div style={{ flex: 1, height: '1px', background: '#2A3145' }} />
+            <div style={{ flex: 1, height: '1px', background: 'var(--border-color)' }} />
+            <span style={{ color: 'var(--text-secondary)', fontSize: '13px', fontWeight: 600 }}>OR SIGN UP WITH EMAIL</span>
+            <div style={{ flex: 1, height: '1px', background: 'var(--border-color)' }} />
           </div>
 
           <div style={{ marginBottom: '18px' }}>
@@ -159,7 +159,7 @@ export default function Signup() {
             {loading ? 'Creating account...' : 'Create Account'}
           </button>
 
-          <p style={{ textAlign: 'center', color: '#8892A4', fontSize: '15px' }}>
+          <p style={{ textAlign: 'center', color: 'var(--text-muted)', fontSize: '15px' }}>
             Already have an account?{' '}
             <Link href="/login" style={{ color: '#05809B', textDecoration: 'none', fontWeight: 700 }}>Sign in →</Link>
           </p>
@@ -172,8 +172,8 @@ export default function Signup() {
         </div>
       </div>
 
-      <div style={{ textAlign: 'center', padding: '20px', color: '#4A5568', fontSize: '13px', borderTop: '1px solid #2A3145' }}>
-        © 2026 Fractional-AECO LLC · <a href="https://www.fractionalaeco.com" target="_blank" rel="noopener noreferrer" style={{ color: '#4A5568', textDecoration: 'none' }}>fractionalaeco.com</a>
+      <div style={{ textAlign: 'center', padding: '20px', color: 'var(--text-secondary)', fontSize: '13px', borderTop: '1px solid var(--border-color)' }}>
+        © 2026 Fractional-AECO LLC · <a href="https://www.fractionalaeco.com" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--text-secondary)', textDecoration: 'none' }}>fractionalaeco.com</a>
       </div>
     </div>
   )

@@ -34,7 +34,7 @@ function VerifyEmailContent() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: '#0F1117', display: 'flex', flexDirection: 'column', fontFamily: "'Nunito Sans', sans-serif" }}>
+    <div style={{ minHeight: '100vh', background: 'var(--bg-primary)', display: 'flex', flexDirection: 'column', fontFamily: "'Nunito Sans', sans-serif" }}>
 
       {/* Top bar */}
       <div style={{ background: '#F6981F', color: 'white', textAlign: 'center', padding: '9px 16px', fontSize: '13px', fontWeight: 700 }}>
@@ -42,12 +42,12 @@ function VerifyEmailContent() {
       </div>
 
       {/* Nav */}
-      <nav style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px 48px', borderBottom: '1px solid #2A3145' }}>
+      <nav style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px 48px', borderBottom: '1px solid var(--border-color)' }}>
         <Link href="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'baseline', gap: '8px' }}>
           <span style={{ fontSize: '22px', fontWeight: 800, color: '#F6981F', fontFamily: "'Nunito', sans-serif" }}>Fractus</span>
-          <span style={{ fontSize: '11px', color: '#4A5568', letterSpacing: '0.05em', fontWeight: 600 }}>BY FRACTIONAL AECO</span>
+          <span style={{ fontSize: '11px', color: 'var(--text-secondary)', letterSpacing: '0.05em', fontWeight: 600 }}>BY FRACTIONAL AECO</span>
         </Link>
-        <Link href="/login" style={{ color: '#8892A4', textDecoration: 'none', fontSize: '14px' }}>
+        <Link href="/login" style={{ color: 'var(--text-muted)', textDecoration: 'none', fontSize: '14px' }}>
           Already verified? <span style={{ color: '#05809B', fontWeight: 700 }}>Sign in →</span>
         </Link>
       </nav>
@@ -58,14 +58,14 @@ function VerifyEmailContent() {
           <div style={{ width: '64px', height: '64px', borderRadius: '20px', background: 'rgba(246,152,32,0.12)', border: '1px solid rgba(246,152,32,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '28px', margin: '0 auto 24px' }}>
             ✉️
           </div>
-          <h1 style={{ fontFamily: "'Nunito', sans-serif", fontSize: '34px', fontWeight: 800, color: 'white', marginBottom: '12px', letterSpacing: '-1px' }}>Please verify your email</h1>
-          <p style={{ color: '#8892A4', fontSize: '17px', marginBottom: '8px' }}>
+          <h1 style={{ fontFamily: "'Nunito', sans-serif", fontSize: '34px', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '12px', letterSpacing: '-1px' }}>Please verify your email</h1>
+          <p style={{ color: 'var(--text-muted)', fontSize: '17px', marginBottom: '8px' }}>
             We&apos;ve sent a verification link to:
           </p>
           <p style={{ color: '#05809B', fontSize: '18px', fontWeight: 700, marginBottom: '32px' }}>
             {email || 'the email address you signed up with'}
           </p>
-          <p style={{ color: '#8892A4', fontSize: '15px', marginBottom: '32px' }}>
+          <p style={{ color: 'var(--text-muted)', fontSize: '15px', marginBottom: '32px' }}>
             Click the link in that email to activate your account. If you don&apos;t see it, check your spam folder.
           </p>
 
@@ -80,14 +80,14 @@ function VerifyEmailContent() {
             </div>
           )}
 
-          <p style={{ color: '#8892A4', fontSize: '15px' }}>
+          <p style={{ color: 'var(--text-muted)', fontSize: '15px' }}>
             <Link href="/login" style={{ color: '#05809B', textDecoration: 'none', fontWeight: 700 }}>← Back to sign in</Link>
           </p>
         </div>
       </div>
 
-      <div style={{ textAlign: 'center', padding: '20px', color: '#4A5568', fontSize: '13px', borderTop: '1px solid #2A3145' }}>
-        © 2026 Fractional-AECO LLC · <a href="https://www.fractionalaeco.com" target="_blank" rel="noopener noreferrer" style={{ color: '#4A5568', textDecoration: 'none' }}>fractionalaeco.com</a>
+      <div style={{ textAlign: 'center', padding: '20px', color: 'var(--text-secondary)', fontSize: '13px', borderTop: '1px solid var(--border-color)' }}>
+        © 2026 Fractional-AECO LLC · <a href="https://www.fractionalaeco.com" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--text-secondary)', textDecoration: 'none' }}>fractionalaeco.com</a>
       </div>
     </div>
   )
@@ -95,7 +95,7 @@ function VerifyEmailContent() {
 
 export default function VerifyEmailPage() {
   return (
-    <Suspense fallback={<div style={{ background: '#0F1117', minHeight: '100vh' }} />}>
+    <Suspense fallback={<div style={{ background: 'var(--bg-primary)', minHeight: '100vh' }} />}>
       <VerifyEmailContent />
     </Suspense>
   )
